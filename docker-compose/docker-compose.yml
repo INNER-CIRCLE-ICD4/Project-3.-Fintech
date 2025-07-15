@@ -26,6 +26,7 @@ services:
     volumes:
       - ./mysql/master-data:/var/lib/mysql
       - ./mysql/cnf/master.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
     networks:
       - sendy-net
 

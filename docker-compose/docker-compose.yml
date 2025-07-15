@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  api-server:
+    build:
+      context: ..
+    container_name: sendy-api
+    ports:
+      - "8080:8080"
+    networks:
+      - sendy-net
+  mysql-master:
+    image: mysql:8.0.42
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=sendy
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=sendy_master
+      - MYSQL_PASSWORD=sendy_master
+      - TZ=UTC
+    command: # 명령어 실행
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --lower_case_table_names=1
+    volumes:
+      - ./mysql/master-data:/var/lib/mysql
+      - ./mysql/cnf/master.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - sendy-net
+
+networks:
+  sendy-net:

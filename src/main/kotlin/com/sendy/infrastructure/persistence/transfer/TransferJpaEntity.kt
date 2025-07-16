@@ -1,5 +1,6 @@
 package com.sendy.infrastructure.persistence.transfer
 
+import com.sendy.domain.enum.TransferStatusEnum
 import com.sendy.infrastructure.persistence.Identity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -12,7 +13,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "transfer")
 class TransferJpaEntity(
-    id: String,
+    id: Long,
     @Column
     var amount: Long,
     @Enumerated(EnumType.STRING)
@@ -25,11 +26,4 @@ class TransferJpaEntity(
     var completedAt: LocalDateTime? = null,
     @Column(nullable = true)
     val reason: String? = null,
-) : Identity(id) {
-    enum class TransferStatusEnum {
-        PENDING,
-        SUCCESS,
-        FAILED,
-        CANCELLED,
-    }
-}
+) : Identity(id)

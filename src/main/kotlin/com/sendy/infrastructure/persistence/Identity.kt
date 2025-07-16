@@ -12,17 +12,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 abstract class Identity(
-    id: String,
-) : Persistable<String> {
+    id: Long,
+) : Persistable<Long> {
     @Id
     @Column(columnDefinition = "char(13)")
-    private val id: String = id
+    private val id: Long = id
 
     @Suppress("ktlint:standard:backing-property-naming")
     @Transient
     private var _isNew = true
 
-    override fun getId(): String = id
+    override fun getId(): Long = id
 
     override fun isNew(): Boolean = _isNew
 

@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "transaction_history")
 class TransactionHistoryJpaEntity(
-    id: String,
+    id: Long,
     @Column(name = "tx_type")
     var type: String,
     @Column

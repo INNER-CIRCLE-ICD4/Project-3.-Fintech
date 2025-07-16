@@ -1,0 +1,36 @@
+package com.sendy.security
+
+import com.sendy.security.auth.common.JwtAuthenticationFilter
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+
+@Configuration
+class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+) {
+    @Bean
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            .csrf { it.disable() }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .authorizeHttpRequests {
+                it.requestMatchers("/login", "/sign-up").permitAll()
+                it.anyRequest().authenticated()
+            }
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+        return http.build()
+    }
+
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
+        //hash 방식으로 암호화 -> sort 를 넣는다. 비번이 들어오면 해쉬를 시켜서 값이 동일한지 비교한다. 디코딩 불가 오로지 인코딩만 가능.
+        return BCryptPasswordEncoder()
+    }
+}

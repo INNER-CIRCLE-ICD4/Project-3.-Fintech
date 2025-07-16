@@ -40,6 +40,9 @@ dependencies {
     // logback
     // https://tech.kakaopay.com/post/efficient-logging-with-kotlin/
     implementation("ch.qos.logback:logback-classic:1.5.18")
+
+    // tsid
+    implementation("com.github.f4b6a3:tsid-creator:5.2.6")
 }
 
 kotlin {

@@ -6,13 +6,6 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-/**
- * packageName    : com.sendy.support.util
- * fileName       : Aes256Util
- * author         : okdori
- * date           : 2025. 7. 17.
- * description    :
- */
 class Aes256Util(key: String) {
     private val secretKey: SecretKeySpec
 

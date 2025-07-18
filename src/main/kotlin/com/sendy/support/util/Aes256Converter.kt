@@ -5,13 +5,6 @@ import jakarta.persistence.Converter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
-/**
- * packageName    : com.sendy.support.util
- * fileName       : Aes256Converter
- * author         : okdori
- * date           : 2025. 7. 17.
- * description    :
- */
 @Component
 @Converter
 class Aes256Converter(

@@ -4,13 +4,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
-/**
- * packageName    : com.sendy.support.util
- * fileName       : Aes256UtilTest
- * author         : okdori
- * date           : 2025. 7. 17.
- * description    :
- */
 class Aes256UtilTest {
     private val key = "12345678901234567890123456789012"
     private val aesUtil = Aes256Util(key)

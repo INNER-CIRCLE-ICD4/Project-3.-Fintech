@@ -1,7 +1,9 @@
 package com.common.domain.error
 
 interface ErrorCodeIfs {
-    val getHttpStatusCode: Int
-    val getErrorCode: Int
-    val getDescription: String
+    val httpStatusCode: Int?
+
+    val errorCode: Int?
+
+    val description: String?
 }

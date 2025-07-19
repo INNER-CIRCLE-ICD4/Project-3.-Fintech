@@ -13,7 +13,7 @@ import java.util.*
 @Component
 class JwtTokenProvider(
     @Value("\${jwt.secret-key}") private val secretKey: String,
-    @Value("\$jwt.access-token-expire-time") private val validityInSeconds: Long,
+    @Value("\${jwt.access-token-expire-time}") private val validityInSeconds: Long,
     private val userDetailsService: UserDetailsService,
 
     ) {

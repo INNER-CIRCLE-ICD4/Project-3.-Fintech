@@ -1,19 +1,17 @@
 package com.sendy.domain.model
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import java.time.LocalDateTime
 
 /**
- * pure domain model
+ * pure domain model (JPA 엔티티가 아님)
  */
-@Entity
 data class User(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
-    val email : String,
-    val password : String,
-    val role: String = "USER" // 기본값으로 줬음. 권한별로 확장이 필요함
+    val id: Long = 0,
+    val email: String,
+    val password: String,
+    val name: String,
+    val phoneNumber: String? = null,
+    val isDelete: Boolean = false,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime = LocalDateTime.now()
 )

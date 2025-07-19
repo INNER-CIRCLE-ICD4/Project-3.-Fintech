@@ -41,6 +41,9 @@ dependencies {
     // https://tech.kakaopay.com/post/efficient-logging-with-kotlin/
     implementation("ch.qos.logback:logback-classic:1.5.18")
 
+    // tsid
+    implementation("com.github.f4b6a3:tsid-creator:5.2.6")
+
     //swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
@@ -51,8 +54,6 @@ dependencies {
 
     //springSecurity
     implementation("org.springframework.boot:spring-boot-starter-security")
-
-
 }
 
 kotlin {

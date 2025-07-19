@@ -1,8 +1,11 @@
 package com.sendy.infrastructure.persistence.transfer
 
+import com.sendy.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.infrastructure.persistence.Identity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 import java.time.LocalDateTime
 
@@ -10,8 +13,9 @@ import java.time.LocalDateTime
 @Table(name = "transaction_history")
 class TransactionHistoryJpaEntity(
     id: Long,
+    @Enumerated(EnumType.STRING)
     @Column(name = "tx_type")
-    var type: String,
+    var type: TransactionHistoryTypeEnum,
     @Column
     var amount: Long,
     @Column
@@ -21,5 +25,5 @@ class TransactionHistoryJpaEntity(
     @Column
     val createdAt: LocalDateTime,
     @Column
-    var transferId: String? = null,
+    var transferId: Long? = null,
 ) : Identity(id)

@@ -30,21 +30,21 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain
     ) {
         val token = getTokenFromRequest(request)
-
+        
         if (token != null) {
             try {
                 // JWT 자체 검증 (서명, 만료시간 등)
                 val claims = jwtTokenHelper.validationTokenWithThrow(token)
                 val userIdStr = claims["userId"] as? String
                 val jti = claims["jti"] as? String
-
+                
                 // userId를 Long으로 변환
                 val userId = userIdStr?.toLongOrNull()
-
+                
                 // 데이터베이스에서 토큰 상태 확인 (jti 사용)
                 if (userId != null && jti != null) {
                     val tokenStatus = jwtTokenStorageService.getTokenStatus(jti)
-
+                    
                     when (tokenStatus) {
                         TokenStatus.ACTIVE -> {
                             // 토큰이 유효한 경우 인증 설정
@@ -84,7 +84,7 @@ class JwtAuthenticationFilter(
                 return
             }
         }
-
+        
         filterChain.doFilter(request, response)
     }
 
@@ -94,14 +94,14 @@ class JwtAuthenticationFilter(
             bearerToken.substring(7)
         } else null
     }
-
+    
     /**
      * 다른 디바이스에서 로그인 시도 - 사용자 확인 필요
      */
     private fun sendPendingLogoutResponse(response: HttpServletResponse) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json;charset=UTF-8"
-
+        
         val errorResponse = mapOf(
             "error" to "PENDING_LOGOUT",
             "message" to "다른 디바이스에서 로그인을 시도했습니다. 현재 디바이스에서 계속 사용하시겠습니까?",
@@ -111,39 +111,39 @@ class JwtAuthenticationFilter(
                 "logout" to "/api/auth/confirm-logout"
             )
         )
-
+        
         response.writer.write(objectMapper.writeValueAsString(errorResponse))
     }
-
+    
     /**
      * 완전히 무효화된 토큰에 대한 응답
      */
     private fun sendRevokedTokenResponse(response: HttpServletResponse) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json;charset=UTF-8"
-
+        
         val errorResponse = mapOf(
             "error" to "TOKEN_REVOKED",
             "message" to "토큰이 무효화되었습니다. 다시 로그인해주세요.",
             "code" to "TOKEN_REVOKED"
         )
-
+        
         response.writer.write(objectMapper.writeValueAsString(errorResponse))
     }
-
+    
     /**
      * 일반적인 토큰 오류 응답
      */
     private fun sendInvalidTokenResponse(response: HttpServletResponse) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json;charset=UTF-8"
-
+        
         val errorResponse = mapOf(
             "error" to "INVALID_TOKEN",
             "message" to "유효하지 않은 토큰입니다. 다시 로그인해주세요.",
             "code" to "TOKEN_INVALID"
         )
-
+        
         response.writer.write(objectMapper.writeValueAsString(errorResponse))
     }
 }

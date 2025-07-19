@@ -43,6 +43,17 @@ dependencies {
 
     // tsid
     implementation("com.github.f4b6a3:tsid-creator:5.2.6")
+
+    //swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
+    //jwt
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+
+    //springSecurity
+    implementation("org.springframework.boot:spring-boot-starter-security")
 }
 
 kotlin {

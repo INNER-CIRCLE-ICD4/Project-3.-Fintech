@@ -1,5 +1,6 @@
 package com.sendy.infrastructure.persistence
 
+import com.sendy.support.util.Aes256Converter
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -9,25 +10,25 @@ import java.time.LocalDateTime
  */
 @Entity
 @Table(name = "users")
-data class UserEntity(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    var id: Long = 0,
+class UserEntity(
+    id: Long,
 
     @Column(name = "name", length = 50, nullable = false)
     val name: String,
 
     @Column(name = "phone_number", length = 20, nullable = false)
+    @Convert(converter = Aes256Converter::class)
     val phoneNumber: String,
 
     @Column(name = "password", length = 100, nullable = false)
     val password: String,
 
     @Column(name = "email", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Convert(converter = Aes256Converter::class)
     val email: String,
 
     @Column(name = "ci", length = 100, nullable = true)
+    @Convert(converter = Aes256Converter::class)
     val ci: String? = null,
 
     @Column(name = "birth", nullable = false)
@@ -47,4 +48,4 @@ data class UserEntity(
 
     @Column(name = "email_verified", nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     var emailVerified: Boolean = false
-    )
+) : Identity(id)

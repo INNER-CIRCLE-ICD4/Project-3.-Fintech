@@ -1,4 +1,4 @@
-package com.sendy.application.usecase.command
+package com.sendy.user.application.usecase.command
 
 /**
  *

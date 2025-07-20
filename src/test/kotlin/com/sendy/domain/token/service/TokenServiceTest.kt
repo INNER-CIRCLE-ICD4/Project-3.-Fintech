@@ -5,9 +5,9 @@ import com.sendy.domain.token.business.TokenBusiness
 import com.sendy.domain.token.controller.model.TokenResponse
 import com.sendy.domain.token.converter.TokenConverter
 import com.sendy.domain.token.model.TokenDto
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+//import io.mockk.every
+//import io.mockk.mockk
+//import io.mockk.verify
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -109,4 +109,4 @@ class TokenServiceTest {
         assertEquals(expectedUserId, result)
         verify(exactly = 1) { tokenBusiness.validationToken(token) }
     }
-} 
+}

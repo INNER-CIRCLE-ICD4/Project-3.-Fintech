@@ -1,9 +1,8 @@
 package com.sendy.domain.service
 
-import com.common.crypto.SHA256Util
+
 import com.common.domain.error.ErrorCode
 import com.common.domain.exceptions.ApiException
-import com.sendy.application.dto.DeviceInfoDto
 import com.sendy.domain.repository.DeviceInfoRepository
 import com.sendy.domain.repository.UserEntityRepository
 import com.sendy.infrastructure.persistence.DeviceInfoEntity
@@ -20,9 +19,9 @@ import java.time.LocalDateTime
 class DeviceService(
     private val deviceInfoRepository: DeviceInfoRepository,
     private val userEntityRepository: UserEntityRepository,
-    private val sha256Util: SHA256Util
+//    private val sha256Util: SHA256Util
 ) {
-    
+
     /**
      * 디바이스 정보를 기반으로 디바이스 핑거프린트 생성
      */
@@ -35,7 +34,7 @@ class DeviceService(
         // 클라이언트에서 제공한 IP가 있으면 우선 사용, 없으면 서버에서 추출
         val ipAddress = deviceInfo?.ipAddress ?: getClientIpAddress(request)
         val acceptLanguage = request.getHeader("Accept-Language") ?: ""
-        
+
         // 디바이스 핑거프린트 생성을 위한 요소들
         val fingerprintData = buildString {
             append(userId)
@@ -52,10 +51,10 @@ class DeviceService(
             append("|")
             append(deviceInfo?.isMobile ?: false)
         }
-        
+
         return sha256Util.createFixedHash(fingerprintData)
     }
-    
+
     /**
      * 디바이스 정보 저장 또는 업데이트
      */
@@ -67,10 +66,10 @@ class DeviceService(
         // UserEntity 조회
         val user = userEntityRepository.findById(userId)
             .orElseThrow { ApiException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다") }
-            
+
         val fingerprint = generateDeviceFingerprint(userId, deviceInfo, request)
         val existingDevice = deviceInfoRepository.findByDeviceFingerprint(fingerprint)
-        
+
         return if (existingDevice.isPresent) {
             // 기존 디바이스 정보 업데이트
             val device = existingDevice.get()
@@ -81,7 +80,7 @@ class DeviceService(
             // 새 디바이스 정보 저장
             // 클라이언트에서 제공한 IP가 있으면 우선 사용, 없으면 서버에서 추출
             val finalIpAddress = deviceInfo?.ipAddress ?: getClientIpAddress(request)
-            
+
             val newDevice = DeviceInfoEntity(
                 user = user,
                 deviceFingerprint = fingerprint,
@@ -99,7 +98,7 @@ class DeviceService(
             deviceInfoRepository.save(newDevice)
         }
     }
-    
+
     /**
      * 사용자의 모든 디바이스 조회
      */
@@ -107,7 +106,7 @@ class DeviceService(
     fun getUserDevices(userId: Long): List<DeviceInfoEntity> {
         return deviceInfoRepository.findByUserId(userId)
     }
-    
+
     /**
      * 클라이언트 IP 주소 추출 (프록시, 로드밸런서 고려)
      */
@@ -117,7 +116,7 @@ class DeviceService(
         val xForwardedProto = request.getHeader("X-Forwarded-Proto")
         val cfConnectingIP = request.getHeader("CF-Connecting-IP") // Cloudflare
         val xClientIP = request.getHeader("X-Client-IP")
-        
+
         return when {
             !cfConnectingIP.isNullOrBlank() -> cfConnectingIP
             !xForwardedFor.isNullOrBlank() -> xForwardedFor.split(",")[0].trim()
@@ -126,13 +125,13 @@ class DeviceService(
             else -> request.remoteAddr
         }
     }
-    
+
     /**
      * User-Agent에서 브라우저 정보 추출 (버전 포함)
      */
     private fun extractBrowserInfo(userAgent: String?): String? {
         if (userAgent.isNullOrBlank()) return null
-        
+
         val ua = userAgent.lowercase()
         return when {
             ua.contains("chrome") -> {
@@ -158,14 +157,14 @@ class DeviceService(
             else -> "Unknown Browser"
         }
     }
-    
+
     /**
      * User-Agent에서 버전 정보 추출
      */
     private fun extractVersion(userAgent: String, prefix: String): String {
         val startIndex = userAgent.lowercase().indexOf(prefix)
         if (startIndex == -1) return ""
-        
+
         val versionStart = startIndex + prefix.length
         val versionEnd = userAgent.indexOf(" ", versionStart)
         return if (versionEnd == -1) {
@@ -174,13 +173,13 @@ class DeviceService(
             userAgent.substring(versionStart, versionEnd)
         }
     }
-    
+
     /**
      * User-Agent에서 OS 정보 추출 (버전 포함)
      */
     private fun extractOSInfo(userAgent: String?): String? {
         if (userAgent.isNullOrBlank()) return null
-        
+
         val ua = userAgent.lowercase()
         return when {
             ua.contains("windows") -> {
@@ -220,7 +219,7 @@ class DeviceService(
             else -> "Unknown OS"
         }
     }
-    
+
     /**
      * 문자열을 SHA-256으로 해시 (고정된 해시)
      * 디바이스 핑거프린트용 - 같은 입력에 대해 항상 같은 결과 보장
@@ -228,4 +227,4 @@ class DeviceService(
     private fun createFingerprint(input: String): String {
         return sha256Util.createFixedHash(input)
     }
-} 
+}

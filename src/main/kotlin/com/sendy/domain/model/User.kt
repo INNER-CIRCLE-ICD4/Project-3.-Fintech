@@ -11,7 +11,7 @@ data class User(
     val email: String,
     val password: String,
     val name: String,
-    val phoneNumber: String? = null,
+    val phoneNumber: String,
     val isDelete: Boolean = false,
     val emailVerified: Boolean = false,
     val createdAt: LocalDateTime = LocalDateTime.now(),

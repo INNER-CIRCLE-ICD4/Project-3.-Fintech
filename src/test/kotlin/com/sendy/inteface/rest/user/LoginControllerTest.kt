@@ -1,10 +1,10 @@
 package com.sendy.inteface.rest.user
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.sendy.application.dto.LoginRequestDto
-import com.sendy.domain.service.LoginService
 import com.sendy.domain.token.controller.model.TokenResponse
 import com.ninjasquad.springmockk.MockkBean
+import com.sendy.application.dto.LoginRequestDto
+import com.sendy.domain.service.LoginService
 import io.mockk.every
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -102,4 +102,4 @@ class LoginControllerTest {
         )
             .andExpect(status().isBadRequest)
     }
-} 
+}

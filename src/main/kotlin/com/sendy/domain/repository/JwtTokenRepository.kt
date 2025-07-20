@@ -1,8 +1,8 @@
 package com.sendy.domain.repository
 
 import com.sendy.infrastructure.persistence.JwtTokenEntity
-import com.sendy.infrastructure.persistence.TokenType
 import com.sendy.infrastructure.persistence.TokenStatus
+import com.sendy.infrastructure.persistence.TokenType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query

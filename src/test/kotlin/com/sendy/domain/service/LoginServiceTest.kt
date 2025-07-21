@@ -3,6 +3,7 @@ package com.sendy.domain.service
 import com.common.crypto.SHA256Util
 import com.common.domain.error.ErrorCode
 import com.common.domain.exceptions.ApiException
+import com.sendy.application.dto.LoginRequestDto
 import com.sendy.domain.model.User
 import com.sendy.domain.repository.UserRepository
 import com.sendy.domain.token.controller.model.TokenResponse

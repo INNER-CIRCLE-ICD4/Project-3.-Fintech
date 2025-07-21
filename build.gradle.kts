@@ -58,10 +58,10 @@ dependencies {
     //springSecurity
     implementation("org.springframework.boot:spring-boot-starter-security")
 
-    // tsid
-    implementation("com.github.f4b6a3:tsid-creator:5.2.6")
     // mail
     implementation("org.springframework.boot:spring-boot-starter-mail")
+
+
 
 
 }

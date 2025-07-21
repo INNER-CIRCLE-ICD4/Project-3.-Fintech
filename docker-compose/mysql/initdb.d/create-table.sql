@@ -31,3 +31,27 @@ CREATE TABLE transaction_history
     INDEX (account_id, created_at),
     INDEX (transfer_id)
 );
+
+-- 사용자 테이블
+CREATE TABLE users (
+       user_id BIGINT NOT NULL PRIMARY KEY,
+       password VARCHAR(100) NOT NULL,
+       name VARCHAR(50) NOT NULL,
+       phone_number VARCHAR(20) NOT NULL,
+       email VARCHAR(255) NOT NULL,
+       ci VARCHAR(100),
+       birth CHAR(8) NOT NULL,
+       is_delete BOOLEAN NOT NULL DEFAULT false,
+       email_verified BOOLEAN NOT NULL DEFAULT false,
+       create_at TIMESTAMP NOT NULL,
+       update_at TIMESTAMP,
+       delete_at TIMESTAMP
+);
+
+-- 사용자 메일인증 발송기록 테이블
+CREATE TABLE email_auth (
+    email_id BIGINT NOT NULL PRIMARY KEY,
+    code VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    is_verified BOOLEAN NOT NULL
+);

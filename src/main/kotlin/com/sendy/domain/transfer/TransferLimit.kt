@@ -15,13 +15,9 @@ data class TransferLimit(
     fun incrementDailyCount(
         withdrawTxList: List<TransactionHistory>,
         amount: Int,
-    ) {
-        if (amount.toLong() > singleTransactionLimit) {
-            throw Exception("1회 이체 한도를 초과했습니다.")
-        } else if (amount.toLong() > dailyLimit) {
-            throw Exception("일일 이체 한도를 초과했습니다.")
-        } else {
-            withdrawTxList.isEmpty()
-        }
+    ) = if (withdrawTxList.isEmpty() && amount.toLong() <= dailyLimit) {
+        dailyCount++
+    } else {
+        throw Exception("이체 한도를 초과했습니다.")
     }
 }

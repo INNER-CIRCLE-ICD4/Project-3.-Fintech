@@ -35,6 +35,9 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testImplementation("io.mockk:mockk:1.13.10")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // logback
@@ -43,6 +46,24 @@ dependencies {
 
     // tsid
     implementation("com.github.f4b6a3:tsid-creator:5.2.6")
+
+    //swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
+    //jwt
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+
+    //springSecurity
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
+    // mail
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+
+
+
+
 }
 
 kotlin {

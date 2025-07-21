@@ -16,6 +16,25 @@ CREATE TABLE transfer
     INDEX (receive_account_id)
 ) engine = InnoDB;
 
+-- 이체 한도 관리 테이블
+CREATE TABLE transfer_limit
+(
+    id              char(13) PRIMARY KEY COMMENT "id",
+    daily_dt        varchar(8) NOT NULL COMMENT "일자(8자리)",
+    daily_limit     bigint     NOT NULL COMMENT "일일 최대 한도",
+    single_tx_limit bigint     NOT NULL COMMENT "1회 이체시 최대 한도",
+    daily_count     bigint     NOT NULL COMMENT "일일 이체 횟수",
+    created_at      DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "생성 일자",
+    updated_at      DATETIME   NULL     DEFAULT CURRENT_TIMESTAMP COMMENT "수정 일자",
+    user_id         bigint     NULL,
+
+    -- 추후 account 외래키 추가
+    INDEX (user_id),
+    INDEX (daily_dt),
+    INDEX (daily_dt, user_id),
+    UNIQUE (daily_dt, user_id)
+);
+
 -- 입출금 이력 테이블
 CREATE TABLE transaction_history
 (

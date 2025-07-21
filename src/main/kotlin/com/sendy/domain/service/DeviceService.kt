@@ -1,8 +1,10 @@
 package com.sendy.domain.service
 
 
+import com.common.crypto.SHA256Util
 import com.common.domain.error.ErrorCode
 import com.common.domain.exceptions.ApiException
+import com.sendy.application.dto.DeviceInfoDto
 import com.sendy.domain.repository.DeviceInfoRepository
 import com.sendy.domain.repository.UserEntityRepository
 import com.sendy.infrastructure.persistence.DeviceInfoEntity
@@ -19,7 +21,7 @@ import java.time.LocalDateTime
 class DeviceService(
     private val deviceInfoRepository: DeviceInfoRepository,
     private val userEntityRepository: UserEntityRepository,
-//    private val sha256Util: SHA256Util
+    private val sha256Util: SHA256Util
 ) {
 
     /**

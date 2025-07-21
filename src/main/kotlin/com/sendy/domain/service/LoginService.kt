@@ -1,6 +1,6 @@
 package com.sendy.domain.service
 
-
+import com.common.crypto.SHA256Util
 import com.common.domain.error.ErrorCode
 import com.common.domain.exceptions.ApiException
 import com.sendy.application.dto.LoginRequestDto
@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service
 @Service
 class LoginService(
     private val userRepository: UserRepository,
-//    private val sha256Util: SHA256Util,
+    private val sha256Util: SHA256Util,
     private val tokenService: TokenService,
-//    private val deviceService: DeviceService,
+    private val deviceService: DeviceService,
     private val jwtTokenStorageService: JwtTokenStorageService
 ) {
 
@@ -34,8 +34,7 @@ class LoginService(
         }
 
         // SHA-256 해시로 비밀번호 검증
-//        val hashedPassword = sha256Util.hash(dto.password) //원본코드
-        val hashedPassword = dto.password //버그로 인한 임시 코드 (삭제코드)
+        val hashedPassword = sha256Util.hash(dto.password)
         if (!user.validatePassword(hashedPassword)) {
             throw ApiException(ErrorCode.INVALID_INPUT_VALUE, "비밀번호가 일치하지 않습니다")
         }
@@ -45,18 +44,13 @@ class LoginService(
         jwtTokenStorageService.setPendingLogoutByUserId(user.id)
 
         // 새 디바이스 정보 저장/업데이트
-//        val device = deviceService.saveOrUpdateDevice(user.id, dto.deviceInfo, request)
+        val device = deviceService.saveOrUpdateDevice(user.id, dto.deviceInfo, request)
 
         // 사용자 마지막 활동 시간 업데이트
         userRepository.save(user.updateLastActivity())
 
         // 새 토큰 발급 (디바이스 ID 포함)
-
-//        logger.info("사용자 ID ${user.id}, 디바이스 ID ${device.id}에 새 토큰을 발급합니다")
-//        return tokenService.issueToken(user.id, device.id)
-
-        //--- 인국님 코드에러나서 임의로 수정--- 하단 코드 삭제코드 / 위의 코드가 원본코드
-        logger.info("사용자 ID ${user.id}, 디바이스 ID ${user.id}에 새 토큰을 발급합니다")
-        return tokenService.issueToken(user.id, user.id)
+        logger.info("사용자 ID ${user.id}, 디바이스 ID ${device.id}에 새 토큰을 발급합니다")
+        return tokenService.issueToken(user.id, device.id)
     }
 }

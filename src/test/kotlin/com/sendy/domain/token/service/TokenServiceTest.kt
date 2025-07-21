@@ -5,6 +5,9 @@ import com.sendy.domain.token.business.TokenBusiness
 import com.sendy.domain.token.controller.model.TokenResponse
 import com.sendy.domain.token.converter.TokenConverter
 import com.sendy.domain.token.model.TokenDto
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 //import io.mockk.every
 //import io.mockk.mockk
 //import io.mockk.verify
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.verify
 import java.time.LocalDateTime
 
 class TokenServiceTest {
@@ -34,10 +38,12 @@ class TokenServiceTest {
         val userId = 1L
         val accessToken = TokenDto(
             token = "access_token_123",
+            jti= "",
             expiredAt = LocalDateTime.now().plusHours(1)
         )
         val refreshToken = TokenDto(
             token = "refresh_token_456",
+            jti= "",
             expiredAt = LocalDateTime.now().plusHours(24)
         )
         val expectedResponse = TokenResponse(
@@ -73,6 +79,7 @@ class TokenServiceTest {
         val refreshToken = "valid_refresh_token"
         val newAccessToken = TokenDto(
             token = "new_access_token_789",
+            jti= "",
             expiredAt = LocalDateTime.now().plusHours(1)
         )
         val expectedResponse = RefreshTokenResponseDto(

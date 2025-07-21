@@ -21,4 +21,4 @@ spring:
 
 # 추후 Secrets Manager 등으로 이관
 aes256:
-  key: d2f3de5ce2bef6aad4c2b01e2bffdcd66190b4ed811e4e862c2f39c01ac53db5
+  key: d2f3de5ce2bef6aad4c2b01e2bffdcd6

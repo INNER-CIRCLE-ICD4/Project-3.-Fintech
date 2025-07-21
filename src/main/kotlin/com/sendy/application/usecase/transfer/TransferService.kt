@@ -2,9 +2,7 @@ package com.sendy.application.usecase.transfer
 
 import com.sendy.application.dto.transfer.TransferMoneyCommand
 import com.sendy.application.usecase.transfer.command.TransferMoneyUseCase
-import com.sendy.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.domain.enum.TransferStatusEnum
-import com.sendy.domain.transfer.TransactionHistory
 import com.sendy.domain.transfer.TransactionHistoryRepository
 import com.sendy.domain.transfer.Transfer
 import com.sendy.domain.transfer.TransferRepository
@@ -16,7 +14,6 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 class TransferService(
@@ -55,28 +52,6 @@ class TransferService(
         val transfer = transferRepository.getTransferById(transferId)
 
         transfer.changeSuccess()
-
-        transactionHistoryRepository.save(
-            TransactionHistory(
-                id = getTsid(),
-                type = TransactionHistoryTypeEnum.WITHDRAW,
-                amount = transfer.amount,
-                balanceAfter = event.senderAccountBalance,
-                createdAt = LocalDateTime.now(),
-                transferId = transfer.id,
-            ),
-        )
-
-        transactionHistoryRepository.save(
-            TransactionHistory(
-                id = getTsid(),
-                type = TransactionHistoryTypeEnum.DEPOSIT,
-                amount = transfer.amount,
-                balanceAfter = event.receiverAccountBalance,
-                createdAt = LocalDateTime.now(),
-                transferId = transfer.id,
-            ),
-        )
 
         transferRepository.save(transfer)
     }

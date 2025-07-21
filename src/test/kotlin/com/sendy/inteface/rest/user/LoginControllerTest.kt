@@ -1,20 +1,20 @@
 package com.sendy.inteface.rest.user
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.sendy.domain.token.controller.model.TokenResponse
 import com.ninjasquad.springmockk.MockkBean
 import com.sendy.application.dto.LoginRequestDto
 import com.sendy.domain.service.LoginService
+import com.sendy.domain.token.controller.model.TokenResponse
 import io.mockk.every
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.FilterType
 import org.springframework.http.MediaType
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -32,6 +32,8 @@ import java.time.LocalDateTime
     "spring.main.allow-bean-definition-overriding=true",
     "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration"
 ])
+@SpringBootTest
+@AutoConfigureMockMvc
 class LoginControllerTest {
 
     @Autowired

@@ -3,6 +3,7 @@ package com.sendy.domain.service
 import com.common.crypto.SHA256Util
 import com.common.domain.error.ErrorCode
 import com.common.domain.exceptions.ApiException
+import com.sendy.application.dto.LoginRequestDto
 import com.sendy.domain.model.User
 import com.sendy.domain.repository.UserRepository
 import com.sendy.domain.token.controller.model.TokenResponse
@@ -48,6 +49,7 @@ class LoginServiceTest {
             email = "test@test.com",
             password = "hashed_password",
             name = "테스트사용자",
+            phoneNumber = "010-1234-5678",
             emailVerified = true
         )
         val expectedTokenResponse = TokenResponse(
@@ -109,6 +111,7 @@ class LoginServiceTest {
             email = "test@test.com",
             password = "hashed_password",
             name = "테스트사용자",
+            phoneNumber = "010-1234-5678",
             emailVerified = false // 이메일 인증 미완료
         )
 
@@ -135,6 +138,7 @@ class LoginServiceTest {
             email = "test@test.com",
             password = "hashed_password",
             name = "테스트사용자",
+            phoneNumber = "010-1234-5678",
             emailVerified = true
         )
 

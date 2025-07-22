@@ -1,9 +1,9 @@
-package com.sendy.security.auth.common
+package com.sendy.inteface.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.sendy.domain.service.CustomerUserDetailsService
 import com.sendy.domain.token.helper.JwtTokenHelper
 import com.sendy.domain.token.service.JwtTokenStorageService
-import com.sendy.domain.service.CustomerUserDetailsService
 import com.sendy.infrastructure.persistence.TokenStatus
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -18,16 +18,15 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthenticationFilter(
     private val jwtTokenHelper: JwtTokenHelper,
     private val jwtTokenStorageService: JwtTokenStorageService,
-    private val userDetailsService: CustomerUserDetailsService
+    private val userDetailsService: CustomerUserDetailsService,
 ) : OncePerRequestFilter() {
-
     private val logger = LoggerFactory.getLogger(JwtAuthenticationFilter::class.java)
     private val objectMapper = ObjectMapper()
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val token = getTokenFromRequest(request)
 
@@ -92,7 +91,9 @@ class JwtAuthenticationFilter(
         val bearerToken = request.getHeader("Authorization")
         return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             bearerToken.substring(7)
-        } else null
+        } else {
+            null
+        }
     }
 
     /**
@@ -102,15 +103,17 @@ class JwtAuthenticationFilter(
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json;charset=UTF-8"
 
-        val errorResponse = mapOf(
-            "error" to "PENDING_LOGOUT",
-            "message" to "다른 디바이스에서 로그인을 시도했습니다. 현재 디바이스에서 계속 사용하시겠습니까?",
-            "code" to "DEVICE_CONFLICT",
-            "actions" to mapOf(
-                "continue" to "/api/auth/continue-session",
-                "logout" to "/api/auth/confirm-logout"
+        val errorResponse =
+            mapOf(
+                "error" to "PENDING_LOGOUT",
+                "message" to "다른 디바이스에서 로그인을 시도했습니다. 현재 디바이스에서 계속 사용하시겠습니까?",
+                "code" to "DEVICE_CONFLICT",
+                "actions" to
+                    mapOf(
+                        "continue" to "/api/auth/continue-session",
+                        "logout" to "/api/auth/confirm-logout",
+                    ),
             )
-        )
 
         response.writer.write(objectMapper.writeValueAsString(errorResponse))
     }
@@ -122,11 +125,12 @@ class JwtAuthenticationFilter(
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json;charset=UTF-8"
 
-        val errorResponse = mapOf(
-            "error" to "TOKEN_REVOKED",
-            "message" to "토큰이 무효화되었습니다. 다시 로그인해주세요.",
-            "code" to "TOKEN_REVOKED"
-        )
+        val errorResponse =
+            mapOf(
+                "error" to "TOKEN_REVOKED",
+                "message" to "토큰이 무효화되었습니다. 다시 로그인해주세요.",
+                "code" to "TOKEN_REVOKED",
+            )
 
         response.writer.write(objectMapper.writeValueAsString(errorResponse))
     }
@@ -138,11 +142,12 @@ class JwtAuthenticationFilter(
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json;charset=UTF-8"
 
-        val errorResponse = mapOf(
-            "error" to "INVALID_TOKEN",
-            "message" to "유효하지 않은 토큰입니다. 다시 로그인해주세요.",
-            "code" to "TOKEN_INVALID"
-        )
+        val errorResponse =
+            mapOf(
+                "error" to "INVALID_TOKEN",
+                "message" to "유효하지 않은 토큰입니다. 다시 로그인해주세요.",
+                "code" to "TOKEN_INVALID",
+            )
 
         response.writer.write(objectMapper.writeValueAsString(errorResponse))
     }

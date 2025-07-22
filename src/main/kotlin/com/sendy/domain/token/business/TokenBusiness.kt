@@ -1,20 +1,19 @@
 package com.sendy.domain.token.business
 
-import com.common.domain.error.ErrorCode
-import com.common.domain.error.TokenErrorCode
-import com.common.domain.exceptions.ApiException
 import com.sendy.domain.token.ifs.TokenHelperIfs
 import com.sendy.domain.token.model.TokenDto
 import com.sendy.domain.token.service.JwtTokenStorageService
 import com.sendy.infrastructure.persistence.TokenType
+import com.sendy.support.error.ErrorCode
+import com.sendy.support.error.TokenErrorCode
+import com.sendy.support.exception.ApiException
 import org.springframework.stereotype.Service
 
 @Service
 class TokenBusiness(
     private val tokenHelperIfs: TokenHelperIfs,
-    private val jwtTokenStorageService: JwtTokenStorageService
+    private val jwtTokenStorageService: JwtTokenStorageService,
 ) {
-
     fun issueAccessToken(userId: Long): TokenDto {
         val data = mapOf("userId" to userId.toString()) // String으로 변환
         val tokenDto = tokenHelperIfs.issueAccessToken(data)
@@ -24,7 +23,7 @@ class TokenBusiness(
             userId = userId,
             jti = tokenDto.jti,
             tokenType = TokenType.ACCESS,
-            expiredAt = tokenDto.expiredAt
+            expiredAt = tokenDto.expiredAt,
         )
 
         return tokenDto
@@ -39,13 +38,16 @@ class TokenBusiness(
             userId = userId,
             jti = tokenDto.jti,
             tokenType = TokenType.REFRESH,
-            expiredAt = tokenDto.expiredAt
+            expiredAt = tokenDto.expiredAt,
         )
 
         return tokenDto
     }
 
-    fun issueAccessToken(userId: Long, deviceId: Long): TokenDto {
+    fun issueAccessToken(
+        userId: Long,
+        deviceId: Long,
+    ): TokenDto {
         val data = mapOf("userId" to userId.toString(), "deviceId" to deviceId.toString()) // String으로 변환
         val tokenDto = tokenHelperIfs.issueAccessToken(data)
 
@@ -55,13 +57,16 @@ class TokenBusiness(
             deviceId = deviceId,
             jti = tokenDto.jti,
             tokenType = TokenType.ACCESS,
-            expiredAt = tokenDto.expiredAt
+            expiredAt = tokenDto.expiredAt,
         )
 
         return tokenDto
     }
 
-    fun issueRefreshToken(userId: Long, deviceId: Long): TokenDto {
+    fun issueRefreshToken(
+        userId: Long,
+        deviceId: Long,
+    ): TokenDto {
         val data = mapOf("userId" to userId.toString(), "deviceId" to deviceId.toString()) // String으로 변환
         val tokenDto = tokenHelperIfs.issueRefreshToken(data)
 
@@ -71,7 +76,7 @@ class TokenBusiness(
             deviceId = deviceId,
             jti = tokenDto.jti,
             tokenType = TokenType.REFRESH,
-            expiredAt = tokenDto.expiredAt
+            expiredAt = tokenDto.expiredAt,
         )
 
         return tokenDto
@@ -121,7 +126,6 @@ class TokenBusiness(
 
             // 새로운 Access Token 발급
             return issueAccessToken(userId)
-
         } catch (e: ApiException) {
             // Token 관련 예외는 그대로 전파
             when (e.getErrorCodeIfs()) {

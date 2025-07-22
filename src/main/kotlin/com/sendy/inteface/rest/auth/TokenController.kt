@@ -1,9 +1,9 @@
-package com.sendy.inteface.rest
+package com.sendy.inteface.rest.auth
 
 import com.sendy.application.dto.RefreshTokenRequestDto
 import com.sendy.application.dto.RefreshTokenResponseDto
 import com.sendy.domain.token.service.TokenService
-import com.sendy.inteface.rest.user.ui.Response
+import com.sendy.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -16,16 +16,18 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/token")
 class TokenController(
-    private val tokenService: TokenService
+    private val tokenService: TokenService,
 ) {
-    
     @Operation(
         summary = "Access Token 갱신",
-        description = "Refresh Token을 사용하여 새로운 Access Token을 발급받습니다. " +
-                "Refresh Token이 만료된 경우 재로그인이 필요합니다."
+        description =
+            "Refresh Token을 사용하여 새로운 Access Token을 발급받습니다. " +
+                "Refresh Token이 만료된 경우 재로그인이 필요합니다.",
     )
     @PostMapping("/refresh")
-    fun refreshToken(@Valid @RequestBody request: RefreshTokenRequestDto): Response<RefreshTokenResponseDto> {
+    fun refreshToken(
+        @Valid @RequestBody request: RefreshTokenRequestDto,
+    ): Response<RefreshTokenResponseDto> {
         val refreshTokenResponse = tokenService.refreshAccessToken(request.refreshToken)
         return Response.ok(refreshTokenResponse)
     }

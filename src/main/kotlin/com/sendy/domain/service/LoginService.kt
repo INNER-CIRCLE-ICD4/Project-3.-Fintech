@@ -1,13 +1,13 @@
 package com.sendy.domain.service
 
-import com.common.crypto.SHA256Util
-import com.common.domain.error.ErrorCode
-import com.common.domain.exceptions.ApiException
 import com.sendy.application.dto.LoginRequestDto
 import com.sendy.domain.repository.UserRepository
 import com.sendy.domain.token.controller.model.TokenResponse
-import com.sendy.domain.token.service.TokenService
 import com.sendy.domain.token.service.JwtTokenStorageService
+import com.sendy.domain.token.service.TokenService
+import com.sendy.support.error.ErrorCode
+import com.sendy.support.exception.ApiException
+import com.sendy.support.util.SHA256Util
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -18,15 +18,19 @@ class LoginService(
     private val sha256Util: SHA256Util,
     private val tokenService: TokenService,
     private val deviceService: DeviceService,
-    private val jwtTokenStorageService: JwtTokenStorageService
+    private val jwtTokenStorageService: JwtTokenStorageService,
 ) {
-
     private val logger = LoggerFactory.getLogger(LoginService::class.java)
 
-    fun login(dto: LoginRequestDto, request: HttpServletRequest): TokenResponse {
+    fun login(
+        dto: LoginRequestDto,
+        request: HttpServletRequest,
+    ): TokenResponse {
         // 사용자 인증 (도메인 모델 사용)
-        val user = userRepository.findActiveById(dto.id)
-            .orElseThrow { ApiException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다") }
+        val user =
+            userRepository
+                .findActiveById(dto.id)
+                .orElseThrow { ApiException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다") }
 
         // 도메인 로직을 통한 로그인 가능 여부 확인
         if (!user.canLogin()) {

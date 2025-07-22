@@ -1,9 +1,8 @@
-package com.common.domain.exceptions
+package com.sendy.support.exception
 
-import com.common.domain.error.ErrorCodeIfs
+import com.sendy.support.error.ErrorCodeIfs
 
 interface ApiExceptionIfs {
-
     fun getErrorCodeIfs(): ErrorCodeIfs?
 
     fun getErrorDescription(): String?

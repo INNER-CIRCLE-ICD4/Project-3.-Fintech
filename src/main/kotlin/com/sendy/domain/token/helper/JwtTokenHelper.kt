@@ -1,9 +1,9 @@
 package com.sendy.domain.token.helper
 
-import com.common.domain.error.TokenErrorCode
-import com.common.domain.exceptions.ApiException
 import com.sendy.domain.token.ifs.TokenHelperIfs
 import com.sendy.domain.token.model.TokenDto
+import com.sendy.support.error.TokenErrorCode
+import com.sendy.support.exception.ApiException
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
@@ -18,28 +18,29 @@ import java.util.*
 class JwtTokenHelper(
     @Value("\${jwt.secret-key}") private val secretKey: String,
     @Value("\${jwt.access-token-expire-time}") private val accessTokenExpireTime: Long,
-    @Value("\${jwt.refresh-token-expire-time}") private val refreshTokenExpireTime: Long
+    @Value("\${jwt.refresh-token-expire-time}") private val refreshTokenExpireTime: Long,
 ) : TokenHelperIfs {
-
     override fun issueAccessToken(data: Map<String, Any>): TokenDto {
         val expiredLocalDateTime = LocalDateTime.now().plusHours(accessTokenExpireTime)
         val expiredAt = Date.from(expiredLocalDateTime.atZone(ZoneId.systemDefault()).toInstant())
         val key = Keys.hmacShaKeyFor(secretKey.toByteArray())
-        
+
         // 고유한 JWT ID 생성
         val jti = UUID.randomUUID().toString()
 
-        val jwtToken = Jwts.builder()
-            .signWith(key, SignatureAlgorithm.HS256)
-            .setClaims(data)
-            .setId(jti) // JWT ID 설정
-            .setExpiration(expiredAt)
-            .compact()
+        val jwtToken =
+            Jwts
+                .builder()
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setClaims(data)
+                .setId(jti) // JWT ID 설정
+                .setExpiration(expiredAt)
+                .compact()
 
         return TokenDto(
             token = jwtToken,
             jti = jti, // JWT ID 반환
-            expiredAt = expiredLocalDateTime
+            expiredAt = expiredLocalDateTime,
         )
     }
 
@@ -47,29 +48,33 @@ class JwtTokenHelper(
         val expiredLocalDateTime = LocalDateTime.now().plusHours(refreshTokenExpireTime)
         val expiredAt = Date.from(expiredLocalDateTime.atZone(ZoneId.systemDefault()).toInstant())
         val key = Keys.hmacShaKeyFor(secretKey.toByteArray())
-        
+
         // 고유한 JWT ID 생성
         val jti = UUID.randomUUID().toString()
 
-        val jwtToken = Jwts.builder()
-            .signWith(key, SignatureAlgorithm.HS256)
-            .setClaims(data)
-            .setId(jti) // JWT ID 설정
-            .setExpiration(expiredAt)
-            .compact()
+        val jwtToken =
+            Jwts
+                .builder()
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setClaims(data)
+                .setId(jti) // JWT ID 설정
+                .setExpiration(expiredAt)
+                .compact()
 
         return TokenDto(
             token = jwtToken,
             jti = jti, // JWT ID 반환
-            expiredAt = expiredLocalDateTime
+            expiredAt = expiredLocalDateTime,
         )
     }
 
     override fun validationTokenWithThrow(token: String): Map<String, Any> {
         val key = Keys.hmacShaKeyFor(secretKey.toByteArray())
-        val parser = Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
+        val parser =
+            Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
 
         return try {
             val result = parser.parseClaimsJws(token)

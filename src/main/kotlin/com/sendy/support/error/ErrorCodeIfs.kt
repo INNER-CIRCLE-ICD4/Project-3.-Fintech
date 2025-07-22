@@ -1,4 +1,4 @@
-package com.common.domain.error
+package com.sendy.support.error
 
 interface ErrorCodeIfs {
     val httpStatusCode: Int?

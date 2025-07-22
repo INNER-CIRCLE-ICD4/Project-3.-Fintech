@@ -1,9 +1,10 @@
-package com.common.domain.exceptions
+package com.sendy.support.exception
 
-import com.common.domain.error.ErrorCodeIfs
+import com.sendy.support.error.ErrorCodeIfs
 
-class ApiException : RuntimeException, ApiExceptionIfs {
-    
+class ApiException :
+    RuntimeException,
+    ApiExceptionIfs {
     private val errorCodeIfs: ErrorCodeIfs
     private val errorDescription: String
 
@@ -28,5 +29,6 @@ class ApiException : RuntimeException, ApiExceptionIfs {
     }
 
     override fun getErrorCodeIfs(): ErrorCodeIfs = errorCodeIfs
+
     override fun getErrorDescription(): String = errorDescription
 }

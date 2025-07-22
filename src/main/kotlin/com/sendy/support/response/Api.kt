@@ -1,12 +1,12 @@
-package com.common.domain.Api
+package com.sendy.support.response
 
-import com.common.domain.error.ErrorCodeIfs
+import com.sendy.support.error.ErrorCodeIfs
 import jakarta.validation.Valid
 
 data class Api<T>(
     var result: Result? = null,
     @field:Valid
-    var body: T? = null
+    var body: T? = null,
 ) {
     companion object {
         fun <T> OK(data: T): Api<T> {
@@ -28,13 +28,19 @@ data class Api<T>(
             return api
         }
 
-        fun ERROR(errorCodeIfs: ErrorCodeIfs, tx: Throwable): Api<Any> {
+        fun ERROR(
+            errorCodeIfs: ErrorCodeIfs,
+            tx: Throwable,
+        ): Api<Any> {
             val api = Api<Any>()
             api.result = Result.ERROR(errorCodeIfs, tx)
             return api
         }
 
-        fun ERROR(errorCodeIfs: ErrorCodeIfs, description: String): Api<Any> {
+        fun ERROR(
+            errorCodeIfs: ErrorCodeIfs,
+            description: String,
+        ): Api<Any> {
             val api = Api<Any>()
             api.result = Result.ERROR(errorCodeIfs, description)
             return api

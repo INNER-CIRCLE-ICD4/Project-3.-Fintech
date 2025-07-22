@@ -1,11 +1,13 @@
 plugins {
-    kotlin("jvm") version "1.9.25"
-    kotlin("plugin.spring") version "1.9.25"
+    // TODO: detekt 버전을 kotlin에 맞추는 설정하기
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.spring") version "1.9.23"
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
 
-    kotlin("plugin.jpa") version "1.9.25"
-    kotlin("plugin.allopen") version "1.9.25"
+    kotlin("plugin.jpa") version "1.9.23"
+    kotlin("plugin.allopen") version "1.9.23"
+    id("io.gitlab.arturbosch.detekt") version("1.23.6")
 }
 
 allOpen {
@@ -61,9 +63,14 @@ dependencies {
     // mail
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
+    // detekt ktlint
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
+}
 
-
-
+detekt {
+    toolVersion = "1.23.6"
+    config.setFrom(file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
 }
 
 kotlin {

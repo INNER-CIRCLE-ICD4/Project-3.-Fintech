@@ -1,7 +1,7 @@
 package com.sendy.application.usecase.auth
 
 import com.sendy.domain.auth.UserRepository
-import com.sendy.email.repository.EmailJpaRepository
+import com.sendy.domain.email.EmailJpaRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

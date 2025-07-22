@@ -1,8 +1,8 @@
 package com.sendy.interfaces.rest.auth
 
-import com.sendy.application.dto.RefreshTokenRequestDto
-import com.sendy.application.dto.RefreshTokenResponseDto
-import com.sendy.domain.token.service.TokenService
+import com.sendy.application.dto.auth.RefreshTokenRequestDto
+import com.sendy.application.dto.auth.RefreshTokenResponseDto
+import com.sendy.domain.auth.token.service.TokenService
 import com.sendy.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag

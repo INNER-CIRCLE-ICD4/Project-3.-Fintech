@@ -1,0 +1,28 @@
+package com.sendy.domain.auth
+
+import com.sendy.infrastructure.persistence.auth.UserEntity
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+import java.util.*
+
+/**
+ * UserEntity repository (인프라스트럭처 계층용)
+ */
+@Repository
+interface UserEntityRepository : JpaRepository<UserEntity, Long> {
+    fun findByEmail(email: String): Optional<UserEntity>
+
+    fun findByPhoneNumber(phoneNumber: String): Optional<UserEntity>
+
+    fun findByIdAndIsDeleteFalse(id: Long): Optional<UserEntity>
+
+    fun findByPhoneNumberAndIsDeleteFalse(phoneNumber: String): Optional<UserEntity>
+
+    fun existsByEmail(email: String): Boolean
+
+    fun existsByPhoneNumber(phoneNumber: String): Boolean
+
+    fun existsByEmailAndIsDeleteFalse(email: String): Boolean
+
+    fun existsByPhoneNumberAndIsDeleteFalse(phoneNumber: String): Boolean
+} 

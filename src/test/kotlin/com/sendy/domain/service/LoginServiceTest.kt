@@ -3,9 +3,9 @@
 // import com.sendy.support.util.SHA256Util
 // import com.common.domain.error.ErrorCode
 // import com.common.domain.exceptions.ApiException
-// import com.sendy.application.dto.LoginRequestDto
+// import com.sendy.application.dto.auth.LoginRequestDto
 // import com.sendy.domain.model.User
-// import com.sendy.domain.repository.UserRepository
+// import com.sendy.domain.auth.UserRepository
 // import com.sendy.domain.token.controller.model.TokenResponse
 // import com.sendy.domain.token.service.TokenService
 // import com.sendy.domain.token.service.JwtTokenStorageService

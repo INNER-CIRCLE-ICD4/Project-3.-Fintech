@@ -1,10 +1,10 @@
 package com.sendy.interfaces.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.sendy.domain.service.CustomerUserDetailsService
-import com.sendy.domain.token.helper.JwtTokenHelper
-import com.sendy.domain.token.service.JwtTokenStorageService
-import com.sendy.infrastructure.persistence.TokenStatus
+import com.sendy.application.usecase.auth.CustomerUserDetailsService
+import com.sendy.domain.auth.token.helper.JwtTokenHelper
+import com.sendy.domain.auth.token.service.JwtTokenStorageService
+import com.sendy.domain.enum.TokenStatus
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

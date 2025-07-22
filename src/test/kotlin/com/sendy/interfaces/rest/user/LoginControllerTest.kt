@@ -2,9 +2,9 @@ package com.sendy.interfaces.rest.user
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import com.sendy.application.dto.LoginRequestDto
-import com.sendy.domain.service.LoginService
-import com.sendy.domain.token.controller.model.TokenResponse
+import com.sendy.application.dto.auth.LoginRequestDto
+import com.sendy.application.usecase.auth.LoginService
+import com.sendy.domain.auth.token.controller.model.TokenResponse
 import io.mockk.every
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

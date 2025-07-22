@@ -5,4 +5,4 @@ import org.springframework.http.HttpStatus
 class ResponseException(
     msg: String,
     val status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
-) : RuntimeException(message = msg)
+) : RuntimeException(msg)

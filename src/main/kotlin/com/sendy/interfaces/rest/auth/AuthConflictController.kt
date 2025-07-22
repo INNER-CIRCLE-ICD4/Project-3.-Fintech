@@ -1,8 +1,8 @@
 package com.sendy.interfaces.rest.auth
 
-import com.sendy.domain.token.ifs.TokenHelperIfs
-import com.sendy.domain.token.service.JwtTokenStorageService
-import com.sendy.infrastructure.persistence.TokenStatus
+import com.sendy.domain.auth.token.ifs.TokenHelperIfs
+import com.sendy.domain.auth.token.service.JwtTokenStorageService
+import com.sendy.domain.enum.TokenStatus
 import com.sendy.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag

@@ -1,12 +1,13 @@
+import org.jetbrains.kotlin.gradle.plugin.kotlinToolingVersion
+
 plugins {
-    // TODO: detekt 버전을 kotlin에 맞추는 설정하기
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.spring") version "1.9.23"
+    kotlin("jvm") version "1.9.25"
+    kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
 
-    kotlin("plugin.jpa") version "1.9.23"
-    kotlin("plugin.allopen") version "1.9.23"
+    kotlin("plugin.jpa") version "1.9.25"
+    kotlin("plugin.allopen") version "1.9.25"
     id("io.gitlab.arturbosch.detekt") version("1.23.6")
 }
 
@@ -71,7 +72,13 @@ detekt {
     toolVersion = "1.23.6"
     config.setFrom(file("config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
-}
+    configurations.matching { it.name == "detekt" }.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin") {
+                useVersion("1.9.23")
+            }
+        }
+    }}
 
 kotlin {
     compilerOptions {

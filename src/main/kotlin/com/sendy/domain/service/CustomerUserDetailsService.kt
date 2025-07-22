@@ -3,14 +3,14 @@ package com.sendy.domain.service
 
 
 import com.sendy.domain.repository.UserRepository
-import com.sendy.email.repository.EmailJpaRepository
-import org.springframework.security.core.userdetails.User
+import com.sendy.domain.repository.EmailJpaRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
 @Service("customerUserDetailsService")
+
 class CustomerUserDetailsService(
     private val userEntityRepository: UserRepository,
     private val email: EmailJpaRepository
@@ -23,7 +23,7 @@ class CustomerUserDetailsService(
                 .orElseThrow { UsernameNotFoundException("해당 사용자가 없습니다: $username") }
         } catch (e: NumberFormatException) {
             // 일반 로그인 시에는 email로 조회
-            userEntityRepository.findByEmail(username)
+            userEntityRepository.findByEmail(username).orElseThrow()
                 ?: throw UsernameNotFoundException("해당 사용자가 없습니다: $username")
         }
         

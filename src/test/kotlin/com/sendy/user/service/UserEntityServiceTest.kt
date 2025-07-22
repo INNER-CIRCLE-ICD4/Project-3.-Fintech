@@ -1,6 +1,6 @@
 //package com.sendy.user.service
 //
-//import com.sendy.user.application.dto.RegisterUserRequestDto
+//import com.sendy.application.dto.RegisterUserRequestDto
 //import com.sendy.user.domain.repository.UserRepository
 //import org.junit.jupiter.api.Test
 //

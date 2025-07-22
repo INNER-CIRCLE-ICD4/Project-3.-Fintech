@@ -44,7 +44,7 @@ spring:
 
 # 추후 Secrets Manager 등으로 이관
 aes256:
-  key: d2f3de5ce2bef6aad4c2b01e2bffdcd66190b4ed811e4e862c2f39c01ac53db5
+  key: d2f3de5ce2bef6aad4c2b01e2bffdcd6
 
 springdoc:
   packages-to-scan: com
@@ -55,7 +55,7 @@ springdoc:
     display-request-duration: true
     operations-sorter: alpha
 
-token:
+jwt:
   secret-key: DYS6feNXKYnsLOebpSU0Ljm05bgit9j3sc3YYoBYh2E=
   access-token-expire-time: 300
   refresh-token-expire-time: 7200

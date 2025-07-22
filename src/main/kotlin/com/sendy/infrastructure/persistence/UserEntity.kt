@@ -1,7 +1,7 @@
 package com.sendy.infrastructure.persistence
 
 import com.sendy.support.util.Aes256Converter
-import com.sendy.user.application.dto.UpdateUserRequestDto
+import com.sendy.application.dto.UpdateUserRequestDto
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -56,11 +56,11 @@ class UserEntity(
         return UserEntity(
             id = this.id,
             password = this.password,
-            name = if (updateDto.name == null) this.name else updateDto.name,
-            phoneNumber = if(updateDto.phoneNumber == null) this.phoneNumber else updateDto.phoneNumber,
-            email = if(updateDto.email == this.email) this.email else updateDto.email,
+            name = updateDto.name ?: this.name,
+            phoneNumber = updateDto.phoneNumber ?: this.phoneNumber,
+            email = updateDto.email ?: this.email,
             ci = this.ci,
-            birth = if(updateDto.birth == null) this.birth else updateDto.birth,
+            birth = updateDto.birth,
             isDelete = this.isDelete,
             emailVerified = this.emailVerified,
             createAt = this.createAt,

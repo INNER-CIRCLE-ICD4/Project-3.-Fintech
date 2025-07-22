@@ -1,4 +1,4 @@
-package com.sendy.user.application.dto
+package com.sendy.application.dto
 import com.sendy.infrastructure.persistence.UserEntity
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank

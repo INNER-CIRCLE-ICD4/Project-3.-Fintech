@@ -1,6 +1,7 @@
 package com.sendy.domain.repository
 
 import com.sendy.domain.model.User
+import com.sendy.infrastructure.persistence.UserEntity
 import java.util.*
 
 /**
@@ -42,6 +43,7 @@ interface UserRepository {
     /**
      * 사용자 저장
      */
+
     fun save(user: User): User
 
     /**
@@ -63,4 +65,8 @@ interface UserRepository {
      * 활성 사용자 전화번호 존재 여부 확인
      */
     fun existsActiveByPhoneNumber(phoneNumber: String): Boolean
+
+
+
+
 }

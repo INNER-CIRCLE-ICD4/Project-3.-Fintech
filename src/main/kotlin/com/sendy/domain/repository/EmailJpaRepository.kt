@@ -1,6 +1,6 @@
-package com.sendy.email.repository
+package com.sendy.domain.repository
 
-import com.sendy.email.model.Email
+import com.sendy.domain.model.Email
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

@@ -4,7 +4,7 @@ import com.sendy.domain.enum.AccountStatus
 
 import java.time.LocalDateTime
 
-class Account private constructor(
+class Account(
     val accountNumber: String,
     val userId: Long,
     val status: AccountStatus,

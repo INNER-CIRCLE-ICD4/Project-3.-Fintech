@@ -1,5 +1,5 @@
-package com.sendy.user.application.dto
-import com.sendy.user.domain.model.UserEntity
+package com.sendy.application.dto
+import com.sendy.infrastructure.persistence.UserEntity
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 
@@ -24,7 +24,7 @@ data class UpdateUserRequestDto(
 ){
     fun toEntity(id : Long) : UserEntity {
         return UserEntity(
-            userId = id,
+            id = id,
             name = this.name,
             password = "",
             phoneNumber = this.phoneNumber,

@@ -1,6 +1,6 @@
-package com.sendy.email.model
+package com.sendy.application.dto
 
-import jakarta.persistence.*
+import com.sendy.domain.model.Email
 
 /**
  *

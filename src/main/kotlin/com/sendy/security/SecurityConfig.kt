@@ -15,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig(
     private val jwtAuthenticationFilter: com.sendy.security.auth.common.JwtAuthenticationFilter
 ) {
-
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
@@ -23,9 +22,12 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth
+
+                    .requestMatchers("/api/auth").permitAll()
                     .requestMatchers("/api/auth").permitAll()
                     .requestMatchers("/health").permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/user/login").permitAll()
                     .requestMatchers("/user/logout").permitAll()
                     .requestMatchers("/user/logout/current").permitAll()

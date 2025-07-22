@@ -1,4 +1,4 @@
-package com.sendy.email.model
+package com.sendy.domain.model
 
 import jakarta.persistence.*
 

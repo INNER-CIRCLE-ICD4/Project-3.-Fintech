@@ -1,9 +1,9 @@
-package com.sendy.user.inteface
+package com.sendy.inteface.rest.user
 
-import com.sendy.user.application.dto.RegisterUserRequestDto
-import com.sendy.user.application.dto.RegisterUserResponseDto
-import com.sendy.user.application.dto.UpdateUserRequestDto
-import com.sendy.user.service.UserService
+import com.sendy.application.dto.RegisterUserRequestDto
+import com.sendy.application.dto.RegisterUserResponseDto
+import com.sendy.application.dto.UpdateUserRequestDto
+import com.sendy.domain.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*
 class RegisterUserController(
     var UserService: UserService,
 
-) {
+    ) {
 
     @PostMapping("/register")
     @Operation(summary = "사용자 등록", description = "사용자 정보로 회원가입을 합니다.")

@@ -1,14 +1,15 @@
-package com.sendy.user.service
+package com.sendy.domain.service
 
+import com.sendy.domain.repository.UserEntityRepository
+import com.sendy.domain.repository.UserRepository
 import com.sendy.domain.token.service.TokenService
-import com.sendy.email.model.EmailDto
-import com.sendy.email.repository.EmailJpaRepository
+import com.sendy.application.dto.EmailDto
+import com.sendy.domain.repository.EmailJpaRepository
 import com.sendy.support.ResponseException
 import com.sendy.support.util.getTsid
-import com.sendy.user.application.dto.RegisterUserRequestDto
-import com.sendy.user.application.dto.RegisterUserResponseDto
-import com.sendy.user.application.dto.UpdateUserRequestDto
-import com.sendy.user.domain.repository.UserRepository
+import com.sendy.application.dto.RegisterUserRequestDto
+import com.sendy.application.dto.RegisterUserResponseDto
+import com.sendy.application.dto.UpdateUserRequestDto
 import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
 import org.springframework.mail.javamail.JavaMailSender
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service
 @Service
 class UserService(
     private val userRepository: UserRepository
+    ,private val userEntityRepository : UserEntityRepository
     , private val emailJpaRepository: EmailJpaRepository
     , private val mailSender: JavaMailSender
     , private val builder: AuthenticationManagerBuilder
@@ -38,11 +40,11 @@ class UserService(
         val tsid = getTsid()
         val entity = requestDto.toEntity(tsid)
 
-        val userEntity = userRepository.save(entity);
+        val userEntity = userEntityRepository.save(entity)
         val sendEmail = sendVerificationEmail(userEntity.email)
 
         return RegisterUserResponseDto(
-            userId = userEntity.userId,
+            userId = userEntity.id,
             message = userEntity.email + " / "+sendEmail + "인증코드 발송 완료"
         )
     }
@@ -52,12 +54,13 @@ class UserService(
     fun updateUser(token:String,updateDto: UpdateUserRequestDto): RegisterUserResponseDto {
 
         val userId = tokenService.validationToken(token)
-        val updateUser = userRepository.findByUserId(userId) ?: throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+        val updateUser = userEntityRepository.findByIdAndIsDeleteFalse(userId)
+            .orElseThrow{ throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) }
 
         updateUser.update(updateDto)
 
         return RegisterUserResponseDto(
-            userId = updateUser.userId,
+            userId = updateUser.id,
             message = "수정완료"
         )
     }
@@ -67,7 +70,8 @@ class UserService(
     fun deleteUser(email: String,password:String,token:String): String {
 
         val userId = tokenService.validationToken(token)
-        val updateUser = userRepository.findByEmailAndPassword(email, password) ?: throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+        val updateUser = userEntityRepository.existsByEmailAndPassword(email, password)
+            .orElseThrow{ throw ResponseException("이메일 또는 비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED) }
         if(userId.equals(userId) == false) {
             throw ResponseException("사용자 정보가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED)
         }
@@ -116,7 +120,10 @@ class UserService(
         }
 
         emailEntity.isVerified = true
-        userRepository.findByEmail(email)?.emailVerified = true
+        val user = userRepository.findByEmail(email).orElseThrow{
+            throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+        }
+        user.verifyEmail()
         emailJpaRepository.save(emailEntity)
 
         // 이메일 인증 완료 후 엔티티 삭제

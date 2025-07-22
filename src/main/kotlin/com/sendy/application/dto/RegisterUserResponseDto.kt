@@ -1,5 +1,5 @@
-package com.sendy.user.application.dto
-import jakarta.validation.constraints.NotBlank
+package com.sendy.application.dto
+
 /**
  * 
  * User dto 클래스

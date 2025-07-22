@@ -51,6 +51,7 @@ class UserRepositoryImpl(
         return savedEntity.toUser()
     }
 
+
     override fun existsByEmail(email: String): Boolean {
         return userEntityRepository.existsByEmail(email)
     }

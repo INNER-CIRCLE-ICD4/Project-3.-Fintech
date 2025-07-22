@@ -28,17 +28,10 @@ class AuthConflictController(
     )
     @PostMapping("/continue-session")
     fun continueSession(request: HttpServletRequest): Response<String> {
-        val token = getTokenFromRequest(request)
-
-        if (token == null) {
-            return Response.fail("토큰이 없습니다.")
-        }
+        val token = getTokenFromRequest(request) ?: return Response.fail("토큰이 없습니다.")
 
         // JWT에서 jti 추출
-        val jti = getJtiFromToken(token)
-        if (jti == null) {
-            return Response.fail("유효하지 않은 토큰입니다.")
-        }
+        val jti = getJtiFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
 
         // 토큰 상태 확인 (jti 사용)
         val tokenStatus = jwtTokenStorageService.getTokenStatus(jti)
@@ -70,17 +63,10 @@ class AuthConflictController(
     )
     @PostMapping("/confirm-logout")
     fun confirmLogout(request: HttpServletRequest): Response<String> {
-        val token = getTokenFromRequest(request)
-
-        if (token == null) {
-            return Response.fail("토큰이 없습니다.")
-        }
+        val token = getTokenFromRequest(request) ?: return Response.fail("토큰이 없습니다.")
 
         // JWT에서 jti 추출
-        val jti = getJtiFromToken(token)
-        if (jti == null) {
-            return Response.fail("유효하지 않은 토큰입니다.")
-        }
+        val jti = getJtiFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
 
         // 토큰 상태 확인 (jti 사용)
         val tokenStatus = jwtTokenStorageService.getTokenStatus(jti)
@@ -90,10 +76,7 @@ class AuthConflictController(
         }
 
         // 사용자 ID 추출
-        val userId = getUserIdFromToken(token)
-        if (userId == null) {
-            return Response.fail("유효하지 않은 토큰입니다.")
-        }
+        val userId = getUserIdFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
 
         // 현재 사용자의 모든 토큰을 REVOKED로 변경 (완전 로그아웃)
         jwtTokenStorageService.revokeAllTokensByUserId(userId)

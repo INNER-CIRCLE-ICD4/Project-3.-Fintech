@@ -1,6 +1,10 @@
 package com.sendy.domain.service
 
-import com.sendy.user.domain.repository.UserRepository
+
+
+import com.sendy.domain.repository.UserRepository
+import com.sendy.email.repository.EmailJpaRepository
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -8,7 +12,8 @@ import org.springframework.stereotype.Service
 
 @Service("customerUserDetailsService")
 class CustomerUserDetailsService(
-    private val userEntityRepository: UserRepository
+    private val userEntityRepository: UserRepository,
+    private val email: EmailJpaRepository
 ) : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
         // JWT 인증 시에는 userId가 문자열로 전달됨

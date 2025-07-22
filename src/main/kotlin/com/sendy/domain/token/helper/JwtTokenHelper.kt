@@ -16,13 +16,13 @@ import java.util.*
 
 @Component
 class JwtTokenHelper(
-    @Value("\${token.secret.key}") private val secretKey: String,
-    @Value("\${token.access-token.plus-hour}") private val accessTokenPlusHour: Long,
-    @Value("\${token.refresh-token.plus-hour}") private val refreshTokenPlusHour: Long
+    @Value("\${jwt.secret-key}") private val secretKey: String,
+    @Value("\${jwt.access-token-expire-time}") private val accessTokenExpireTime: Long,
+    @Value("\${jwt.refresh-token-expire-time}") private val refreshTokenExpireTime: Long
 ) : TokenHelperIfs {
 
     override fun issueAccessToken(data: Map<String, Any>): TokenDto {
-        val expiredLocalDateTime = LocalDateTime.now().plusHours(accessTokenPlusHour)
+        val expiredLocalDateTime = LocalDateTime.now().plusHours(accessTokenExpireTime)
         val expiredAt = Date.from(expiredLocalDateTime.atZone(ZoneId.systemDefault()).toInstant())
         val key = Keys.hmacShaKeyFor(secretKey.toByteArray())
         
@@ -44,7 +44,7 @@ class JwtTokenHelper(
     }
 
     override fun issueRefreshToken(data: Map<String, Any>): TokenDto {
-        val expiredLocalDateTime = LocalDateTime.now().plusHours(refreshTokenPlusHour)
+        val expiredLocalDateTime = LocalDateTime.now().plusHours(refreshTokenExpireTime)
         val expiredAt = Date.from(expiredLocalDateTime.atZone(ZoneId.systemDefault()).toInstant())
         val key = Keys.hmacShaKeyFor(secretKey.toByteArray())
         

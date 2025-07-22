@@ -1,6 +1,6 @@
 package com.sendy.infrastructure.config
 
-import com.sendy.inteface.filter.JwtAuthenticationFilter
+import com.sendy.interfaces.filter.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -48,4 +48,4 @@ class SecurityConfig(
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
-} 
+}

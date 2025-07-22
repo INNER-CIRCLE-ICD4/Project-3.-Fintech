@@ -1,4 +1,4 @@
-package com.sendy.inteface.filter
+package com.sendy.interfaces.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sendy.domain.service.CustomerUserDetailsService
@@ -8,7 +8,6 @@ import com.sendy.infrastructure.persistence.TokenStatus
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
@@ -20,7 +19,6 @@ class JwtAuthenticationFilter(
     private val jwtTokenStorageService: JwtTokenStorageService,
     private val userDetailsService: CustomerUserDetailsService,
 ) : OncePerRequestFilter() {
-    private val logger = LoggerFactory.getLogger(JwtAuthenticationFilter::class.java)
     private val objectMapper = ObjectMapper()
 
     override fun doFilterInternal(

@@ -1,4 +1,4 @@
-package com.sendy.inteface.rest.auth
+package com.sendy.interfaces.rest.auth
 
 import com.sendy.domain.token.ifs.TokenHelperIfs
 import com.sendy.domain.token.service.JwtTokenStorageService
@@ -130,4 +130,4 @@ class AuthConflictController(
             logger.warn("토큰에서 사용자 ID 추출 실패: ${e.message}")
             null
         }
-} 
+}

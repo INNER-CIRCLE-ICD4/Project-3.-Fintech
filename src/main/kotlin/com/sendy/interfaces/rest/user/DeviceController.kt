@@ -1,4 +1,4 @@
-package com.sendy.inteface.rest.user
+package com.sendy.interfaces.rest.user
 
 import com.sendy.domain.service.DeviceService
 import com.sendy.infrastructure.persistence.DeviceInfoEntity
@@ -32,4 +32,4 @@ class DeviceController(
 
     // 단일 디바이스 정책에서는 특정 디바이스 로그아웃이 불필요하므로 제거
     // 새 디바이스에서 로그인하면 자동으로 기존 디바이스가 로그아웃됨
-} 
+}

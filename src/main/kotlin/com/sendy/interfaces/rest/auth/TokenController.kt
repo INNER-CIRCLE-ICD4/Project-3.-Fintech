@@ -1,4 +1,4 @@
-package com.sendy.inteface.rest.auth
+package com.sendy.interfaces.rest.auth
 
 import com.sendy.application.dto.RefreshTokenRequestDto
 import com.sendy.application.dto.RefreshTokenResponseDto
@@ -31,4 +31,4 @@ class TokenController(
         val refreshTokenResponse = tokenService.refreshAccessToken(request.refreshToken)
         return Response.ok(refreshTokenResponse)
     }
-} 
+}

@@ -1,4 +1,4 @@
-package com.sendy.inteface.rest.user
+package com.sendy.interfaces.rest.user
 
 import com.sendy.application.dto.LoginRequestDto
 import com.sendy.domain.service.LoginService

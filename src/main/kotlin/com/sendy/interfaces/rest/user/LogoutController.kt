@@ -1,4 +1,4 @@
-package com.sendy.inteface.rest.user
+package com.sendy.interfaces.rest.user
 
 import com.sendy.domain.service.LogoutService
 import com.sendy.support.response.Response
@@ -76,4 +76,4 @@ class LogoutController(
             null
         }
     }
-} 
+}

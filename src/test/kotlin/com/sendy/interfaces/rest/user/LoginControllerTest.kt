@@ -1,4 +1,4 @@
-package com.sendy.inteface.rest.user
+package com.sendy.interfaces.rest.user
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
@@ -23,19 +23,22 @@ import java.time.LocalDateTime
 
 @WebMvcTest(
     controllers = [LoginController::class],
-    excludeFilters = [ComponentScan.Filter(
-        type = FilterType.REGEX,
-        pattern = ["com.sendy.security.*"]
-    )]
+    excludeFilters = [
+        ComponentScan.Filter(
+            type = FilterType.REGEX,
+            pattern = ["com.sendy.security.*"],
+        ),
+    ],
 )
-@TestPropertySource(properties = [
-    "spring.main.allow-bean-definition-overriding=true",
-    "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration"
-])
+@TestPropertySource(
+    properties = [
+        "spring.main.allow-bean-definition-overriding=true",
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration",
+    ],
+)
 @SpringBootTest
 @AutoConfigureMockMvc
 class LoginControllerTest {
-
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -50,25 +53,28 @@ class LoginControllerTest {
     fun login_ShouldReturnTokenResponse_WhenValidRequest() {
         // Given
         val loginRequest = LoginRequestDto(id = 1L, password = "password123")
-        val tokenResponse = TokenResponse(
-            accessToken = "access_token_123",
-            accessTokenExpiredAt = LocalDateTime.now().plusHours(1),
-            refreshToken = "refresh_token_456",
-            refreshTokenExpiredAt = LocalDateTime.now().plusHours(24)
-        )
+        val tokenResponse =
+            TokenResponse(
+                accessToken = "access_token_123",
+                accessTokenExpiredAt = LocalDateTime.now().plusHours(1),
+                refreshToken = "refresh_token_456",
+                refreshTokenExpiredAt = LocalDateTime.now().plusHours(24),
+            )
 
-        every { loginService.login(
-            loginRequest,
-            request = TODO()
-        ) } returns tokenResponse
+        every {
+            loginService.login(
+                loginRequest,
+                request = TODO(),
+            )
+        } returns tokenResponse
 
         // When & Then
-        mockMvc.perform(
-            post("/user/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest))
-        )
-            .andExpect(status().isOk)
+        mockMvc
+            .perform(
+                post("/user/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(loginRequest)),
+            ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.code").value(200))
             .andExpect(jsonPath("$.message").value("OK"))
@@ -85,23 +91,23 @@ class LoginControllerTest {
         val invalidRequest = """{"invalidField": "value"}"""
 
         // When & Then
-        mockMvc.perform(
-            post("/user/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(invalidRequest)
-        )
-            .andExpect(status().isBadRequest)
+        mockMvc
+            .perform(
+                post("/user/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(invalidRequest),
+            ).andExpect(status().isBadRequest)
     }
 
     @Test
     @DisplayName("빈 요청 바디로 로그인하면 400 에러가 발생한다")
     fun login_ShouldReturnBadRequest_WhenEmptyRequestBody() {
         // When & Then
-        mockMvc.perform(
-            post("/user/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}")
-        )
-            .andExpect(status().isBadRequest)
+        mockMvc
+            .perform(
+                post("/user/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{}"),
+            ).andExpect(status().isBadRequest)
     }
 }

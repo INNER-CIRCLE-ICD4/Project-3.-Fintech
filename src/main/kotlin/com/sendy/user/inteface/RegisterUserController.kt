@@ -4,11 +4,9 @@ import com.sendy.user.application.dto.RegisterUserRequestDto
 import com.sendy.user.application.dto.RegisterUserResponseDto
 import com.sendy.user.application.dto.UpdateUserRequestDto
 import com.sendy.user.service.UserService
-import com.sendy.user.service.UserValidator
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -22,9 +20,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/user")
 class RegisterUserController(
-    @Autowired
-    var userValidator: UserValidator,
-
     var UserService: UserService,
 
 ) {

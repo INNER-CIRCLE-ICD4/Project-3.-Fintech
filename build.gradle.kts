@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.plugin.kotlinToolingVersion
+import io.gitlab.arturbosch.detekt.Detekt
 
 plugins {
     kotlin("jvm") version "1.9.25"
@@ -8,7 +8,7 @@ plugins {
 
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("plugin.allopen") version "1.9.25"
-    id("io.gitlab.arturbosch.detekt") version("1.23.6")
+    id("io.gitlab.arturbosch.detekt") version ("1.23.6")
 }
 
 allOpen {
@@ -50,15 +50,15 @@ dependencies {
     // tsid
     implementation("com.github.f4b6a3:tsid-creator:5.2.6")
 
-    //swagger
+    // swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
-    //jwt
+    // jwt
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
-    //springSecurity
+    // springSecurity
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     // mail
@@ -78,7 +78,8 @@ detekt {
                 useVersion("1.9.23")
             }
         }
-    }}
+    }
+}
 
 kotlin {
     compilerOptions {
@@ -89,3 +90,49 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.withType<Detekt>().configureEach {
+    if (project.hasProperty("pre-commit")) {
+        val rootDir = project.rootDir
+        val projectDir = projectDir
+
+        val fileCollection = files()
+
+        setSource(
+            getGitStagedFiles(rootDir)
+                .map { stagedFiles ->
+                    val stagedFilesFromThisProject =
+                        stagedFiles
+                            .filter { it.startsWith(projectDir) }
+
+                    fileCollection.setFrom(*stagedFilesFromThisProject.toTypedArray())
+
+                    fileCollection.asFileTree
+                },
+        )
+    }
+}
+
+afterEvaluate {
+    tasks.withType(Detekt::class.java).configureEach {
+        val typeResolutionEnabled = !classpath.isEmpty
+        if (typeResolutionEnabled && project.hasProperty("pre-commit")) {
+            // We must exclude kts files from pre-commit hook to prevent detekt from crashing
+            // This is a workaround for the https://github.com/detekt/detekt/issues/5501
+            exclude("*.gradle.kts")
+        }
+    }
+}
+
+fun Project.getGitStagedFiles(rootDir: File): Provider<List<File>> =
+    providers
+        .exec {
+            this.commandLine("git", "--no-pager", "diff", "--name-only", "--cached")
+        }.standardOutput.asText
+        .map { outputText ->
+            outputText
+                .trim()
+                .split("\n")
+                .filter { it.isNotBlank() }
+                .map { File(rootDir, it) }
+        }

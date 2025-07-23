@@ -1,10 +1,10 @@
 package com.sendy.domain.transfer
 
-interface TransferLimitRepository {
-    fun getTransferLimitBy(
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface TransferLimitRepository : JpaRepository<TransferLimitEntity, Long> {
+    fun findByUserIdAndDailyDt(
         userId: Long,
         dailyDt: String,
-    ): TransferLimit?
-
-    fun save(domain: TransferLimit): TransferLimit
+    ): TransferLimitEntity?
 }

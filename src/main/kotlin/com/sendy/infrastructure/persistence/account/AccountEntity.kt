@@ -1,7 +1,8 @@
-package com.sendy.infrastructure.persistence
+package com.sendy.infrastructure.persistence.account
 
-import com.sendy.domain.enum.AccountStatus
-import com.sendy.domain.model.Account
+import com.sendy.domain.account.AccountStatus
+import com.sendy.domain.account.Account
+import com.sendy.infrastructure.persistence.Identity
 import com.sendy.support.util.getTsid
 import jakarta.persistence.*
 import java.time.LocalDateTime

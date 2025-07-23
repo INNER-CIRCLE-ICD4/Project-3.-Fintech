@@ -1,6 +1,4 @@
-package com.sendy.domain.model
-
-import com.sendy.domain.enum.AccountStatus
+package com.sendy.domain.account
 
 import java.time.LocalDateTime
 

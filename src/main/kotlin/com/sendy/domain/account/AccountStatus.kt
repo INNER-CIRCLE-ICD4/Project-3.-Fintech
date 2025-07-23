@@ -1,4 +1,4 @@
-package com.sendy.domain.enum
+package com.sendy.domain.account
 
 enum class AccountStatus {
     ACTIVE, LOCKED, CLOSED

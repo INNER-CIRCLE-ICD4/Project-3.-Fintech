@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.kotlinToolingVersion
-
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
@@ -8,7 +6,7 @@ plugins {
 
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("plugin.allopen") version "1.9.25"
-    id("io.gitlab.arturbosch.detekt") version("1.23.6")
+    id("io.gitlab.arturbosch.detekt") version ("1.23.6")
 }
 
 allOpen {
@@ -50,15 +48,15 @@ dependencies {
     // tsid
     implementation("com.github.f4b6a3:tsid-creator:5.2.6")
 
-    //swagger
+    // swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
-    //jwt
+    // jwt
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
-    //springSecurity
+    // springSecurity
     implementation("org.springframework.boot:spring-boot-starter-security")
 
     // mail
@@ -78,7 +76,8 @@ detekt {
                 useVersion("1.9.23")
             }
         }
-    }}
+    }
+}
 
 kotlin {
     compilerOptions {

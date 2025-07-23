@@ -10,6 +10,7 @@ import java.util.*
  */
 @Repository
 interface UserEntityRepository : JpaRepository<UserEntity, Long> {
+
     fun findByEmail(email: String): Optional<UserEntity>
 
     fun findByPhoneNumber(phoneNumber: String): Optional<UserEntity>
@@ -25,4 +26,7 @@ interface UserEntityRepository : JpaRepository<UserEntity, Long> {
     fun existsByEmailAndIsDeleteFalse(email: String): Boolean
 
     fun existsByPhoneNumberAndIsDeleteFalse(phoneNumber: String): Boolean
-} 
+
+    fun existsByEmailAndPassword(email: String, password: String): Optional<UserEntity>
+
+}

@@ -6,12 +6,8 @@ import com.sendy.application.dto.user.UpdateUserRequestDto
 import com.sendy.domain.auth.UserRepository
 import com.sendy.domain.auth.token.service.TokenService
 import com.sendy.domain.email.EmailJpaRepository
-import com.sendy.domain.token.service.TokenService
-import com.sendy.email.model.EmailDto
-import com.sendy.email.repository.EmailJpaRepository
-import com.sendy.support.ResponseException
+import com.sendy.support.exception.ResponseException
 import com.sendy.support.util.getTsid
-import com.sendy.user.domain.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
 import org.springframework.mail.javamail.JavaMailSender

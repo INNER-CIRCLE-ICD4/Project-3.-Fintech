@@ -114,7 +114,9 @@ class JwtAuthenticationFilter(
         }
 
     /**
-     * 다른 디바이스에서 로그인 시도 - 사용자 확인 필요
+     * 다른 디바이스에서 로그인 시도 - 사용자 확인 필요.
+     *
+     * 추후에 작업할 내용입니다.
      */
     private fun sendPendingLogoutResponse(response: HttpServletResponse) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED

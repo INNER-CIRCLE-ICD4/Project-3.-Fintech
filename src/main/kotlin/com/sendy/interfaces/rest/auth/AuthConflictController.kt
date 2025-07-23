@@ -60,7 +60,7 @@ class AuthConflictController(
         summary = "로그아웃 확인",
         description = """
             다른 디바이스에서의 로그인을 허용하고 현재 디바이스에서 로그아웃합니다.
-            현재 토큰을 REVOKED 상태로 변경합니다.
+            현재 토큰을 REVOKED 상태로 변경합니다. 
         """,
     )
     @PostMapping("/confirm-logout")

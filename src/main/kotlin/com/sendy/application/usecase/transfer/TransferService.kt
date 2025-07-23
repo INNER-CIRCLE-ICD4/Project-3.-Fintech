@@ -6,8 +6,8 @@ import com.sendy.domain.enum.TransferStatusEnum
 import com.sendy.domain.transfer.TransactionHistoryRepository
 import com.sendy.domain.transfer.TransferEntity
 import com.sendy.domain.transfer.TransferRepository
-import com.sendy.infrastructure.persistence.transfer.event.TransferProcessed
-import com.sendy.infrastructure.persistence.transfer.event.TransferSucceeded
+import com.sendy.domain.transfer.event.TransferProcessed
+import com.sendy.domain.transfer.event.TransferSucceeded
 import com.sendy.support.util.getTsid
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher

@@ -55,3 +55,16 @@ CREATE TABLE email_auth (
     email VARCHAR(255) NOT NULL,
     is_verified BOOLEAN NOT NULL
 );
+
+-- 계좌 테이블
+CREATE TABLE account (
+                         id BIGINT NOT NULL PRIMARY KEY,
+                         account_number VARCHAR(13) NOT NULL,
+                         user_id BIGINT NOT NULL,
+                         status VARCHAR(20) NOT NULL,
+                         is_primary BOOLEAN NOT NULL,
+                         is_limited_account BOOLEAN NOT NULL,
+                         created_at DATETIME NOT NULL DEFAULT,
+                         updated_at DATETIME NOT NULL DEFAULT,
+                         balance BIGINT NOT NULL
+);

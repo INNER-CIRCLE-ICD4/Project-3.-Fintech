@@ -3,6 +3,7 @@ package com.sendy.interfaces.rest.auth
 import com.sendy.domain.auth.token.ifs.TokenHelperIfs
 import com.sendy.domain.auth.token.service.JwtTokenStorageService
 import com.sendy.domain.enum.TokenStatus
+import com.sendy.interfaces.filter.JwtAuthenticationFilter
 import com.sendy.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/auth")
 class AuthConflictController(
     private val jwtTokenStorageService: JwtTokenStorageService,
-    private val tokenHelperIfs: TokenHelperIfs,
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
 ) {
     private val logger = LoggerFactory.getLogger(AuthConflictController::class.java)
 
@@ -28,10 +29,10 @@ class AuthConflictController(
     )
     @PostMapping("/continue-session")
     fun continueSession(request: HttpServletRequest): Response<String> {
-        val token = getTokenFromRequest(request) ?: return Response.fail("토큰이 없습니다.")
+        val token = jwtAuthenticationFilter.getTokenFromRequest(request) ?: return Response.fail("토큰이 없습니다.")
 
         // JWT에서 jti 추출
-        val jti = getJtiFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
+        val jti = jwtAuthenticationFilter.getJtiFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
 
         // 토큰 상태 확인 (jti 사용)
         val tokenStatus = jwtTokenStorageService.getTokenStatus(jti)
@@ -41,7 +42,7 @@ class AuthConflictController(
         }
 
         // 사용자 ID 추출
-        val userId = getUserIdFromToken(token)
+        val userId = jwtAuthenticationFilter.getUserIdFromToken(token)
         if (userId == null) {
             return Response.fail("유효하지 않은 토큰입니다.")
         }
@@ -63,10 +64,10 @@ class AuthConflictController(
     )
     @PostMapping("/confirm-logout")
     fun confirmLogout(request: HttpServletRequest): Response<String> {
-        val token = getTokenFromRequest(request) ?: return Response.fail("토큰이 없습니다.")
+        val token = jwtAuthenticationFilter.getTokenFromRequest(request) ?: return Response.fail("토큰이 없습니다.")
 
         // JWT에서 jti 추출
-        val jti = getJtiFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
+        val jti = jwtAuthenticationFilter.getJtiFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
 
         // 토큰 상태 확인 (jti 사용)
         val tokenStatus = jwtTokenStorageService.getTokenStatus(jti)
@@ -76,7 +77,7 @@ class AuthConflictController(
         }
 
         // 사용자 ID 추출
-        val userId = getUserIdFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
+        val userId = jwtAuthenticationFilter.getUserIdFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
 
         // 현재 사용자의 모든 토큰을 REVOKED로 변경 (완전 로그아웃)
         jwtTokenStorageService.revokeAllTokensByUserId(userId)
@@ -85,32 +86,4 @@ class AuthConflictController(
 
         return Response.ok("로그아웃되었습니다. 새로운 디바이스에서 로그인이 허용됩니다.")
     }
-
-    private fun getTokenFromRequest(request: HttpServletRequest): String? {
-        val bearerToken = request.getHeader("Authorization")
-        return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            bearerToken.substring(7)
-        } else {
-            null
-        }
-    }
-
-    private fun getJtiFromToken(token: String): String? =
-        try {
-            val claims = tokenHelperIfs.validationTokenWithThrow(token)
-            claims["jti"] as? String
-        } catch (e: Exception) {
-            logger.warn("토큰에서 JTI 추출 실패: ${e.message}")
-            null
-        }
-
-    private fun getUserIdFromToken(token: String): Long? =
-        try {
-            val claims = tokenHelperIfs.validationTokenWithThrow(token)
-            val userIdStr = claims["userId"] as? String
-            userIdStr?.toLongOrNull()
-        } catch (e: Exception) {
-            logger.warn("토큰에서 사용자 ID 추출 실패: ${e.message}")
-            null
-        }
 }

@@ -85,7 +85,7 @@ class JwtAuthenticationFilter(
         filterChain.doFilter(request, response)
     }
 
-    private fun getTokenFromRequest(request: HttpServletRequest): String? {
+    fun getTokenFromRequest(request: HttpServletRequest): String? {
         val bearerToken = request.getHeader("Authorization")
         return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             bearerToken.substring(7)
@@ -93,6 +93,25 @@ class JwtAuthenticationFilter(
             null
         }
     }
+
+    fun getJtiFromToken(token: String): String? =
+        try {
+            val claims = jwtTokenHelper.validationTokenWithThrow(token)
+            claims["jti"] as? String
+        } catch (e: Exception) {
+            logger.warn("토큰에서 JTI 추출 실패: ${e.message}")
+            null
+        }
+
+    fun getUserIdFromToken(token: String): Long? =
+        try {
+            val claims = jwtTokenHelper.validationTokenWithThrow(token)
+            val userIdStr = claims["userId"] as? String
+            userIdStr?.toLongOrNull()
+        } catch (e: Exception) {
+            logger.warn("토큰에서 사용자 ID 추출 실패: ${e.message}")
+            null
+        }
 
     /**
      * 다른 디바이스에서 로그인 시도 - 사용자 확인 필요

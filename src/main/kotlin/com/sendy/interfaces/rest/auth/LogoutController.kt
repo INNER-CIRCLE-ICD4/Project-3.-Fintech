@@ -1,6 +1,7 @@
 package com.sendy.interfaces.rest.user
 
 import com.sendy.application.usecase.auth.LogoutService
+import com.sendy.interfaces.filter.JwtAuthenticationFilter
 import com.sendy.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/user")
 class LogoutController(
     private val logoutService: LogoutService,
-) {
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+
+    ) {
     @Operation(
         summary = "전체 로그아웃",
         description = """
@@ -28,7 +31,7 @@ class LogoutController(
     )
     @PostMapping("/logout")
     fun logout(request: HttpServletRequest): Response<String> {
-        val token = getTokenFromRequest(request)
+        val token = jwtAuthenticationFilter.getTokenFromRequest(request)
 
         if (token != null) {
             try {
@@ -54,7 +57,7 @@ class LogoutController(
     )
     @PostMapping("/logout/current")
     fun logoutCurrent(request: HttpServletRequest): Response<String> {
-        val token = getTokenFromRequest(request)
+        val token = jwtAuthenticationFilter.getTokenFromRequest(request)
 
         if (token != null) {
             try {
@@ -66,14 +69,5 @@ class LogoutController(
         }
 
         return Response.ok("현재 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
-    }
-
-    private fun getTokenFromRequest(request: HttpServletRequest): String? {
-        val bearerToken = request.getHeader("Authorization")
-        return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            bearerToken.substring(7)
-        } else {
-            null
-        }
     }
 }

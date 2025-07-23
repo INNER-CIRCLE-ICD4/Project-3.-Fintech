@@ -1,6 +1,5 @@
 package com.sendy.interfaces.rest.auth
 
-import com.sendy.domain.auth.token.ifs.TokenHelperIfs
 import com.sendy.domain.auth.token.service.JwtTokenStorageService
 import com.sendy.domain.enum.TokenStatus
 import com.sendy.interfaces.filter.JwtAuthenticationFilter
@@ -9,7 +8,9 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "Auth Conflict", description = "디바이스 충돌 상황 처리 API")
 @RestController

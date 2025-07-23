@@ -1,5 +1,5 @@
-package com.sendy.user.application.dto
-import com.sendy.infrastructure.persistence.auth.UserEntity
+package com.sendy.application.dto.user
+import com.sendy.domain.model.User
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -26,8 +26,8 @@ data class RegisterUserRequestDto(
     @Schema(description = "생년월일", example = "19900101")
     var birth: String,
 ) {
-    fun toEntity(id: Long): UserEntity =
-        UserEntity(
+    fun toEntity(id: Long): User =
+        User(
             id = id,
             name = this.name,
             password = this.password,

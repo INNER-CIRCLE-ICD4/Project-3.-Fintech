@@ -1,8 +1,8 @@
 package com.sendy.infrastructure.persistence.auth
 
+import com.sendy.application.dto.user.UpdateUserRequestDto
 import com.sendy.infrastructure.persistence.Identity
 import com.sendy.support.util.Aes256Converter
-import com.sendy.user.application.dto.UpdateUserRequestDto
 import jakarta.persistence.*
 import java.time.LocalDateTime
 

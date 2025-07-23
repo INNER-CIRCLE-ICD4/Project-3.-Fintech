@@ -1,10 +1,11 @@
 package com.sendy.domain.transfer
 
+import java.time.LocalDateTime
+
 interface TransferLimitCountProcessor {
     fun processLimitCount(
-        transactions: List<TransactionHistory>,
         userId: Long,
-        dailyDt: String,
-        callback: (withdrawTxList: List<TransactionHistory>, transferLimit: TransferLimit) -> Unit,
-    ): TransferLimit
+        dailyDt: LocalDateTime,
+        amount: Long,
+    )
 }

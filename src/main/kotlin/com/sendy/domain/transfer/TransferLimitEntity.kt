@@ -1,6 +1,5 @@
-package com.sendy.infrastructure.persistence.transfer
+package com.sendy.domain.transfer
 
-import com.sendy.domain.transfer.TransferLimit
 import com.sendy.infrastructure.persistence.Identity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -14,7 +13,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "transfer_limit")
 @EntityListeners(AuditingEntityListener::class)
-class TransferLimitJpaEntity(
+class TransferLimitEntity(
     id: Long,
     @Column(columnDefinition = "VARCHAR(8)")
     val dailyDt: String,
@@ -30,14 +29,4 @@ class TransferLimitJpaEntity(
     var updatedAt: LocalDateTime,
     @Column
     var userId: Long,
-) : Identity(id) {
-    override fun toString(): String =
-        """
-        id: $id,
-        isNew: $isNew
-        """.trimIndent()
-
-    fun updateFrom(domain: TransferLimit) {
-        dailyCount = domain.dailyCount
-    }
-}
+) : Identity(id)

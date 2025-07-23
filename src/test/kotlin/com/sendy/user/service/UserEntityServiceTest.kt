@@ -1,18 +1,18 @@
-//package com.sendy.user.service
+// package com.sendy.user.service
 //
-//import com.sendy.application.dto.RegisterUserRequestDto
-//import com.sendy.user.domain.repository.UserRepository
-//import org.junit.jupiter.api.Test
+// import com.sendy.application.dto.user.RegisterUserRequestDto
+// import com.sendy.user.domain.repository.UserRepository
+// import org.junit.jupiter.api.Test
 //
-//import org.junit.jupiter.api.Assertions.*
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.boot.test.context.SpringBootTest
+// import org.junit.jupiter.api.Assertions.*
+// import org.springframework.beans.factory.annotation.Autowired
+// import org.springframework.boot.test.context.SpringBootTest
 //
-//@SpringBootTest
-//class UserEntityServiceTest(
+// @SpringBootTest
+// class UserEntityServiceTest(
 //    @Autowired private val userService: UserService
 //    ,@Autowired private val userRepository: UserRepository
-//) {
+// ) {
 //
 //
 //
@@ -46,4 +46,4 @@
 //    @Test
 //    fun verifyEmail() {
 //    }
-//}
+// }

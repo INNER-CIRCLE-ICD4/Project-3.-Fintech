@@ -1,26 +1,26 @@
-//package com.sendy.domain.service
+// package com.sendy.domain.service
 //
-//import com.common.crypto.SHA256Util
-//import com.common.domain.error.ErrorCode
-//import com.common.domain.exceptions.ApiException
-//import com.sendy.application.dto.LoginRequestDto
-//import com.sendy.domain.model.User
-//import com.sendy.domain.repository.UserRepository
-//import com.sendy.domain.token.controller.model.TokenResponse
-//import com.sendy.domain.token.service.TokenService
-//import com.sendy.domain.token.service.JwtTokenStorageService
-//import com.sendy.domain.service.DeviceService
-//import io.mockk.every
-//import io.mockk.mockk
-//import io.mockk.verify
-//import org.junit.jupiter.api.Assertions.*
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.DisplayName
-//import org.junit.jupiter.api.Test
-//import java.time.LocalDateTime
-//import java.util.*
+// import com.sendy.support.util.SHA256Util
+// import com.common.domain.error.ErrorCode
+// import com.common.domain.exceptions.ApiException
+// import com.sendy.application.dto.auth.LoginRequestDto
+// import com.sendy.domain.model.User
+// import com.sendy.domain.auth.UserRepository
+// import com.sendy.domain.token.controller.model.TokenResponse
+// import com.sendy.domain.token.service.TokenService
+// import com.sendy.domain.token.service.JwtTokenStorageService
+// import com.sendy.domain.service.DeviceService
+// import io.mockk.every
+// import io.mockk.mockk
+// import io.mockk.verify
+// import org.junit.jupiter.api.Assertions.*
+// import org.junit.jupiter.api.BeforeEach
+// import org.junit.jupiter.api.DisplayName
+// import org.junit.jupiter.api.Test
+// import java.time.LocalDateTime
+// import java.util.*
 //
-//class LoginServiceTest {
+// class LoginServiceTest {
 //
 //    private lateinit var loginService: LoginService
 //    private lateinit var userRepository: UserRepository
@@ -155,4 +155,4 @@
 //        verify(exactly = 1) { sha256Util.hash(loginRequest.password) }
 //        verify(exactly = 0) { tokenService.issueToken(any(), any()) }
 //    }
-//}
+// }

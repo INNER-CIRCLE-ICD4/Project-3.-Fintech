@@ -2,7 +2,7 @@ package com.sendy.interfaces.rest.auth
 
 import com.sendy.application.usecase.auth.DeviceService
 import com.sendy.infrastructure.persistence.auth.DeviceInfoEntity
-import com.sendy.support.response.Response
+import com.sendy.support.response.Api
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.Authentication
@@ -22,12 +22,12 @@ class DeviceController(
         """,
     )
     @GetMapping
-    fun getCurrentDevice(authentication: Authentication): Response<List<DeviceInfoEntity>> {
+    fun getCurrentDevice(authentication: Authentication): Api<List<DeviceInfoEntity>> {
         val userId = authentication.name.toLong()
         val devices = deviceService.getUserDevices(userId)
 
         // 단일 디바이스 정책: 최대 1개의 디바이스만 존재
-        return Response.ok(devices.take(1))
+        return Api.ok(devices.take(1))
     }
 
     // 단일 디바이스 정책에서는 특정 디바이스 로그아웃이 불필요하므로 제거

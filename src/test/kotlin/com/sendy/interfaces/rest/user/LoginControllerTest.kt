@@ -76,12 +76,12 @@ class LoginControllerTest {
                     .content(objectMapper.writeValueAsString(loginRequest)),
             ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.code").value(200))
-            .andExpect(jsonPath("$.message").value("OK"))
-            .andExpect(jsonPath("$.value.accessToken").value(tokenResponse.accessToken))
-            .andExpect(jsonPath("$.value.refreshToken").value(tokenResponse.refreshToken))
-            .andExpect(jsonPath("$.value.accessTokenExpiredAt").exists())
-            .andExpect(jsonPath("$.value.refreshTokenExpiredAt").exists())
+            .andExpect(jsonPath("$.result.resultCode").value(200))
+            .andExpect(jsonPath("$.result.resultMessage").value("성공"))
+            .andExpect(jsonPath("$.body.accessToken").value(tokenResponse.accessToken))
+            .andExpect(jsonPath("$.body.refreshToken").value(tokenResponse.refreshToken))
+            .andExpect(jsonPath("$.body.accessTokenExpiredAt").exists())
+            .andExpect(jsonPath("$.body.refreshTokenExpiredAt").exists())
     }
 
     @Test

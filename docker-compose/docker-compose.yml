@@ -7,12 +7,20 @@ services:
     container_name: sendy-api
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prd
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://mysql-master:3306/sendy
+      - SPRING_DATASOURCE_USERNAME=sendy_master
+      - SPRING_DATASOURCE_PASSWORD=sendy_master
+    restart: always
     networks:
       - sendy-net
   mysql-master:
     image: mysql:8.0.42
+    container_name: mysql-master
     ports:
       - "3306:3306"
+    restart: always
     environment:
       - MYSQL_DATABASE=sendy
       - MYSQL_ROOT_PASSWORD=root
@@ -24,11 +32,12 @@ services:
       - --collation-server=utf8mb4_unicode_ci
       - --lower_case_table_names=1
     volumes:
-      - ./mysql/master-data:/var/lib/mysql
       - ./mysql/cnf/master.cnf:/etc/mysql/conf.d/my.cnf
       - ./mysql/initdb.d:/docker-entrypoint-initdb.d
     networks:
       - sendy-net
+    tmpfs:
+      - /var/lib/mysql
 
 networks:
   sendy-net:

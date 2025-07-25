@@ -1,4 +1,4 @@
-package com.sendy.infrastructure.persistence.auth
+package com.sendy.domain.user
 
 import com.sendy.application.dto.user.UpdateUserRequestDto
 import com.sendy.infrastructure.persistence.Identity
@@ -19,7 +19,7 @@ class UserEntity(
     @Column(name = "name", length = 50, nullable = false)
     val name: String,
 
-    @Column(name = "phone_number", length = 20, nullable = false)
+    @Column(name = "phone_number", length = 100, nullable = false)
     @Convert(converter = Aes256Converter::class)
     val phoneNumber: String,
 
@@ -60,7 +60,7 @@ class UserEntity(
             phoneNumber = updateDto.phoneNumber ?: this.phoneNumber,
             email = updateDto.email ?: this.email,
             ci = this.ci,
-            birth = updateDto.birth,
+            birth = updateDto.birth ?: this.birth,
             isDelete = this.isDelete,
             emailVerified = this.emailVerified,
             createAt = this.createAt,

@@ -1,5 +1,5 @@
 package com.sendy.application.dto
-import com.sendy.infrastructure.persistence.auth.UserEntity
+import com.sendy.domain.user.UserEntity
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -24,7 +24,7 @@ data class RegisterUserRequestDto(
     var phoneNumber: String,
 
     @field:NotBlank
-    @Schema(description = "이메일", example = "xxx@example.com")
+    @Schema(description = "이메일", example = "test@gmail.com")
     var email: String,
 
     @field:NotNull

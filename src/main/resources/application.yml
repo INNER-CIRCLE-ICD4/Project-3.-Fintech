@@ -7,7 +7,7 @@ spring:
   h2:
     console:
       enabled: true
-      path: /h2-console
+#      path: /h2-console
   datasource:
     hikari:
       jdbc-url: jdbc:h2:mem:testdb;MODE=MySQL;
@@ -47,11 +47,13 @@ aes256:
   key: d2f3de5ce2bef6aad4c2b01e2bffdcd6
 
 springdoc:
-  packages-to-scan: com
+  override-with-generic-response: false
+  packages-to-scan: com.sendy
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
-    path: /swagger-ui.html
+    enabled: true
+    path: /swagger-ui
     display-request-duration: true
     operations-sorter: alpha
 

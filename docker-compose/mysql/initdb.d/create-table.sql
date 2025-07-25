@@ -53,7 +53,8 @@ CREATE TABLE email_auth (
     email_id BIGINT NOT NULL PRIMARY KEY,
     code VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    is_verified BOOLEAN NOT NULL
+    is_verified BOOLEAN NOT NULL,
+    user_id BIGINT NOT NULL
 );
 
 -- 계좌 테이블

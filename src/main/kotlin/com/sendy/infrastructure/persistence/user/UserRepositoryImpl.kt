@@ -1,8 +1,9 @@
-package com.sendy.infrastructure.persistence.auth
+package com.sendy.infrastructure.persistence.user
 
 import com.sendy.domain.auth.UserEntityRepository
 import com.sendy.domain.auth.UserRepository
 import com.sendy.domain.model.User
+import com.sendy.domain.user.UserEntity
 import org.springframework.stereotype.Repository
 import java.util.*
 

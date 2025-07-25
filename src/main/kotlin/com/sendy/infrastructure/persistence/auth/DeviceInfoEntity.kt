@@ -1,5 +1,6 @@
 package com.sendy.infrastructure.persistence.auth
 
+import com.sendy.domain.user.UserEntity
 import jakarta.persistence.*
 import java.time.LocalDateTime
 

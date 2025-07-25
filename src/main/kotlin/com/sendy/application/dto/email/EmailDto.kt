@@ -1,6 +1,6 @@
 package com.sendy.application.dto.email
 
-import com.sendy.domain.model.Email
+import com.sendy.domain.email.EmailEntity
 
 /**
  *
@@ -12,12 +12,14 @@ data class EmailDto(
     var code: String,
     var email: String,
     var isVerified: Boolean = false,
+    var userId: Long
 ) {
-    fun toEntity(): Email =
-        Email(
+    fun toEntity(): EmailEntity =
+        EmailEntity(
             emailId = this.emailId,
             code = this.code,
             email = this.email,
             isVerified = this.isVerified,
+            userId = this.userId
         )
 }

@@ -1,6 +1,6 @@
 package com.sendy.domain.auth
 
-import com.sendy.infrastructure.persistence.auth.UserEntity
+import com.sendy.domain.user.UserEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 

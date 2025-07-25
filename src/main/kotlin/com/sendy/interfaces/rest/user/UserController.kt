@@ -4,9 +4,11 @@ import com.sendy.application.dto.RegisterUserRequestDto
 import com.sendy.application.dto.user.RegisterUserResponseDto
 import com.sendy.application.dto.user.UpdateUserRequestDto
 import com.sendy.domain.service.UserService
+import com.sendy.support.util.Aes256Util
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -19,8 +21,9 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "User", description = "회원 API")
 @RestController
 @RequestMapping("/user")
+
 class UserController(
-    private val  UserService: UserService,
+    private val  UserService: UserService
     ) {
     @PostMapping("/register")
     @Operation(summary = "사용자 등록", description = "사용자 정보로 회원가입을 합니다.")
@@ -46,8 +49,8 @@ class UserController(
 
     @PostMapping("/auth/email/send")
     @Operation(summary = "본인인증 이메일 발송", description = "회원가입시 본인인증 이메일을 발송합니다.")
-    fun authEmailSent(email : String): ResponseEntity<String> {
-        return ResponseEntity(UserService.sendVerificationEmail(email), HttpStatus.OK)
+    fun authEmailSent(email : String,userId:Long): ResponseEntity<String> {
+        return ResponseEntity(UserService.sendVerificationEmail(email,userId), HttpStatus.OK)
     }
 
     @PostMapping("/auth/email/verify")

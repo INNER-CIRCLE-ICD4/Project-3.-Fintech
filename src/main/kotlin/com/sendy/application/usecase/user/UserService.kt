@@ -7,10 +7,14 @@ import com.sendy.application.dto.user.UpdateUserRequestDto
 import com.sendy.domain.auth.UserEntityRepository
 import com.sendy.domain.auth.UserRepository
 import com.sendy.domain.auth.token.service.TokenService
-import com.sendy.domain.email.EmailJpaRepository
+import com.sendy.domain.user.UserEntity
+import com.sendy.infrastructure.persistence.email.EmailRepository
 import com.sendy.support.exception.ResponseException
+import com.sendy.support.util.Aes256Converter
+import com.sendy.support.util.Aes256Util
 import com.sendy.support.util.getTsid
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
@@ -21,13 +25,13 @@ import org.springframework.stereotype.Service
 class UserService(
     private val userRepository: UserRepository
     ,private val userEntityRepository : UserEntityRepository
-    , private val emailJpaRepository: EmailJpaRepository
+    , private val emailRepository: EmailRepository
     , private val mailSender: JavaMailSender
     , private val builder: AuthenticationManagerBuilder
     , private val tokenService : TokenService
-
+    ,@Value("\${aes256.key}") private val key: String
 ) {
-
+    private val aesUtil = Aes256Util(key)
     /**
      * 유저 등록
      * @param requestDto 유저 등록 요청 DTO
@@ -41,7 +45,7 @@ class UserService(
         val entity = requestDto.toEntity(tsid)
 
         val userEntity = userEntityRepository.save(entity)
-        val sendEmail = sendVerificationEmail(userEntity.email)
+        val sendEmail = sendVerificationEmail(userEntity.email,userEntity.id)
 
         return RegisterUserResponseDto(
             userId = userEntity.id,
@@ -82,7 +86,19 @@ class UserService(
 
     // 이메일 발송 로직
     @Transactional
-    fun sendVerificationEmail(email: String):String {
+    fun sendVerificationEmail(email: String,userId:Long):String {
+        //테스트 코드 저장
+        if(email.equals("test@gmail.com")){
+            val TestEmailEntity = EmailDto(
+                emailId = getTsid(),
+                code = "123123",
+                email = email,
+                isVerified = false,
+                userId = userId
+            ).toEntity()
+            val result = emailRepository.save(TestEmailEntity)
+            return result.code;
+        }
 
         val randomCode = (1..6).map { (0..9).random() }.joinToString("")
 
@@ -98,12 +114,12 @@ class UserService(
             emailId = getTsid(),
             code = randomCode,
             email = email,
-            isVerified = false
+            isVerified = false,
+            userId = userId
+
         ).toEntity()
 
-
-
-        val result = emailJpaRepository.save(emailEntity)
+        val result = emailRepository.save(emailEntity)
         //중복 이메일 여부 체크?
 
         // 예: 이메일 서비스 호출
@@ -113,21 +129,23 @@ class UserService(
     @Transactional
     fun verifyEmail(email: String, emailCode: String): String {
 
-        val emailEntity = emailJpaRepository.findByEmail(email) ?: throw ResponseException("이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+        val emailEntity = emailRepository.findByEmail(email) ?: throw ResponseException("이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+        val user = userEntityRepository.findById(emailEntity.userId).orElseThrow{ throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) }
+        if(!user.email.equals(email)){
+            throw ResponseException("이메일 정보가 다릅니다.", HttpStatus.NOT_FOUND)
+        }
+
 
         if (emailEntity.code != emailCode) {
             throw ResponseException("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST)
         }
-
+        user.emailVerified = true
         emailEntity.isVerified = true
-        val user = userRepository.findByEmail(email).orElseThrow{
-            throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
-        }
-        user.verifyEmail()
-        emailJpaRepository.save(emailEntity)
+        emailRepository.save(emailEntity)
 
-        // 이메일 인증 완료 후 엔티티 삭제
-        emailJpaRepository.deleteByEmail(emailEntity)
+
+        // 이메일 인증 완료 후 엔티티 삭제?
+//        emailRepository.deleteByEmail(emailEntity)
         return "이메일 인증이 완료되었습니다."
     }
 }

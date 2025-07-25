@@ -50,12 +50,12 @@ CREATE TABLE users
 ) engine = InnoDB;
 
 -- 사용자 메일인증 발송기록 테이블
-CREATE TABLE email_auth
-(
-    email_id    BIGINT       NOT NULL PRIMARY KEY,
-    code        VARCHAR(255) NOT NULL,
-    email       VARCHAR(255) NOT NULL,
-    is_verified BOOLEAN      NOT NULL
+CREATE TABLE email_auth (
+    email_id BIGINT NOT NULL PRIMARY KEY,
+    code VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    is_verified BOOLEAN NOT NULL,
+    user_id BIGINT NOT NULL
 ) engine = InnoDB;
 
 -- 계좌 테이블

@@ -39,6 +39,8 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/admin/**")
                     .permitAll() // 관리자 API 허용 (테스트용)
+                    .requestMatchers("/user/register")
+                    .permitAll()
                     .anyRequest()
                     .authenticated()
             }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

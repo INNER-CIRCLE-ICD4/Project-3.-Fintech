@@ -17,6 +17,11 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  data:
+    redis:
+      host: localhost # docker 환경에서는 auth-redis
+      port: 6379
+      password: redis
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -25,6 +30,7 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
+    open-in-view: false
   mail:
     host: smtp.gmail.com
     port: 587

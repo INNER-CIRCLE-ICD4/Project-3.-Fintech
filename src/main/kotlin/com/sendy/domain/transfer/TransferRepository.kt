@@ -1,7 +1,5 @@
 package com.sendy.domain.transfer
 
-interface TransferRepository {
-    fun save(domain: Transfer)
+import org.springframework.data.jpa.repository.JpaRepository
 
-    fun getTransferById(id: Long): Transfer
-}
+interface TransferRepository : JpaRepository<TransferEntity, Long>

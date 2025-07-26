@@ -1,4 +1,4 @@
-package com.sendy.infrastructure.persistence.transfer.event
+package com.sendy.domain.transfer.event
 
 class TransferSucceeded(
     val transferId: Long,

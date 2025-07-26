@@ -4,10 +4,10 @@ import com.sendy.application.dto.transfer.TransferMoneyCommand
 import com.sendy.application.usecase.transfer.command.TransferMoneyUseCase
 import com.sendy.domain.enum.TransferStatusEnum
 import com.sendy.domain.transfer.TransactionHistoryRepository
-import com.sendy.domain.transfer.Transfer
+import com.sendy.domain.transfer.TransferEntity
 import com.sendy.domain.transfer.TransferRepository
-import com.sendy.infrastructure.persistence.transfer.event.TransferProcessed
-import com.sendy.infrastructure.persistence.transfer.event.TransferSucceeded
+import com.sendy.domain.transfer.event.TransferProcessed
+import com.sendy.domain.transfer.event.TransferSucceeded
 import com.sendy.support.util.getTsid
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
@@ -28,7 +28,7 @@ class TransferService(
         // 이체 이력 PENDING 저장
         val transferId = getTsid()
         transferRepository.save(
-            Transfer(
+            TransferEntity(
                 id = transferId,
                 amount = command.amount,
                 status = TransferStatusEnum.PENDING,
@@ -49,7 +49,7 @@ class TransferService(
         logger.info("Event::Transfer Success::{}", event)
         val transferId = event.transferId
 
-        val transfer = transferRepository.getTransferById(transferId)
+        val transfer = transferRepository.findById(transferId).orElseThrow()
 
         transfer.changeSuccess()
 

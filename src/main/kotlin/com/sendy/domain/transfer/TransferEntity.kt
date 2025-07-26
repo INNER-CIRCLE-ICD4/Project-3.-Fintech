@@ -1,4 +1,4 @@
-package com.sendy.infrastructure.persistence.transfer
+package com.sendy.domain.transfer
 
 import com.sendy.domain.enum.TransferStatusEnum
 import com.sendy.infrastructure.persistence.Identity
@@ -9,10 +9,9 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 import java.time.LocalDateTime
 
-// TODO: account 연관관계 설정
 @Entity
 @Table(name = "transfer")
-class TransferJpaEntity(
+class TransferEntity(
     id: Long,
     @Column
     var amount: Long,
@@ -26,4 +25,8 @@ class TransferJpaEntity(
     var completedAt: LocalDateTime? = null,
     @Column(nullable = true)
     val reason: String? = null,
-) : Identity(id)
+) : Identity(id) {
+    fun changeSuccess() {
+        status = TransferStatusEnum.SUCCESS
+    }
+}

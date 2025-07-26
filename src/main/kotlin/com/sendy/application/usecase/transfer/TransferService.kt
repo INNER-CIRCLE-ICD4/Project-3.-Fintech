@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class TransferService(
     private val transferRepository: TransferRepository,
-    private val transactionHistoryRepository: TransactionHistoryRepository,
     private val publisher: ApplicationEventPublisher,
 ) : TransferMoneyUseCase {
     private val logger = LoggerFactory.getLogger(TransferService::class.java)

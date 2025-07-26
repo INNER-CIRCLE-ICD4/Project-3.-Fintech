@@ -1,8 +1,8 @@
 package com.sendy.application.usecase.account.query
 
 import com.sendy.application.dto.account.AccountBalanceResponse
-import com.sendy.domain.account.AccountRepository
 import com.sendy.domain.account.AccountStatus
+import com.sendy.infrastructure.persistence.account.AccountRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

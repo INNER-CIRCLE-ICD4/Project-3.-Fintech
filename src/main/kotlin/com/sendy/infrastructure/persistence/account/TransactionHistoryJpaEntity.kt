@@ -1,4 +1,4 @@
-package com.sendy.infrastructure.persistence.transfer
+package com.sendy.infrastructure.persistence.account
 
 import com.sendy.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.infrastructure.persistence.Identity

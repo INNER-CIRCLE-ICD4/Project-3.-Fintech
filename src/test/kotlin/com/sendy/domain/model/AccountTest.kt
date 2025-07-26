@@ -1,6 +1,5 @@
 package com.sendy.domain.model
 
-import com.sendy.domain.account.Account
 import com.sendy.domain.account.AccountStatus
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test

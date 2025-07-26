@@ -1,7 +1,7 @@
 package com.sendy.application.usecase.auth
 
 import com.sendy.domain.auth.UserRepository
-import com.sendy.domain.email.EmailJpaRepository
+import com.sendy.infrastructure.persistence.email.EmailRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class CustomerUserDetailsService(
     private val userEntityRepository: UserRepository,
-    private val email: EmailJpaRepository,
+    private val email: EmailRepository,
 ) : UserDetailsService {
     override fun loadUserByUsername(username: String?): UserDetails {
         // JWT 인증 시에는 userId가 문자열로 전달됨

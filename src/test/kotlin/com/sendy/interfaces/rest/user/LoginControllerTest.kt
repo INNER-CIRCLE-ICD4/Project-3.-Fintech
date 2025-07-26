@@ -36,7 +36,6 @@ import java.time.LocalDateTime
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration",
     ],
 )
-@SpringBootTest
 @AutoConfigureMockMvc
 class LoginControllerTest {
     @Autowired

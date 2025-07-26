@@ -1,7 +1,8 @@
 package com.sendy.interfaces.rest.user
 
 import com.sendy.application.usecase.auth.LogoutService
-import com.sendy.support.response.Response
+import com.sendy.interfaces.filter.JwtAuthenticationFilter
+import com.sendy.support.response.Api
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/user")
 class LogoutController(
     private val logoutService: LogoutService,
-) {
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+
+    ) {
     @Operation(
         summary = "전체 로그아웃",
         description = """
@@ -23,12 +26,12 @@ class LogoutController(
             1. 로컬스토리지/세션스토리지에서 토큰 삭제
             2. 쿠키에 저장된 토큰 삭제
             3. 메모리에 저장된 토큰 변수 초기화
-            4. 인증이 필요한 페이지에서 로그인 페이지로 리다이렉트
+            4. 인증이 필요한 페이지에서 로그인 페이지로 리다이렉트 
         """,
     )
     @PostMapping("/logout")
-    fun logout(request: HttpServletRequest): Response<String> {
-        val token = getTokenFromRequest(request)
+    fun logout(request: HttpServletRequest): Api<String> {
+        val token = jwtAuthenticationFilter.getTokenFromRequest(request)
 
         if (token != null) {
             try {
@@ -39,7 +42,7 @@ class LogoutController(
             }
         }
 
-        return Response.ok("모든 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
+        return Api.ok("모든 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
     }
 
     @Operation(
@@ -53,8 +56,8 @@ class LogoutController(
         """,
     )
     @PostMapping("/logout/current")
-    fun logoutCurrent(request: HttpServletRequest): Response<String> {
-        val token = getTokenFromRequest(request)
+    fun logoutCurrent(request: HttpServletRequest): Api<String> {
+        val token = jwtAuthenticationFilter.getTokenFromRequest(request)
 
         if (token != null) {
             try {
@@ -65,15 +68,6 @@ class LogoutController(
             }
         }
 
-        return Response.ok("현재 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
-    }
-
-    private fun getTokenFromRequest(request: HttpServletRequest): String? {
-        val bearerToken = request.getHeader("Authorization")
-        return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            bearerToken.substring(7)
-        } else {
-            null
-        }
+        return Api.ok("현재 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
     }
 }

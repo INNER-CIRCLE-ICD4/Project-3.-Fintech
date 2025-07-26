@@ -1,4 +1,4 @@
-package com.sendy.infrastructure.persistence.account
+package com.sendy.domain.account
 
 import com.sendy.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.infrastructure.persistence.Identity
@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "transaction_history")
-class TransactionHistoryJpaEntity(
+class TransactionHistoryEntity(
     id: Long,
     @Enumerated(EnumType.STRING)
     @Column(name = "tx_type")

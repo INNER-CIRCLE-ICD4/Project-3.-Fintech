@@ -1,4 +1,4 @@
-package com.sendy.infrastructure.persistence.transfer
+package com.sendy.infrastructure.persistence.account
 
 import org.springframework.data.jpa.repository.JpaRepository
 

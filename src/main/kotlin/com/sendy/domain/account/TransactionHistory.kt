@@ -1,4 +1,4 @@
-package com.sendy.domain.transfer
+package com.sendy.domain.account
 
 import com.sendy.domain.enum.TransactionHistoryTypeEnum
 import java.time.LocalDateTime

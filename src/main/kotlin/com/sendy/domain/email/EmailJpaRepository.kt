@@ -2,9 +2,7 @@ package com.sendy.domain.email
 
 import com.sendy.domain.model.Email
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
 
-@Repository
 interface EmailJpaRepository : JpaRepository<Email, Long> {
     fun save(entity: Email): Email
 

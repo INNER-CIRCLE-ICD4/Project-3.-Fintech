@@ -14,21 +14,17 @@ RUN ./gradlew bootJar
 FROM eclipse-temurin:21.0.4_7-jre-alpine as extract
 WORKDIR /extract
 
-COPY --from=build /builder/build/libs/application.jar application.jar
-RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
+COPY --from=build /builder/build/libs/sendy-service.jar sendy-service.jar
+RUN java -Djarmode=tools -jar sendy-service.jar extract --layers --destination extracted
 
 
 FROM eclipse-temurin:21.0.4_7-jre-alpine
 WORKDIR /app
 
-COPY --from=extract /extract/application.jar application.jar
+COPY --from=extract /extract/sendy-service.jar sendy-service.jar
 COPY --from=extract /extract/extracted/dependencies/ ./
 COPY --from=extract /extract/extracted/spring-boot-loader/ ./
 COPY --from=extract /extract/extracted/snapshot-dependencies/ ./
 COPY --from=extract /extract/extracted/application/ ./
 
-ENV PROFILE_ACTIVE dev
-
-RUN echo "$PROFILE_ACTIVE"
-
-ENTRYPOINT ["java","-jar", "application.jar", "--spring.profiles.active=${PROFILE_ACTIVE}"]
+ENTRYPOINT ["java","-jar", "sendy-service.jar"]

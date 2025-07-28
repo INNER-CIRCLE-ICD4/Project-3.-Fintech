@@ -21,20 +21,33 @@ class AccountEntity(
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    val status: AccountStatus,
+    var status: AccountStatus,
 
     @Column(name = "is_primary", nullable = false)
-    val isPrimary: Boolean,
+    var isPrimary: Boolean,
 
     @Column(name = "is_limited_account", nullable = false)
-    val isLimitedAccount: Boolean,
+    var isLimitedAccount: Boolean,
 
     @Column(name = "created_at", nullable = false)
     val createdAt: LocalDateTime,
 
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime,
+    var updatedAt: LocalDateTime,
 
     @Column(name = "balance", nullable = false)
-    val balance: Long
-) : Identity(id)
+    var balance: Long
+) : Identity(id) {
+    fun deposit(amount: Long) {
+        require(amount > 0) { "입금 금액은 0보다 커야 합니다." }
+        this.balance += amount
+        this.updatedAt = LocalDateTime.now()
+    }
+
+    fun withdraw(amount: Long) {
+        require(amount > 0) { "출금 금액은 0보다 커야 합니다." }
+        if (this.balance < amount) throw IllegalStateException("잔액이 부족합니다.")
+        this.balance -= amount
+        this.updatedAt = LocalDateTime.now()
+    }
+}

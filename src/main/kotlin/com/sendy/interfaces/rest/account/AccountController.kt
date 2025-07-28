@@ -23,6 +23,7 @@ class AccountController(
         @RequestParam userId: Long,
         @RequestParam accountNumber: String
     ): AccountBalanceResponse {
-        return queryAccountBalanceUseCase.execute(userId, accountNumber)
+        val account = queryAccountBalanceUseCase.execute(userId, accountNumber)
+        return AccountBalanceResponse(account.accountNumber, account.balance)
     }
 }

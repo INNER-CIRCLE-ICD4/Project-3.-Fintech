@@ -1,60 +1,32 @@
 package com.sendy.application.usecase.auth
 
-import com.sendy.application.dto.auth.LoginRequestDto
-import com.sendy.domain.auth.UserRepository
-import com.sendy.domain.auth.token.controller.model.TokenResponse
-import com.sendy.domain.auth.token.service.JwtTokenStorageService
-import com.sendy.domain.auth.token.service.TokenService
-import com.sendy.support.error.ErrorCode
-import com.sendy.support.exception.ApiException
-import com.sendy.support.util.SHA256Util
-import jakarta.servlet.http.HttpServletRequest
-import org.slf4j.LoggerFactory
+import com.sendy.application.dto.auth.DeviceInfoDto
+import com.sendy.application.usecase.auth.interfaces.AuthenticateUserUseCase
+import com.sendy.application.usecase.auth.interfaces.*
 import org.springframework.stereotype.Service
 
 @Service
 class LoginService(
-    private val userRepository: UserRepository,
-    private val sha256Util: SHA256Util,
-    private val tokenService: TokenService,
-    private val deviceService: DeviceService,
-    private val jwtTokenStorageService: JwtTokenStorageService,
-) {
-    private val logger = LoggerFactory.getLogger(LoginService::class.java)
+    private val authenticateUserUseCase: AuthenticateUserUseCase,
+    private val invalidateExistingTokensUseCase: InvalidateExistingTokensUseCase,
+    private val updateUserActivityUseCase: UpdateUserActivityUseCase,
+    private val issueTokenUseCase: IssueTokenUseCase,
+): LoginServiceUseCase {
 
-    fun login(
-        dto: LoginRequestDto,
-        request: HttpServletRequest,
-    ): TokenResponse {
-        // 사용자 인증 (도메인 모델 사용)
-        val user =
-            userRepository
-                .findActiveById(dto.id)
-                .orElseThrow { ApiException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다") }
-
-        // 도메인 로직을 통한 로그인 가능 여부 확인
-        if (!user.canLogin()) {
-            throw ApiException(ErrorCode.INVALID_INPUT_VALUE, "로그인할 수 없는 사용자입니다")
-        }
-
-        // SHA-256 해시로 비밀번호 검증
-        val hashedPassword = sha256Util.hash(dto.password)
-        if (!user.validatePassword(hashedPassword)) {
-            throw ApiException(ErrorCode.INVALID_INPUT_VALUE, "비밀번호가 일치하지 않습니다")
-        }
-
-        // ⚠️ 단일 디바이스 로그인 정책: 기존 모든 토큰을 PENDING_LOGOUT 상태로 변경
-        logger.info("사용자 ID ${user.id}의 기존 모든 토큰을 PENDING_LOGOUT 상태로 변경합니다")
-        jwtTokenStorageService.setPendingLogoutByUserId(user.id)
-
-        // 새 디바이스 정보 저장/업데이트
-        val device = deviceService.saveOrUpdateDevice(user.id, dto.deviceInfo, request)
-
-        // 사용자 마지막 활동 시간 업데이트
-        userRepository.save(user.updateLastActivity())
-
-        // 새 토큰 발급 (디바이스 ID 포함)
-        logger.info("사용자 ID ${user.id}, 디바이스 ID ${device.id}에 새 토큰을 발급합니다")
-        return tokenService.issueToken(user.id, device.id)
+    override fun login(command: LoginCommand): LoginResult {
+        // 1. 사용자 인증
+        val user = authenticateUserUseCase.execute(command.dto.email, command.dto.password)
+        
+        // 2. 기존 토큰 무효화
+        invalidateExistingTokensUseCase.execute(user.id)
+        
+        // 3. 사용자 활동 시간 업데이트
+        updateUserActivityUseCase.execute(user)
+        
+        // 4. 새 토큰 발급
+        val deviceInfo = command.dto.deviceInfo ?: DeviceInfoDto()
+        val tokenResponse = issueTokenUseCase.execute(user.id, deviceInfo, command.request)
+        
+        return LoginResult(tokenResponse = tokenResponse)
     }
 }

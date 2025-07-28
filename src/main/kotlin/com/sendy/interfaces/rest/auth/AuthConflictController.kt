@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "Auth Conflict", description = "디바이스 충돌 상황 처리 API")
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/authorities")
 class AuthConflictController(
     private val jwtTokenStorageService: JwtTokenStorageService,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,

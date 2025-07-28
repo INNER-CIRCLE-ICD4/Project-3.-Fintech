@@ -2,6 +2,8 @@ package com.sendy.interfaces.rest.user
 
 import com.sendy.application.dto.auth.LoginRequestDto
 import com.sendy.application.usecase.auth.LoginService
+import com.sendy.application.usecase.auth.interfaces.LoginCommand
+import com.sendy.application.usecase.auth.interfaces.LoginResult
 import com.sendy.domain.auth.token.controller.model.TokenResponse
 import com.sendy.support.response.Api
 import io.swagger.v3.oas.annotations.Operation
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "User", description = "사용자 인증 API")
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 class LoginController(
     private val loginService: LoginService,
 ) {
@@ -29,9 +31,10 @@ class LoginController(
     @PostMapping("/login")
     fun login(
         @Valid @RequestBody dto: LoginRequestDto,
-        request: HttpServletRequest,
-    ): Api<TokenResponse> {
-        val tokenResponse = loginService.login(dto, request)
-        return Api.ok(tokenResponse)
+        request: HttpServletRequest
+    ): Api<LoginResult> {
+        val command = LoginCommand(dto, request)
+        val result = loginService.login(command)
+        return Api.ok(result)
     }
 }

@@ -61,6 +61,9 @@ dependencies {
     // monitoring
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-prometheus")
+
+    //mokito
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")  // 최신 버전 확인 가능
 }
 
 tasks.withType<JavaCompile> {

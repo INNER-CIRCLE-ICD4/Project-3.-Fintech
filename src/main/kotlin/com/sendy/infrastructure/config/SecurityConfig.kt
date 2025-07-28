@@ -29,7 +29,7 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                     .permitAll()
-                    .requestMatchers("/user/**")
+                    .requestMatchers("/users/**")
                     .permitAll()
                     .requestMatchers("/user/login")
                     .permitAll()

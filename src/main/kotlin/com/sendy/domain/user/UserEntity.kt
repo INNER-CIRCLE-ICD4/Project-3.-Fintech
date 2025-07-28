@@ -1,9 +1,10 @@
 package com.sendy.domain.user
 
-import com.sendy.application.dto.user.UpdateUserRequestDto
+import com.sendy.application.dto.user.UpdateUserDto
 import com.sendy.infrastructure.persistence.Identity
 import com.sendy.support.util.Aes256Converter
 import jakarta.persistence.*
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import java.time.LocalDateTime
 
 /**
@@ -41,7 +42,7 @@ class UserEntity(
     @Column(name = "email_verified", nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     var emailVerified: Boolean = false,
 ) : Identity(id) {
-    fun update(updateDto: UpdateUserRequestDto): UserEntity =
+    fun update(updateDto: UpdateUserDto): UserEntity =
         UserEntity(
             id = this.id,
             password = this.password,

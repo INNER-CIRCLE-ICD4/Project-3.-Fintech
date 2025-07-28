@@ -41,9 +41,9 @@ CREATE TABLE users
     phone_number   VARCHAR(20)  NOT NULL,
     email          VARCHAR(255) NOT NULL,
     ci             VARCHAR(100),
-    birth          CHAR(8)      NOT NULL,
-    is_delete      BOOLEAN      NOT NULL DEFAULT false,
-    email_verified BOOLEAN      NOT NULL DEFAULT false,
+    birth          CHAR(8)  NOT NULL,
+    is_delete      TINYINT(1) NOT NULL DEFAULT 0,
+    email_verified TINYINT(1) NOT NULL DEFAULT 0,
     create_at      TIMESTAMP    NOT NULL,
     update_at      TIMESTAMP,
     delete_at      TIMESTAMP
@@ -54,7 +54,7 @@ CREATE TABLE email_auth (
     email_id BIGINT NOT NULL PRIMARY KEY,
     code VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    is_verified BOOLEAN NOT NULL,
+    is_verified TINYINT(1) NOT NULL DEFAULT 0,
     user_id BIGINT NOT NULL
 ) engine = InnoDB;
 

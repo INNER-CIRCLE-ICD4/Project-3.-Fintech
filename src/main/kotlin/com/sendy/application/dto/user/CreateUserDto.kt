@@ -1,15 +1,18 @@
 package com.sendy.application.dto
 import com.sendy.domain.user.UserEntity
+import com.sendy.infrastructure.persistence.Identity
+import com.sendy.support.util.getTsid
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import java.time.LocalDateTime
 
 /**
  *
  * User등록dto 클래스
  */
-data class RegisterUserRequestDto(
+data class CreateUserDto(
 
     @field:NotBlank
     @Schema(description = "이름")
@@ -31,11 +34,11 @@ data class RegisterUserRequestDto(
     @Schema(description = "생년월일", example = "19900101")
     var birth: String,
 ){
-    fun toEntity(id : Long) : UserEntity {
+    fun toEntity(id : Long,password: String) : UserEntity {
         return UserEntity(
             id = id,
             name = this.name,
-            password = this.password,
+            password = password,
             phoneNumber = this.phoneNumber,
             ci = "",
             email = this.email,

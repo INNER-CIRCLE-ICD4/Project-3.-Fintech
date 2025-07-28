@@ -47,6 +47,7 @@ aes256:
   key: d2f3de5ce2bef6aad4c2b01e2bffdcd6
 
 springdoc:
+  override-with-generic-response: false
   packages-to-scan: com
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8

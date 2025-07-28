@@ -1,7 +1,7 @@
-package com.sendy.infrastructure.persistence.transfer
+package com.sendy.infrastructure.persistence.account
 
-import com.sendy.domain.transfer.TransactionHistory
-import com.sendy.domain.transfer.TransactionHistoryRepository
+import com.sendy.domain.account.TransactionHistory
+import com.sendy.domain.account.TransactionHistoryRepository
 import org.springframework.stereotype.Repository
 
 @Repository

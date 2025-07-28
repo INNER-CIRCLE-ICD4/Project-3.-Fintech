@@ -5,7 +5,9 @@ import com.sendy.domain.account.AccountRepository
 import com.sendy.application.dto.account.CreateAccountRequest
 import com.sendy.application.dto.account.CreateAccountResponse
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 @Service
 class CreateAccountUseCase(
     private val accountRepository: AccountRepository

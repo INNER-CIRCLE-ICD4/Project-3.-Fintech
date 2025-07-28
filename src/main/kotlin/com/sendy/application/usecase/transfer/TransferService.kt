@@ -3,7 +3,6 @@ package com.sendy.application.usecase.transfer
 import com.sendy.application.dto.transfer.TransferMoneyCommand
 import com.sendy.application.usecase.transfer.command.TransferMoneyUseCase
 import com.sendy.domain.enum.TransferStatusEnum
-import com.sendy.domain.account.TransactionHistoryRepository
 import com.sendy.domain.transfer.TransferEntity
 import com.sendy.domain.transfer.TransferRepository
 import com.sendy.domain.transfer.event.TransferProcessed

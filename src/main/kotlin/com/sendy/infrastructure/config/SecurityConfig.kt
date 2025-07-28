@@ -29,6 +29,8 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                     .permitAll()
+                    .requestMatchers("/user/**")
+                    .permitAll()
                     .requestMatchers("/user/login")
                     .permitAll()
                     .requestMatchers("/user/logout")
@@ -39,9 +41,13 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/admin/**")
                     .permitAll() // 관리자 API 허용 (테스트용)
+                    .requestMatchers("/h2-console/**")
+                    .permitAll()
                     .anyRequest()
                     .authenticated()
-            }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            }
+            .headers { it.frameOptions { opt -> opt.sameOrigin() } }
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }

@@ -6,14 +6,12 @@ import com.sendy.infrastructure.persistence.auth.JwtTokenEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
-import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.*
 
 /**
  * JWT 토큰 관리를 위한 리포지토리
  */
-@Repository
 interface JwtTokenRepository : JpaRepository<JwtTokenEntity, Long> {
     /**
      * 토큰 해시로 유효한 토큰 찾기 (ACTIVE 또는 PENDING_LOGOUT)

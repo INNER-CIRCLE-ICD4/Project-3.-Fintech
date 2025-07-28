@@ -1,5 +1,6 @@
 package com.sendy.support.response
 
+import com.sendy.support.error.ErrorCode
 import com.sendy.support.error.ErrorCodeIfs
 import jakarta.validation.Valid
 
@@ -9,6 +10,7 @@ data class Api<T>(
     var body: T? = null,
 ) {
     companion object {
+        // 기존 Api 메서드들
         fun <T> OK(data: T): Api<T> {
             val api = Api<T>()
             api.result = Result.OK()
@@ -45,5 +47,14 @@ data class Api<T>(
             api.result = Result.ERROR(errorCodeIfs, description)
             return api
         }
+
+        // Response.kt와 호환되는 간편한 메서드들
+        fun <T> ok(value: T): Api<T> = OK(value)
+        
+        fun <T> error(errorCode: ErrorCode, message: String): Api<T> =
+            ERROR(errorCode, message) as Api<T>
+        
+        fun <T> fail(message: String): Api<T> =
+            ERROR(ErrorCode.BAD_REQUEST, message) as Api<T>
     }
 }

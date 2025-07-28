@@ -4,14 +4,12 @@ import com.sendy.infrastructure.persistence.auth.DeviceInfoEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
-import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.*
 
 /**
  * 디바이스 정보 관리를 위한 리포지토리
  */
-@Repository
 interface DeviceInfoRepository : JpaRepository<DeviceInfoEntity, Long> {
     /**
      * 디바이스 핑거프린트로 디바이스 찾기
@@ -34,4 +32,4 @@ interface DeviceInfoRepository : JpaRepository<DeviceInfoEntity, Long> {
         loginTime: LocalDateTime,
         updatedAt: LocalDateTime,
     )
-} 
+}

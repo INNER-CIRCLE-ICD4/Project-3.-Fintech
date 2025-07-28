@@ -1,0 +1,61 @@
+server:
+  shutdown: graceful
+
+spring:
+  application:
+    name: sendy
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    hikari:
+      jdbc-url: jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sendy.smtp.test@gmail.com
+    password: pmdfdbayumogvcea
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+      auth-code-expiration-millis: 600,000   # 10 * 60 * 1000 == 10분
+
+# 추후 Secrets Manager 등으로 이관
+aes256:
+  key: d2f3de5ce2bef6aad4c2b01e2bffdcd6
+
+springdoc:
+  packages-to-scan: com
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: alpha
+
+jwt:
+  secret-key: DYS6feNXKYnsLOebpSU0Ljm05bgit9j3sc3YYoBYh2E=
+  access-token-expire-time: 300
+  refresh-token-expire-time: 7200

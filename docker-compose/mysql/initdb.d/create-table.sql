@@ -14,7 +14,7 @@ CREATE TABLE transfer
     -- 추후 account 외래키 추가
     INDEX (sender_account_id),
     INDEX (receive_account_id)
-);
+) engine = InnoDB;
 
 -- 입출금 이력 테이블
 CREATE TABLE transaction_history
@@ -25,46 +25,85 @@ CREATE TABLE transaction_history
     amount        BIGINT      NOT NULL COMMENT "금액",
     balance_after BIGINT      NOT NULL COMMENT "거래 후 금액",
     description   VARCHAR(255) COMMENT "설명",
-    transfer_id   CHAR(13) COMMENT "이체 내역 ID",                                     -- transfer.id (nullable)
+    transfer_id   BIGINT COMMENT "이체 내역 ID",                                       -- transfer.id (nullable)
     created_at    DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "생성일자",
 
     INDEX (account_id, created_at),
     INDEX (transfer_id)
-);
+) engine = InnoDB;
 
 -- 사용자 테이블
-CREATE TABLE users (
-       user_id BIGINT NOT NULL PRIMARY KEY,
-       password VARCHAR(100) NOT NULL,
-       name VARCHAR(50) NOT NULL,
-       phone_number VARCHAR(20) NOT NULL,
-       email VARCHAR(255) NOT NULL,
-       ci VARCHAR(100),
-       birth CHAR(8) NOT NULL,
-       is_delete BOOLEAN NOT NULL DEFAULT false,
-       email_verified BOOLEAN NOT NULL DEFAULT false,
-       create_at TIMESTAMP NOT NULL,
-       update_at TIMESTAMP,
-       delete_at TIMESTAMP
-);
+CREATE TABLE users
+(
+    id        BIGINT       NOT NULL PRIMARY KEY,
+    password       VARCHAR(100) NOT NULL,
+    name           VARCHAR(50)  NOT NULL,
+    phone_number   VARCHAR(20)  NOT NULL,
+    email          VARCHAR(255) NOT NULL,
+    ci             VARCHAR(100),
+    birth          CHAR(8)      NOT NULL,
+    is_delete      BOOLEAN      NOT NULL DEFAULT false,
+    email_verified BOOLEAN      NOT NULL DEFAULT false,
+    create_at      TIMESTAMP    NOT NULL,
+    update_at      TIMESTAMP,
+    delete_at      TIMESTAMP
+) engine = InnoDB;
 
 -- 사용자 메일인증 발송기록 테이블
 CREATE TABLE email_auth (
     email_id BIGINT NOT NULL PRIMARY KEY,
     code VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    is_verified BOOLEAN NOT NULL
-);
+    is_verified BOOLEAN NOT NULL,
+    user_id BIGINT NOT NULL
+) engine = InnoDB;
 
 -- 계좌 테이블
-CREATE TABLE account (
-    id BIGINT NOT NULL PRIMARY KEY,
-    account_number VARCHAR(13) NOT NULL,
-    user_id BIGINT NOT NULL,
-    status VARCHAR(20) NOT NULL,
-    is_primary BOOLEAN NOT NULL,
-    is_limited_account BOOLEAN NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT,
-    updated_at DATETIME NOT NULL DEFAULT,
-    balance BIGINT NOT NULL
-);
+CREATE TABLE account
+(
+    id                 BIGINT      NOT NULL PRIMARY KEY,
+    account_number     VARCHAR(13) NOT NULL,
+    user_id            BIGINT      NOT NULL,
+    status             VARCHAR(20) NOT NULL,
+    is_primary         BOOLEAN     NOT NULL,
+    is_limited_account BOOLEAN     NOT NULL,
+    created_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    balance            BIGINT      NOT NULL
+) engine = InnoDB;
+
+-- jwt 토큰 정보
+create table jwt_token
+(
+    created_at datetime(6)  not null,
+    device_id  bigint,
+    expired_at datetime(6)  not null,
+    token_id   bigint       not null auto_increment,
+    updated_at datetime(6),
+    user_id    bigint       not null,
+    token_hash varchar(500) not null,
+    status     varchar(30)  not null, -- ('ACTIVE','PENDING_LOGOUT','REVOKED')
+    token_type varchar(30),           -- ('ACCESS','REFRESH')
+    primary key (token_id)
+) engine = InnoDB;
+
+-- 디바이스 정보
+create table device_info
+(
+    is_mobile          BOOLEAN DEFAULT false not null,
+    created_at         datetime(6)           not null,
+    device_id          bigint                not null auto_increment,
+    last_login_at      datetime(6)           not null,
+    updated_at         datetime(6),
+    user_id            bigint                not null,
+    language           varchar(10),
+    screen_resolution  varchar(20),
+    ip_address         varchar(50),
+    timezone           varchar(50),
+    device_name        varchar(100),
+    os_info            varchar(100),
+    browser_info       varchar(200),
+    user_agent         varchar(500),
+    device_fingerprint varchar(255)          not null,
+    primary key (device_id)
+) engine = InnoDB;

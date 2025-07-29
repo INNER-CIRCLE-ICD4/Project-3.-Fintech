@@ -26,6 +26,9 @@ class AccountController(
     @GetMapping("/balance")
     fun getAccountBalance(
         @RequestParam userId: Long,
-        @RequestParam accountNumber: String,
-    ): AccountBalanceResponse = queryAccountBalanceUseCase.execute(userId, accountNumber)
+        @RequestParam accountNumber: String
+    ): AccountBalanceResponse {
+        val account = queryAccountBalanceUseCase.execute(userId, accountNumber)
+        return AccountBalanceResponse(account.accountNumber, account.balance)
+    }
 }

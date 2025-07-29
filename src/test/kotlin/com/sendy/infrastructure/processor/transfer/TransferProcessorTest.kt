@@ -1,13 +1,13 @@
 package com.sendy.infrastructure.processor.transfer
 
+import com.sendy.domain.account.TransactionHistoryEntity
+import com.sendy.domain.account.TransactionHistoryRepository
 import com.sendy.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.domain.transfer.TransferLimitEntity
 import com.sendy.domain.transfer.TransferLimitRepository
 import com.sendy.infrastructure.config.TestTransferProcessorConfig
-import com.sendy.infrastructure.persistence.transfer.TransactionHistoryJpaEntity
-import com.sendy.infrastructure.persistence.transfer.TransactionHistoryJpaRepository
-import com.sendy.support.exception.DailyMaxLimitException
-import com.sendy.support.exception.SingleTxLimitException
+import com.sendy.support.exception.transfer.DailyMaxLimitException
+import com.sendy.support.exception.transfer.SingleTxLimitException
 import com.sendy.support.util.getTsid
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -31,7 +31,7 @@ class TransferProcessorTest(
     @Autowired
     private val transferLimitRepository: TransferLimitRepository,
     @Autowired
-    private val transactionHistoryRepository: TransactionHistoryJpaRepository,
+    private val transactionHistoryRepository: TransactionHistoryRepository,
 ) {
     private val transferLimitWithdrawId = getTsid()
     private val transferLimitCountProcessor = TransferProcessor(transferLimitRepository, transactionHistoryRepository)
@@ -119,9 +119,9 @@ class TransferProcessorTest(
         userId = 7090,
     )
 
-    private fun getWithdrawTransaction_success(createdAt: LocalDateTime): List<TransactionHistoryJpaEntity> =
+    private fun getWithdrawTransaction_success(createdAt: LocalDateTime): List<TransactionHistoryEntity> =
         listOf(
-            TransactionHistoryJpaEntity(
+            TransactionHistoryEntity(
                 id = getTsid(),
                 type = TransactionHistoryTypeEnum.WITHDRAW,
                 amount = 100_000,
@@ -129,7 +129,7 @@ class TransferProcessorTest(
                 createdAt = createdAt,
                 transferId = 1,
             ),
-            TransactionHistoryJpaEntity(
+            TransactionHistoryEntity(
                 id = getTsid(),
                 type = TransactionHistoryTypeEnum.WITHDRAW,
                 amount = 100_000,
@@ -137,7 +137,7 @@ class TransferProcessorTest(
                 createdAt = createdAt,
                 transferId = 1,
             ),
-            TransactionHistoryJpaEntity(
+            TransactionHistoryEntity(
                 id = getTsid(),
                 type = TransactionHistoryTypeEnum.WITHDRAW,
                 amount = 100_000,
@@ -145,7 +145,7 @@ class TransferProcessorTest(
                 createdAt = createdAt,
                 transferId = 1,
             ),
-            TransactionHistoryJpaEntity(
+            TransactionHistoryEntity(
                 id = getTsid(),
                 type = TransactionHistoryTypeEnum.WITHDRAW,
                 amount = 100_000,
@@ -155,9 +155,9 @@ class TransferProcessorTest(
             ),
         )
 
-    private fun getWithdrawTransaction_fail(createdAt: LocalDateTime): List<TransactionHistoryJpaEntity> =
+    private fun getWithdrawTransaction_fail(createdAt: LocalDateTime): List<TransactionHistoryEntity> =
         listOf(
-            TransactionHistoryJpaEntity(
+            TransactionHistoryEntity(
                 id = getTsid(),
                 type = TransactionHistoryTypeEnum.WITHDRAW,
                 amount = 9_000_001,

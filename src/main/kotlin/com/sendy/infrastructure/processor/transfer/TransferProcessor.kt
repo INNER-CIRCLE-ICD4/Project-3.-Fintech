@@ -1,11 +1,12 @@
 package com.sendy.infrastructure.processor.transfer
 
+import com.sendy.domain.account.TransactionHistoryRepository
 import com.sendy.domain.transfer.TransferLimitCountProcessor
 import com.sendy.domain.transfer.TransferLimitEntity
 import com.sendy.domain.transfer.TransferLimitRepository
-import com.sendy.infrastructure.persistence.transfer.TransactionHistoryJpaRepository
-import com.sendy.support.exception.DailyMaxLimitException
-import com.sendy.support.exception.SingleTxLimitException
+import com.sendy.support.exception.transfer.DailyMaxLimitException
+import com.sendy.support.exception.transfer.PastNotTransferException
+import com.sendy.support.exception.transfer.SingleTxLimitException
 import com.sendy.support.util.getTsid
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -16,7 +17,7 @@ import java.time.format.DateTimeFormatter
 @Component
 class TransferProcessor(
     private val transferLimitRepository: TransferLimitRepository,
-    private val transactionHistoryRepository: TransactionHistoryJpaRepository,
+    private val transactionHistoryRepository: TransactionHistoryRepository,
 ) : TransferLimitCountProcessor {
     override fun processLimitCount(
         userId: Long,
@@ -30,7 +31,7 @@ class TransferProcessor(
                     dailyDt.toLocalDate(),
                 ).not()
         ) {
-            throw Exception("현재 기준 과거 일자로는 송금을 보낼 수 없습니다.")
+            throw PastNotTransferException()
         }
 
         val dailyDtString = dailyDt.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
@@ -62,12 +63,10 @@ class TransferProcessor(
 
             // 현재 보내려는 송금액, 일일 최대 한도 금액, 1회 요청 최대 한도 금액 모두 체크
             when {
-                amount > findEntity.singleTransactionLimit -> throw SingleTxLimitException(
-                    "1회 송금 최대 한도가 초과되었습니다. 최대한도: ${findEntity.singleTransactionLimit}",
-                )
-                totalAmount + amount > findEntity.dailyLimit -> throw DailyMaxLimitException(
-                    "일일 송금 최대 한도가 초과 되었습니다. 송금액: $amount, 남은 한도: ${findEntity.dailyLimit - totalAmount}",
-                )
+                amount > findEntity.singleTransactionLimit ->
+                    throw SingleTxLimitException(findEntity.singleTransactionLimit)
+                totalAmount + amount > findEntity.dailyLimit ->
+                    throw DailyMaxLimitException(amount, findEntity.dailyLimit - totalAmount)
             }
 
             findEntity.dailyCount++

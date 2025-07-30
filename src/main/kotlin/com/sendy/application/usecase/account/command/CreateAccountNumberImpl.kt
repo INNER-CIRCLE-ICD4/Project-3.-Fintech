@@ -22,11 +22,9 @@ class CreateAccountNumberImpl(
         var random = Random.Default
 
         //예시 앞 3자리 기관코드 321-xxxx-xx-xxxx [기관코드는 erdcloud에 예시로가져왔습니다.)
-        var part1 ="321"
-        var part2 = random.nextInt(1000, 10000).toString().padStart(4, '0')
-        var part3 = random.nextInt(10, 100).toString().padStart(2, '0')
-        var part4 = random.nextInt(1000, 10000).toString().padStart(4, '0')
+        val prefix ="321"
+        val body = (1..11).map{('0'..'9').random() }.joinToString("")
 
-        return "$part1$part2$part3$part4"
+        return prefix + random
     }
 }

@@ -15,7 +15,7 @@ class IssueTokenUseCaseImpl(
     private val tokenService: TokenService,
 ) : IssueTokenUseCase {
     
-    private val logger = LoggerFactory.getLogger(IssueTokenUseCaseImpl::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java)
     
     override fun execute(userId: Long, deviceInfo: DeviceInfoDto, request: HttpServletRequest): TokenResponse {
         // 새 디바이스 정보 저장/업데이트

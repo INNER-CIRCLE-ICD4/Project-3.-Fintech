@@ -1,6 +1,6 @@
 package com.sendy.application.usecase.auth.command
 
-import com.sendy.application.usecase.auth.interfaces.AuthenticateUserUseCase
+import com.sendy.application.usecase.auth.interfaces.VerifyUserCredentials
 import com.sendy.domain.auth.UserRepository
 import com.sendy.domain.model.User
 import com.sendy.support.error.ErrorCode
@@ -9,10 +9,10 @@ import com.sendy.support.util.SHA256Util
 import org.springframework.stereotype.Service
 
 @Service
-class AuthenticateUserUseCaseImpl(
+class VerifyUserCredentialsImpl(
     private val userRepository: UserRepository,
     private val sha256Util: SHA256Util,
-) : AuthenticateUserUseCase {
+) : VerifyUserCredentials {
     
     override fun execute(userId: String, password: String): User {
         // 사용자 인증 (도메인 모델 사용)

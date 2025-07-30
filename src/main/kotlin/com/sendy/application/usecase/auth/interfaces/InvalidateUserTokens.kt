@@ -1,5 +1,5 @@
 package com.sendy.application.usecase.auth.interfaces
 
-interface InvalidateExistingTokensUseCase {
+interface InvalidateUserTokens {
     fun execute(userId: Long)
 } 

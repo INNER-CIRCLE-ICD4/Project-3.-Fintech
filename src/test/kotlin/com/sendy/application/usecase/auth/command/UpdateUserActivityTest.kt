@@ -1,6 +1,6 @@
 package com.sendy.application.usecase.auth.command
 
-import com.sendy.application.usecase.auth.interfaces.UpdateUserActivityUseCase
+import com.sendy.application.usecase.auth.interfaces.UpdateUserActivity
 import com.sendy.domain.auth.UserRepository
 import com.sendy.domain.model.User
 import org.junit.jupiter.api.Assertions.*
@@ -10,25 +10,21 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
 
 
 @ExtendWith(MockitoExtension::class)
-class UpdateUserActivityUseCaseTest {
+class UpdateUserActivityTest {
 
     @Mock
     private lateinit var userRepository: UserRepository
 
-    private lateinit var updateUserActivityUseCase: UpdateUserActivityUseCase
+    private lateinit var updateUserActivity: UpdateUserActivity
 
     @BeforeEach
     fun setUp() {
-        updateUserActivityUseCase = UpdateUserActivityUseCaseImpl(userRepository)
+        updateUserActivity = UpdateUserActivityImpl(userRepository)
     }
 
     @Test
@@ -52,7 +48,7 @@ class UpdateUserActivityUseCaseTest {
         whenever(userRepository.save(any<User>())).thenReturn(updatedUser)
 
         // When
-        val result = updateUserActivityUseCase.execute(user)
+        val result = updateUserActivity.execute(user)
 
         // Then
         assertNotNull(result)
@@ -84,7 +80,7 @@ class UpdateUserActivityUseCaseTest {
         whenever(userRepository.save(any())).thenReturn(updatedUser)
 
         // When
-        val result = updateUserActivityUseCase.execute(user)
+        val result = updateUserActivity.execute(user)
 
         // Then
         assertNotNull(result)
@@ -113,7 +109,7 @@ class UpdateUserActivityUseCaseTest {
         whenever(userRepository.save(any<User>())).thenReturn(updatedUser)
 
         // When
-        updateUserActivityUseCase.execute(user)
+        updateUserActivity.execute(user)
 
         // Then
         verify(userRepository, times(1)).save(any<User>())

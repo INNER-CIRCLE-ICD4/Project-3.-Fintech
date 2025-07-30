@@ -13,9 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
 
@@ -23,13 +20,13 @@ import java.time.LocalDateTime
 class LoginServiceTest {
 
     @Mock
-    private lateinit var authenticateUserUseCase: AuthenticateUserUseCase
+    private lateinit var verifyUserCredentials: VerifyUserCredentials
 
     @Mock
-    private lateinit var invalidateExistingTokensUseCase: InvalidateExistingTokensUseCase
+    private lateinit var invalidateUserTokens: InvalidateUserTokens
 
     @Mock
-    private lateinit var updateUserActivityUseCase: UpdateUserActivityUseCase
+    private lateinit var updateUserActivity: UpdateUserActivity
 
     @Mock
     private lateinit var issueTokenUseCase: IssueTokenUseCase
@@ -42,9 +39,9 @@ class LoginServiceTest {
     @BeforeEach
     fun setUp() {
         loginService = LoginService(
-            authenticateUserUseCase,
-            invalidateExistingTokensUseCase,
-            updateUserActivityUseCase,
+            verifyUserCredentials,
+            invalidateUserTokens,
+            updateUserActivity,
             issueTokenUseCase
         )
     }
@@ -86,9 +83,9 @@ class LoginServiceTest {
         )
 
         // Mock 설정
-        `when`(authenticateUserUseCase.execute(loginRequestDto.email, loginRequestDto.password))
+        `when`(verifyUserCredentials.execute(loginRequestDto.email, loginRequestDto.password))
             .thenReturn(user)
-        `when`(updateUserActivityUseCase.execute(user)).thenReturn(updatedUser)
+        `when`(updateUserActivity.execute(user)).thenReturn(updatedUser)
         `when`(issueTokenUseCase.execute(user.id, loginRequestDto.deviceInfo!!, request))
             .thenReturn(tokenResponse)
 
@@ -100,13 +97,13 @@ class LoginServiceTest {
         assertEquals(tokenResponse, result.tokenResponse)
 
         // 각 UseCase가 올바른 순서로 호출되었는지 확인
-        verify(authenticateUserUseCase).execute(loginRequestDto.email, loginRequestDto.password)
-        verify(invalidateExistingTokensUseCase).execute(user.id)
-        verify(updateUserActivityUseCase).execute(user)
+        verify(verifyUserCredentials).execute(loginRequestDto.email, loginRequestDto.password)
+        verify(invalidateUserTokens).execute(user.id)
+        verify(updateUserActivity).execute(user)
         verify(issueTokenUseCase).execute(user.id, loginRequestDto.deviceInfo!!, request)
 
         // 각 UseCase가 정확히 한 번씩만 호출되었는지 확인
-        verifyNoMoreInteractions(authenticateUserUseCase, invalidateExistingTokensUseCase, updateUserActivityUseCase, issueTokenUseCase)
+        verifyNoMoreInteractions(verifyUserCredentials, invalidateUserTokens, updateUserActivity, issueTokenUseCase)
     }
 
     @Test
@@ -140,8 +137,8 @@ class LoginServiceTest {
         )
 
         // Mockito-Kotlin 사용
-        whenever(authenticateUserUseCase.execute(loginRequestDto.email, loginRequestDto.password)).thenReturn(user)
-        whenever(updateUserActivityUseCase.execute(user)).thenReturn(updatedUser)
+        whenever(verifyUserCredentials.execute(loginRequestDto.email, loginRequestDto.password)).thenReturn(user)
+        whenever(updateUserActivity.execute(user)).thenReturn(updatedUser)
         whenever(issueTokenUseCase.execute(eq(user.id), any(), eq(request)))
             .thenReturn(tokenResponse)
 
@@ -168,7 +165,7 @@ class LoginServiceTest {
         val command = LoginCommand(loginRequestDto, request)
 
         // 인증 실패 시나리오
-        `when`(authenticateUserUseCase.execute(loginRequestDto.email, loginRequestDto.password))
+        `when`(verifyUserCredentials.execute(loginRequestDto.email, loginRequestDto.password))
             .thenThrow(RuntimeException("인증 실패"))
 
         // When & Then
@@ -177,8 +174,8 @@ class LoginServiceTest {
         }
 
         // 인증 UseCase만 호출되고 나머지는 호출되지 않았는지 확인
-        verify(authenticateUserUseCase).execute(loginRequestDto.email, loginRequestDto.password)
-        verifyNoInteractions(invalidateExistingTokensUseCase, updateUserActivityUseCase, issueTokenUseCase)
+        verify(verifyUserCredentials).execute(loginRequestDto.email, loginRequestDto.password)
+        verifyNoInteractions(invalidateUserTokens, updateUserActivity, issueTokenUseCase)
     }
 
     @Test
@@ -213,19 +210,19 @@ class LoginServiceTest {
         )
 
         // Mock 설정
-        `when`(authenticateUserUseCase.execute(any(), any())).thenReturn(user)
-        `when`(updateUserActivityUseCase.execute(any())).thenReturn(updatedUser)
+        `when`(verifyUserCredentials.execute(any(), any())).thenReturn(user)
+        `when`(updateUserActivity.execute(any())).thenReturn(updatedUser)
         `when`(issueTokenUseCase.execute(any(), any(), any())).thenReturn(tokenResponse)
 
         // When
         loginService.login(command)
 
         // Then - 호출 순서 확인
-        val inOrder = inOrder(authenticateUserUseCase, invalidateExistingTokensUseCase, updateUserActivityUseCase, issueTokenUseCase)
+        val inOrder = inOrder(verifyUserCredentials, invalidateUserTokens, updateUserActivity, issueTokenUseCase)
         
-        inOrder.verify(authenticateUserUseCase).execute(loginRequestDto.email, loginRequestDto.password)
-        inOrder.verify(invalidateExistingTokensUseCase).execute(user.id)
-        inOrder.verify(updateUserActivityUseCase).execute(user)
+        inOrder.verify(verifyUserCredentials).execute(loginRequestDto.email, loginRequestDto.password)
+        inOrder.verify(invalidateUserTokens).execute(user.id)
+        inOrder.verify(updateUserActivity).execute(user)
         inOrder.verify(issueTokenUseCase).execute(user.id, DeviceInfoDto(), request)
     }
 } 

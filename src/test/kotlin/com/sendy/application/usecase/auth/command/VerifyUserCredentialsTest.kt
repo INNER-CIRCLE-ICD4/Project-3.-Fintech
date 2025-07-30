@@ -1,6 +1,6 @@
 package com.sendy.application.usecase.auth.command
 
-import com.sendy.application.usecase.auth.interfaces.AuthenticateUserUseCase
+import com.sendy.application.usecase.auth.interfaces.VerifyUserCredentials
 import com.sendy.domain.auth.UserRepository
 import com.sendy.domain.model.User
 import com.sendy.support.error.ErrorCode
@@ -19,7 +19,7 @@ import org.mockito.kotlin.verify
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
-class AuthenticateUserUseCaseTest {
+class VerifyUserCredentialsTest {
 
     @Mock
     private lateinit var userRepository: UserRepository
@@ -27,11 +27,11 @@ class AuthenticateUserUseCaseTest {
     @Mock
     private lateinit var sha256Util: SHA256Util
 
-    private lateinit var authenticateUserUseCase: AuthenticateUserUseCase
+    private lateinit var verifyUserCredentials: VerifyUserCredentials
 
     @BeforeEach
     fun setUp() {
-        authenticateUserUseCase = AuthenticateUserUseCaseImpl(userRepository, sha256Util)
+        verifyUserCredentials = VerifyUserCredentialsImpl(userRepository, sha256Util)
     }
 
     @Test
@@ -55,7 +55,7 @@ class AuthenticateUserUseCaseTest {
         `when`(sha256Util.hash(password)).thenReturn(hashedPassword)
 
         // When
-        val result = authenticateUserUseCase.execute(userId, password)
+        val result = verifyUserCredentials.execute(userId, password)
 
         // Then
         assertNotNull(result)
@@ -78,7 +78,7 @@ class AuthenticateUserUseCaseTest {
 
         // When & Then
         val exception = assertThrows(ApiException::class.java) {
-            authenticateUserUseCase.execute(userId, password)
+            verifyUserCredentials.execute(userId, password)
         }
         
         assertEquals(ErrorCode.NOT_FOUND, exception.getErrorCodeIfs())
@@ -109,7 +109,7 @@ class AuthenticateUserUseCaseTest {
 
         // When & Then
         val exception = assertThrows(ApiException::class.java) {
-            authenticateUserUseCase.execute(userId, password)
+            verifyUserCredentials.execute(userId, password)
         }
         
         assertEquals(ErrorCode.INVALID_INPUT_VALUE, exception.getErrorCodeIfs())
@@ -139,7 +139,7 @@ class AuthenticateUserUseCaseTest {
 
         // When & Then
         val exception = assertThrows(ApiException::class.java) {
-            authenticateUserUseCase.execute(userId, password)
+            verifyUserCredentials.execute(userId, password)
         }
         
         assertEquals(ErrorCode.INVALID_INPUT_VALUE, exception.getErrorCodeIfs())
@@ -172,7 +172,7 @@ class AuthenticateUserUseCaseTest {
 
         // When & Then
         val exception = assertThrows(ApiException::class.java) {
-            authenticateUserUseCase.execute(userId, password)
+            verifyUserCredentials.execute(userId, password)
         }
         
         assertEquals(ErrorCode.INVALID_INPUT_VALUE, exception.getErrorCodeIfs())

@@ -1,14 +1,16 @@
 package com.sendy.application.usecase.transfer
 
 import com.sendy.application.dto.transfer.TransferMoneyCommand
+import com.sendy.application.dto.transfer.TransferMoneyResponse
 import com.sendy.application.usecase.transfer.command.TransferMoneyUseCase
-import com.sendy.domain.account.AccountEntity
-import com.sendy.domain.account.AccountStatus
+import com.sendy.domain.account.AccountRepository
+import com.sendy.domain.account.TransactionHistoryEntity
+import com.sendy.domain.account.TransactionHistoryRepository
+import com.sendy.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.domain.enum.TransferStatusEnum
 import com.sendy.domain.transfer.TransferEntity
+import com.sendy.domain.transfer.TransferLimitCountProcessor
 import com.sendy.domain.transfer.TransferRepository
-import com.sendy.infrastructure.persistence.account.AccountRepository
-import com.sendy.infrastructure.persistence.account.TransactionHistoryRepository
 import com.sendy.support.util.getTsid
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.LoggerFactory
@@ -23,60 +25,88 @@ class TransferService(
     private val transactionHistoryRepository: TransactionHistoryRepository,
     private val accountRepository: AccountRepository,
     private val platformTransactionManager: PlatformTransactionManager,
+    private val transferLimitCountProcessor: TransferLimitCountProcessor,
 ) : TransferMoneyUseCase {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override fun transferMoney(command: TransferMoneyCommand) {
+    override fun transferMoney(command: TransferMoneyCommand): TransferMoneyResponse {
         // 이체 이력 PENDING 먼저 저장
-        saveTransferPending(command.amount, command.requestedAt)
+        val transfer =
+            transferRepository.save(
+                TransferEntity(
+                    id = getTsid(),
+                    amount = command.amount,
+                    status = TransferStatusEnum.PENDING,
+                    requestedAt = command.requestedAt,
+                ),
+            )
 
         // 계좌 비밀번호 인증 체크
 
-        // 송금 계좌 조회 시 lock 획득 후 진행
-        val senderAccount =
-            accountRepository.findOneByAccountNumberForUpdate(command.senderAccountNumber)
-                ?: throw EntityNotFoundException()
-        // 송금 계좌 유효한지 체크 -> 예외 발생 이후 진행X
-        if (senderAccount.status != AccountStatus.ACTIVE) {
-            throw RuntimeException("예외 발생")
+        try {
+            logger.debug("start transfer transaction")
+            TransactionTemplate(platformTransactionManager).execute {
+                // 출금 계좌 조회 시 lock 획득 후 진행
+                val senderAccount =
+                    accountRepository.findOneBySenderAccountNumber(command.senderAccountNumber)
+                        ?: throw EntityNotFoundException("계좌 번호가 없습니다.")
+
+                // 출금 계좌 유효한지 체크 -> 예외 발생 이후 진행X
+                senderAccount.checkActiveAndInvokeError()
+                // 출금 계좌 잔액 체크 -> 예외 발생 이후 진행X
+                senderAccount.checkRemainAmountAndInvokeError(command.amount)
+
+                // 계좌 출금
+                senderAccount.withdraw(command.amount)
+
+                // 일일 이체 한도 체크
+                transferLimitCountProcessor.processLimitCount(command.userId, LocalDateTime.now(), command.amount)
+
+                // 수취인 계좌 유효한지 체크 -> 예외 발생 시 롤백
+                val receiveAccount =
+                    accountRepository.findOneByReceiveAccountNumber(command.receiveAccountNumber)
+                        ?: throw EntityNotFoundException("계좌 번호가 없습니다.")
+
+                // 수취인 계좌로 입금 -> 예외 발생 시 롤백
+                receiveAccount.checkActiveAndInvokeError()
+
+                // 계좌 입금
+                receiveAccount.deposit(command.amount)
+
+                // 계좌 내역 저장(출금 내역)
+                transactionHistoryRepository.save(
+                    TransactionHistoryEntity(
+                        id = getTsid(),
+                        type = TransactionHistoryTypeEnum.WITHDRAW,
+                        amount = command.amount,
+                        balanceAfter = senderAccount.balance,
+                        description = "계좌 출금",
+                        createdAt = LocalDateTime.now(),
+                    ),
+                )
+
+                // 계좌 내역 저장(입금 내역)
+                transactionHistoryRepository.save(
+                    TransactionHistoryEntity(
+                        id = getTsid(),
+                        type = TransactionHistoryTypeEnum.DEPOSIT,
+                        amount = command.amount,
+                        balanceAfter = receiveAccount.balance,
+                        description = "계좌 입금",
+                        createdAt = LocalDateTime.now(),
+                    ),
+                )
+
+                logger.debug("end transfer transaction")
+            }
+
+            // 송금 완료 상태 변경
+            transfer.changeToSuccess()
+        } catch (e: RuntimeException) {
+            transfer.changeToFail()
+            logger.debug("rollback transaction")
         }
-
-        // 송금 계좌 잔액 체크 -> 예외 발생 이후 진행X
-        if (senderAccount.balance < command.amount) {
-            throw RuntimeException("예외 발생")
-        }
-
-        // start transaction
-        // 송금 계좌 출금
-
-        // 수취인 계좌 유효한지 체크 -> 예외 발생 시 롤백
-        // 수취인 계좌로 입금 -> 예외 발생 시 롤백
-        // end transaction
-
-        // 송금 완료 상태 변경
-    }
-
-    private fun saveTransferPending(
-        amount: Long,
-        requestedAt: LocalDateTime,
-    ) {
-        val transferId = getTsid()
-        transferRepository.save(
-            TransferEntity(
-                id = transferId,
-                amount = amount,
-                status = TransferStatusEnum.PENDING,
-                requestedAt = requestedAt,
-            ),
-        )
-    }
-
-    private fun transfer(
-        amount: Long,
-        senderAccount: AccountEntity,
-        receiverAccountNumber: String,
-    ) {
-        TransactionTemplate(platformTransactionManager).execute {
-        }
+        transferRepository.save(transfer)
+        return TransferMoneyResponse(transfer.status)
     }
 }

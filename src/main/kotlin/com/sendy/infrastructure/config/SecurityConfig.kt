@@ -3,8 +3,10 @@ package com.sendy.infrastructure.config
 import com.sendy.interfaces.filter.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -17,6 +19,14 @@ class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
 ) {
     @Bean
+    @Profile("!prd")
+    fun webSecurityCustomizer(): WebSecurityCustomizer =
+        WebSecurityCustomizer {
+            it.debug(true).ignoring().requestMatchers("/**")
+        }
+
+    @Bean
+    @Profile("prd")
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
@@ -45,13 +55,13 @@ class SecurityConfig(
                     .permitAll()
                     .anyRequest()
                     .authenticated()
-            }
-            .headers { it.frameOptions { opt -> opt.sameOrigin() } }
+            }.headers { it.frameOptions { opt -> opt.sameOrigin() } }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
 
     @Bean
+    @Profile("prd")
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

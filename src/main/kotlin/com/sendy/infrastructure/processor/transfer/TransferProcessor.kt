@@ -9,6 +9,7 @@ import com.sendy.support.exception.transfer.PastNotTransferException
 import com.sendy.support.exception.transfer.SingleTxLimitException
 import com.sendy.support.util.getTsid
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -19,6 +20,7 @@ class TransferProcessor(
     private val transferLimitRepository: TransferLimitRepository,
     private val transactionHistoryRepository: TransactionHistoryRepository,
 ) : TransferLimitCountProcessor {
+    @Transactional
     override fun processLimitCount(
         userId: Long,
         dailyDt: LocalDateTime,

@@ -88,7 +88,9 @@ CREATE TABLE account
     is_limited_account BOOLEAN     NOT NULL,
     created_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    balance            BIGINT      NOT NULL
+    balance            BIGINT      NOT NULL,
+
+    UNIQUE KEY `account_account_number_uk` (account_number)
 ) engine = InnoDB;
 
 -- jwt 토큰 정보

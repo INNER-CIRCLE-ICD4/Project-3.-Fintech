@@ -26,7 +26,11 @@ class TransferEntity(
     @Column(nullable = true)
     val reason: String? = null,
 ) : Identity(id) {
-    fun changeSuccess() {
+    fun changeToSuccess() {
         status = TransferStatusEnum.SUCCESS
+    }
+
+    fun changeToFail() {
+        status = TransferStatusEnum.FAILED
     }
 }

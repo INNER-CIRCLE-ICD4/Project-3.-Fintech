@@ -19,6 +19,9 @@ class AccountEntity(
     @Column(name = "user_id", nullable = false)
     val userId: Long,
 
+    @Column(name = "password", nullable = false, length = 4)
+    val password: Int,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: AccountStatus,

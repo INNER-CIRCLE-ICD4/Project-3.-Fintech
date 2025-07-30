@@ -10,4 +10,6 @@ interface AccountRepository : JpaRepository<AccountEntity, Long> {
         userId: Long,
         accountNumber: String,
     ): AccountEntity?
+
+    fun existsByAccountNumber(accountNumber: String): Boolean
 }

@@ -6,6 +6,7 @@ import com.sendy.domain.account.AccountEntity
 import com.sendy.domain.account.AccountRepository
 import com.sendy.domain.account.AccountStatus
 import com.sendy.support.util.getTsid
+import com.sendy.support.util.AccountNumberValidator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -14,17 +15,22 @@ import java.time.LocalDateTime
 @Service
 class CreateAccountService(
     private val accountRepository: AccountRepository,
+    private val createAccountNumberUseCase: CreateAccountNumberUseCase
 ) : CreateAccountUseCase {
     override fun execute(request: CreateAccountRequest): CreateAccountResponse {
-        require(request.accountNumber.length == 13) { "계좌번호는 13자리여야 합니다." }
-        require(request.accountNumber.all { it.isDigit() }) { "계좌번호는 숫자만 가능합니다." }
+        // 서버에서 계좌번호를 자동 생성
+        val generatedAccountNumber = createAccountNumberUseCase.generate()
+        
+        // 생성된 계좌번호 형식 검증 (321-xxxx-xx-xxxx 형식)
+        AccountNumberValidator.validateFormat(generatedAccountNumber)
 
         return accountRepository
             .save(
                 AccountEntity(
                     id = getTsid(),
-                    accountNumber = request.accountNumber,
+                    accountNumber = generatedAccountNumber, // 서버에서 생성한 계좌번호 사용
                     userId = request.userId,
+                    password = request.password, // 클라이언트에서 받은 비밀번호
                     status = AccountStatus.ACTIVE,
                     isPrimary = request.isPrimary,
                     isLimitedAccount = request.isLimitedAccount,

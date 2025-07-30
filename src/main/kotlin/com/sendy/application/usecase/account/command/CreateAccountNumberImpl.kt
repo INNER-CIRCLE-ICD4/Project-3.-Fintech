@@ -12,9 +12,6 @@ class CreateAccountNumberImpl(
     override fun generate():String {
         var accountNumber = generateAccountNumber()
 
-        while(accountRepository.existsByAccountNumber(accountNumber)){
-            accountNumber = generateAccountNumber()
-        }
         return accountNumber
     }
 

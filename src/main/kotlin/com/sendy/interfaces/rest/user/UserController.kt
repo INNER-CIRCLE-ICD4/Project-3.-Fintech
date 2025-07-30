@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*
 class UserController(
     private val  UserService: UserService
     ) {
-    @PostMapping(path = [""])
+    @PostMapping("")
     @Operation(summary = "사용자 등록", description = "사용자 정보로 회원가입을 합니다.")
     fun registerUser(@RequestBody @Valid requestDto: CreateUserDto): Api<UserEntity> {
         return Api.ok(UserService.registerUser(requestDto))

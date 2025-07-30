@@ -50,7 +50,7 @@ class UserEntity(
             phoneNumber = updateDto.phoneNumber ?: this.phoneNumber,
             email = updateDto.email ?: this.email,
             ci = this.ci,
-            birth = updateDto.birth ?: this.birth,
+            birth = this.birth,
             isDelete = this.isDelete,
             emailVerified = this.emailVerified,
             createAt = this.createAt,

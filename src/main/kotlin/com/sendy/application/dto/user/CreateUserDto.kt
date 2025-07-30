@@ -1,7 +1,5 @@
 package com.sendy.application.dto
 import com.sendy.domain.user.UserEntity
-import com.sendy.infrastructure.persistence.Identity
-import com.sendy.support.util.getTsid
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -20,7 +18,7 @@ data class CreateUserDto(
 
     @field:NotBlank
     @Schema(description = "비밀번호")
-    var password : String,
+    var password: String,
 
     @field:NotBlank
     @Schema(description = "핸드폰 번호", example = "01012345678")
@@ -33,8 +31,9 @@ data class CreateUserDto(
     @field:NotNull
     @Schema(description = "생년월일", example = "19900101")
     var birth: String,
-){
-    fun toEntity(id : Long,password: String) : UserEntity {
+) {
+    @Suppress("FunctionParameterNaming")
+    fun toEntity(id: Long, password: String): UserEntity {
         return UserEntity(
             id = id,
             name = this.name,
@@ -50,5 +49,4 @@ data class CreateUserDto(
             emailVerified = false,
         )
     }
-
 }

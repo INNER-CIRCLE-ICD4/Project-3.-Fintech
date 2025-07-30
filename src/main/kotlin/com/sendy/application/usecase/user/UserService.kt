@@ -2,15 +2,11 @@ package com.sendy.domain.service
 
 import com.sendy.application.dto.CreateUserDto
 import com.sendy.application.dto.email.EmailDto
-import com.sendy.application.dto.user.RegisterUserResponseDto
 import com.sendy.application.dto.user.UpdateUserDto
 import com.sendy.domain.auth.UserEntityRepository
 import com.sendy.domain.auth.UserRepository
-import com.sendy.domain.auth.token.service.TokenService
 import com.sendy.domain.user.UserEntity
-import com.sendy.infrastructure.persistence.Identity
 import com.sendy.infrastructure.persistence.email.EmailRepository
-import com.sendy.support.error.ErrorCode
 import com.sendy.support.exception.ResponseException
 import com.sendy.support.response.Result
 import com.sendy.support.util.Aes256Util
@@ -23,7 +19,6 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.stereotype.Service
-import kotlin.jvm.optionals.getOrNull
 
 @Service
 class UserService(

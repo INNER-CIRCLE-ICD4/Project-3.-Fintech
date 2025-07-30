@@ -42,7 +42,7 @@ CREATE TABLE users
     email          VARCHAR(255) NOT NULL,
     ci             VARCHAR(100),
     birth          CHAR(8)  NOT NULL,
-    is_delete      TINYINT(1) NOT NULL DEFAULT 0,
+    is_delete      TINYINT(1) NOT NULL,
     email_verified TINYINT(1) NOT NULL DEFAULT 0,
     create_at      TIMESTAMP    NOT NULL,
     update_at      TIMESTAMP,

@@ -15,8 +15,5 @@ data class UpdateUserDto(
     var phoneNumber: String?,
 
     @Schema(description = "이메일", example = "xxx@example.com")
-    var email: String?,
-
-    @Schema(description = "생년월일", example = "19900101")
-    var birth: String?,
+    var email: String?
 )

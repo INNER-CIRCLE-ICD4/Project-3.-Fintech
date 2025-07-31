@@ -1,6 +1,5 @@
 package com.sendy.infrastructure.persistence.transfer
 
-import com.sendy.domain.transfer.TransferLimit
 import com.sendy.domain.transfer.TransferLimitRepository
 import org.springframework.stereotype.Repository
 

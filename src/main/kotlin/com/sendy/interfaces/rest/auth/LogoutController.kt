@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "User", description = "사용자 관리 API")
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 class LogoutController(
     private val logoutService: LogoutService,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,

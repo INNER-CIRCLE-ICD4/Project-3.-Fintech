@@ -17,14 +17,21 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Grant execute permission for Gradle
-        run: chmod +x ./gradlew
+        run: chmod +x gradlew
         
       - name: Test with Gradle
         run: ./gradlew --info test
-
-      - name: Run only tests
-        run: ./gradlew --stacktrace
 
       - name: 테스트 결과를 PR에 코멘트로 등록합니다
         uses: EnricoMi/publish-unit-test-result-action@v1
@@ -32,9 +39,3 @@ jobs:
         with:
           files: '**/build/test-results/test/TEST-*.xml'
 
-      - name: 테스트 실패 시, 실패한 코드 라인에 Check 코멘트를 등록합니다
-        uses: mikepenz/action-junit-report@v3
-        if: always()
-        with:
-          report_paths: '**/build/test-results/test/TEST-*.xml'
-          token: ${{ github.token }}

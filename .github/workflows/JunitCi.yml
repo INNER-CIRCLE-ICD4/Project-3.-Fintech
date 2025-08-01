@@ -29,12 +29,6 @@ jobs:
       - name: Build (compile & test)
         run: ./gradlew build
 
-      - name: Upload test results (optional)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-test-results
-          path: build/test-results/test
       - name: Check test failure
         if: ${{ failure() }}
         run: echo "❌ Tests failed! Check the test results above."

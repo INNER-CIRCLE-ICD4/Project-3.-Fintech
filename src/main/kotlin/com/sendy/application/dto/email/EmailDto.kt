@@ -1,6 +1,7 @@
 package com.sendy.application.dto.email
 
 import com.sendy.domain.email.EmailEntity
+import java.time.LocalDateTime
 
 /**
  *
@@ -8,18 +9,22 @@ import com.sendy.domain.email.EmailEntity
  */
 
 data class EmailDto(
-    var emailId: Long,
-    var code: String,
-    var email: String,
-    var isVerified: Boolean = false,
-    var userId: Long
+    val id: Long,
+    val code: String,
+    val email: String,
+    val isVerified: Boolean = false,
+    val userId: Long,
+    val sendAt : LocalDateTime
+
 ) {
     fun toEntity(): EmailEntity =
         EmailEntity(
-            emailId = this.emailId,
+            id = this.id,
             code = this.code,
             email = this.email,
             isVerified = this.isVerified,
-            userId = this.userId
+            userId = this.userId,
+            sendAt = this.sendAt
+
         )
 }

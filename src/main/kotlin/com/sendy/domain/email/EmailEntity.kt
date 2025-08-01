@@ -2,17 +2,18 @@ package com.sendy.domain.email
 
 import com.sendy.support.util.Aes256Converter
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 /**
  *
  * jpa entity
  */
 @Entity
-@Table(name = "email_auth")
+@Table(name = "email")
 class EmailEntity(
     @Id
-    @Column(name = "email_id")
-    val emailId: Long,
+    @Column(name = "id")
+    val id: Long,
 
     @Column(name = "code")
     val code: String,
@@ -25,4 +26,7 @@ class EmailEntity(
 
     @Column(name = "user_id")
     val userId: Long,
+
+    @Column(name = "send_at")
+    val sendAt: LocalDateTime,
 )

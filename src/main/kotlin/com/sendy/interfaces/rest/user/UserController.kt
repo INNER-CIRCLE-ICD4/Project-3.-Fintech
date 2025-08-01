@@ -51,7 +51,10 @@ class UserController(
 
     @PostMapping("/auth/email/send")
     @Operation(summary = "본인인증 이메일 발송", description = "회원가입시 본인인증 이메일을 발송합니다.")
-    fun authEmailSent(email : String,userId:Long): Api<String> {
+    fun authEmailSent(
+        @RequestParam email : String,
+        @RequestParam userId:Long
+    ): Api<String> {
         return Api.ok(UserService.sendVerificationEmail(email,userId))
     }
 

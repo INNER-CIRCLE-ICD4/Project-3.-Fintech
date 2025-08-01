@@ -75,6 +75,7 @@ CREATE TABLE email_auth (
     email VARCHAR(255) NOT NULL,
     is_verified TINYINT(1) NOT NULL DEFAULT 0,
     user_id BIGINT NOT NULL
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ) engine = InnoDB;
 
 -- 계좌 테이블

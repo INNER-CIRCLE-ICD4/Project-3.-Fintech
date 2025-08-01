@@ -7,13 +7,13 @@ import io.swagger.v3.oas.annotations.media.Schema
  */
 data class UpdateUserDto(
 
-    var name: String?,
+    val name: String?,
 
-    var password : String?,
+    val password : String?,
 
     @Schema(description = "핸드폰 번호", example = "01012345678")
-    var phoneNumber: String?,
+    val phoneNumber: String?,
 
     @Schema(description = "이메일", example = "xxx@example.com")
-    var email: String?
+    val email: String?
 )

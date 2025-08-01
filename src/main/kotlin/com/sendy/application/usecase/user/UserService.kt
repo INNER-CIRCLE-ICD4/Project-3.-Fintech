@@ -3,6 +3,7 @@ package com.sendy.domain.service
 import com.sendy.application.dto.CreateUserDto
 import com.sendy.application.dto.email.EmailDto
 import com.sendy.application.dto.user.UpdateUserDto
+import com.sendy.application.usecase.user.MailAsyncSend
 import com.sendy.domain.auth.UserEntityRepository
 import com.sendy.domain.auth.UserRepository
 import com.sendy.domain.user.UserEntity
@@ -12,22 +13,20 @@ import com.sendy.support.response.Result
 import com.sendy.support.util.Aes256Util
 import com.sendy.support.util.SHA256Util
 import com.sendy.support.util.getTsid
-import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.mail.javamail.JavaMailSender
-import org.springframework.mail.javamail.MimeMessageHelper
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(
     private val userRepository: UserRepository,
     private val userEntityRepository: UserEntityRepository,
     private val emailRepository: EmailRepository,
-    private val javaMailSender : JavaMailSender,
-    private val builder: AuthenticationManagerBuilder,
+    private val mailSender: JavaMailSender,
     private val sha256Util: SHA256Util,
+    private val mailAsyncSend: MailAsyncSend,
     @Value("\${aes256.key}") private val key: String,
 ) {
     private val aesUtil = Aes256Util(key)
@@ -80,46 +79,43 @@ class UserService(
     }
 
     // 이메일 발송 로직
-    @Transactional
+    @org.springframework.transaction.annotation.Transactional
     fun sendVerificationEmail(email: String, userId: Long): String {
-        // 테스트 코드 저장
-        if (email.equals("test@gmail.com")) {
-            val TestEmailEntity =
+        var randomCode = ""
+        try{
+            // 테스트 코드 저장
+            if (email.equals("test@gmail.com")) {
+                val TestEmailEntity =
+                    EmailDto(
+                        id = getTsid(),
+                        code = "123123",
+                        email = email,
+                        isVerified = false,
+                        userId = userId,
+                        sendAt = java.time.LocalDateTime.now()
+                    ).toEntity()
+                val result = emailRepository.save(TestEmailEntity)
+                return result.email
+            }
+
+            randomCode = (1..6).map { (0..9).random() }.joinToString("")
+            val emailEntity =
                 EmailDto(
-                    emailId = getTsid(),
-                    code = "123123",
+                    id = getTsid(),
+                    code = randomCode,
                     email = email,
                     isVerified = false,
                     userId = userId,
+                    sendAt = java.time.LocalDateTime.now()
                 ).toEntity()
-            val result = emailRepository.save(TestEmailEntity)
-            return result.email
+            emailRepository.save(emailEntity)
+        }
+        catch (e: Exception) {
+            throw ResponseException("이메일 발송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
-        val randomCode = (1..6).map { (0..9).random() }.joinToString("")
-
-        val message = javaMailSender.createMimeMessage()
-        val helper = MimeMessageHelper(message, true, "UTF-8")
-        helper.setTo(email)
-        helper.setSubject("회원가입 인증 코드")
-        helper.setText("인증 코드: $randomCode", true)
-        helper.setFrom("sendy.smtp.test@gmail.com")
-        javaMailSender.send(message)
-
-        val emailEntity =
-            EmailDto(
-                emailId = getTsid(),
-                code = randomCode,
-                email = email,
-                isVerified = false,
-                userId = userId,
-            ).toEntity()
-
-        val result = emailRepository.save(emailEntity)
-        // 중복 이메일 여부 체크?
-
-        // 예: 이메일 서비스 호출
-        return "인증 코드: ${result.code}"
+        val mailFlag =  mailAsyncSend.sendEmailAsync(mailSender,email,randomCode)
+        return "인증 코드 발송" + mailFlag;
     }
 
     @Transactional
@@ -140,8 +136,6 @@ class UserService(
         emailEntity.isVerified = true
         emailRepository.save(emailEntity)
 
-        // 이메일 인증 완료 후 엔티티 삭제?
-//        emailRepository.deleteByEmail(emailEntity)
         return Result(200, "이메일 인증 성공")
     }
 }

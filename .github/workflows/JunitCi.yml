@@ -1,0 +1,41 @@
+name: Kotlin SpringBoot JUnit CI 
+on:
+  push:
+    branches: [ "**" ]
+    paths:
+      - '**.kt'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'src/**'
+  pull_request:
+    branches: [ "**" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for Gradle
+        run: chmod +x ./gradlew
+
+      - name: Build (compile & test)
+        run: ./gradlew build
+
+      - name: Upload test results (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-test-results
+          path: build/test-results/test
+      - name: Check test failure
+        if: ${{ failure() }}
+        run: echo "❌ Tests failed! Check the test results above."
+

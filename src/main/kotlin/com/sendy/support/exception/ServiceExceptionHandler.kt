@@ -4,6 +4,8 @@ import com.sendy.support.error.TokenErrorCode
 import com.sendy.support.response.Response
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -12,7 +14,7 @@ class ServiceExceptionHandler {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @ExceptionHandler(value = [ServiceException::class])
-    fun serviceHandler(serviceException: ServiceException): Response<Any> {
+    fun serviceHandler(serviceException: ServiceException): ResponseEntity<Response<Any>> {
         logger.error("ServiceException Occurred", serviceException)
 
         val errorCode = serviceException.getErrorCodeIfs()
@@ -27,17 +29,28 @@ class ServiceExceptionHandler {
                 else -> serviceException.getErrorDescription()
             }
 
-        return Response.fail(errorCode, errorMessage)
+        return ResponseEntity
+            .status(errorCode.httpStatusCode ?: HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .body(
+                Response.fail(errorCode, errorMessage),
+            )
     }
 
     @ExceptionHandler(value = [EntityNotFoundException::class])
-    fun entityNotFoundHandler(entityNotFoundException: EntityNotFoundException): Response<Any> =
-        Response.fail(entityNotFoundException.message ?: "엔티티를 찾을 수 없습니다.")
+    fun entityNotFoundHandler(entityNotFoundException: EntityNotFoundException): ResponseEntity<Response<Any>> =
+        ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(
+            Response.fail(
+                entityNotFoundException.message
+                    ?: "엔티티를 찾을 수 없습니다.",
+            ),
+        )
 
     @ExceptionHandler(value = [RuntimeException::class])
-    fun unknownHandler(runtimeException: RuntimeException): Response<Any> =
-        Response.fail(
-            runtimeException.message
-                ?: "알 수 없는 서버 오류",
+    fun unknownHandler(runtimeException: RuntimeException): ResponseEntity<Response<Any>> =
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(
+            Response.fail(
+                runtimeException.message
+                    ?: "알 수 없는 서버 오류",
+            ),
         )
 }

@@ -2,7 +2,7 @@ package com.sendy.interfaces.rest.user
 
 import com.sendy.application.usecase.auth.LogoutService
 import com.sendy.interfaces.filter.JwtAuthenticationFilter
-import com.sendy.support.response.Api
+import com.sendy.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class LogoutController(
     private val logoutService: LogoutService,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-
-    ) {
+) {
     @Operation(
         summary = "전체 로그아웃",
         description = """
@@ -30,7 +29,7 @@ class LogoutController(
         """,
     )
     @PostMapping("/logout")
-    fun logout(request: HttpServletRequest): Api<String> {
+    fun logout(request: HttpServletRequest): Response<String> {
         val token = jwtAuthenticationFilter.getTokenFromRequest(request)
 
         if (token != null) {
@@ -42,7 +41,7 @@ class LogoutController(
             }
         }
 
-        return Api.ok("모든 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
+        return Response.ok("모든 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
     }
 
     @Operation(
@@ -56,7 +55,7 @@ class LogoutController(
         """,
     )
     @PostMapping("/logout/current")
-    fun logoutCurrent(request: HttpServletRequest): Api<String> {
+    fun logoutCurrent(request: HttpServletRequest): Response<String> {
         val token = jwtAuthenticationFilter.getTokenFromRequest(request)
 
         if (token != null) {
@@ -68,6 +67,6 @@ class LogoutController(
             }
         }
 
-        return Api.ok("현재 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
+        return Response.ok("현재 디바이스에서 로그아웃이 완료되었습니다. 클라이언트에서 토큰을 삭제해주세요.")
     }
 }

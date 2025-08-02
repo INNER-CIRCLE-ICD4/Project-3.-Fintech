@@ -5,7 +5,7 @@ import com.sendy.domain.auth.DeviceInfoRepository
 import com.sendy.domain.auth.UserEntityRepository
 import com.sendy.infrastructure.persistence.auth.DeviceInfoEntity
 import com.sendy.support.error.ErrorCode
-import com.sendy.support.exception.ApiException
+import com.sendy.support.exception.ServiceException
 import com.sendy.support.util.SHA256Util
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Service
@@ -68,7 +68,7 @@ class DeviceService(
         val user =
             userEntityRepository
                 .findById(userId)
-                .orElseThrow { ApiException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다") }
+                .orElseThrow { ServiceException(ErrorCode.NOT_FOUND, "사용자를 찾을 수 없습니다") }
 
         val fingerprint = generateDeviceFingerprint(userId, deviceInfo, request)
         val existingDevice = deviceInfoRepository.findByDeviceFingerprint(fingerprint)

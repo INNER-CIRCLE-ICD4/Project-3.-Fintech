@@ -4,8 +4,7 @@ import com.sendy.application.dto.auth.LoginRequestDto
 import com.sendy.application.usecase.auth.LoginService
 import com.sendy.application.usecase.auth.interfaces.LoginCommand
 import com.sendy.application.usecase.auth.interfaces.LoginResult
-import com.sendy.domain.auth.token.controller.model.TokenResponse
-import com.sendy.support.response.Api
+import com.sendy.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
@@ -31,10 +30,10 @@ class LoginController(
     @PostMapping("/login")
     fun login(
         @Valid @RequestBody dto: LoginRequestDto,
-        request: HttpServletRequest
-    ): Api<LoginResult> {
+        request: HttpServletRequest,
+    ): Response<LoginResult> {
         val command = LoginCommand(dto, request)
         val result = loginService.login(command)
-        return Api.ok(result)
+        return Response.ok(result)
     }
 }

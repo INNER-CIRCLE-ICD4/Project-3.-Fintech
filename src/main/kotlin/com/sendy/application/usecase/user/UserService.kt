@@ -38,20 +38,24 @@ class UserService(
     @Transactional
     fun registerUser(requestDto: CreateUserDto): UserEntity {
         // ci 값 등록
-        val entity = requestDto.toEntity(getTsid(),sha256Util.hash(requestDto.password))
+        val entity = requestDto.toEntity(getTsid(), sha256Util.hash(requestDto.password))
         return userEntityRepository.save(entity)
     }
 
     @Transactional
-    fun findUserId(email: String) : Long{
-        val user = userEntityRepository.findByEmail(email).get()
-            ?: throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+    fun findUserId(email: String): Long {
+        val user =
+            userEntityRepository.findByEmail(email).get()
+                ?: throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
         // 사용자 ID 반환
         return user.id
     }
 
     @Transactional
-    fun updateUser(id: Long, updateDto: UpdateUserDto): UserEntity {
+    fun updateUser(
+        id: Long,
+        updateDto: UpdateUserDto,
+    ): UserEntity {
         val updateUser =
             userEntityRepository
                 .findByIdAndIsDeleteFalse(id)
@@ -61,17 +65,21 @@ class UserService(
     }
 
     @Transactional
-    fun deleteUser(email: String, password: String, id: Long): UserEntity {
+    fun deleteUser(
+        email: String,
+        password: String,
+        id: Long,
+    ): UserEntity {
+        val delUser =
+            userEntityRepository
+                .findByIdAndIsDeleteFalse(id)
+                .orElseThrow { throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) }
 
-        val delUser = userEntityRepository
-            .findByIdAndIsDeleteFalse(id)
-            .orElseThrow { throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) }
-
-        if (!delUser.email.equals(email) || !delUser.password.equals(password) ) {
+        if (!delUser.email.equals(email) || !delUser.password.equals(password)) {
             throw ResponseException("사용자 정보가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED)
         }
 
-        if(delUser.isDelete) {
+        if (delUser.isDelete) {
             throw ResponseException("이미 삭제된 사용자입니다.", HttpStatus.NOT_FOUND)
         }
 
@@ -80,9 +88,12 @@ class UserService(
 
     // 이메일 발송 로직
     @org.springframework.transaction.annotation.Transactional
-    fun sendVerificationEmail(email: String, userId: Long): String {
+    fun sendVerificationEmail(
+        email: String,
+        userId: Long,
+    ): String {
         var randomCode = ""
-        try{
+        try {
             // 테스트 코드 저장
             if (email.equals("test@gmail.com")) {
                 val TestEmailEntity =
@@ -92,7 +103,7 @@ class UserService(
                         email = email,
                         isVerified = false,
                         userId = userId,
-                        sendAt = java.time.LocalDateTime.now()
+                        sendAt = java.time.LocalDateTime.now(),
                     ).toEntity()
                 val result = emailRepository.save(TestEmailEntity)
                 return result.email
@@ -106,20 +117,22 @@ class UserService(
                     email = email,
                     isVerified = false,
                     userId = userId,
-                    sendAt = java.time.LocalDateTime.now()
+                    sendAt = java.time.LocalDateTime.now(),
                 ).toEntity()
             emailRepository.save(emailEntity)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             throw ResponseException("이메일 발송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
-        val mailFlag =  mailAsyncSend.sendEmailAsync(mailSender,email,randomCode)
-        return "인증 코드 발송" + mailFlag;
+        val mailFlag = mailAsyncSend.sendEmailAsync(mailSender, email, randomCode)
+        return "인증 코드 발송" + mailFlag
     }
 
     @Transactional
-    fun verifyEmail(email: String, emailCode: String): Result {
+    fun verifyEmail(
+        email: String,
+        emailCode: String,
+    ): Result {
         val emailEntity = emailRepository.findByEmail(email) ?: throw ResponseException("이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
         val user =
             userEntityRepository.findById(emailEntity.userId).orElseThrow {

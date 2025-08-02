@@ -3,7 +3,7 @@ package com.sendy.interfaces.rest.auth
 import com.sendy.application.dto.auth.RefreshTokenRequestDto
 import com.sendy.application.dto.auth.RefreshTokenResponseDto
 import com.sendy.domain.auth.token.service.TokenService
-import com.sendy.support.response.Api
+import com.sendy.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -27,8 +27,8 @@ class TokenController(
     @PostMapping("/refresh")
     fun refreshToken(
         @Valid @RequestBody request: RefreshTokenRequestDto,
-    ): Api<RefreshTokenResponseDto> {
+    ): Response<RefreshTokenResponseDto> {
         val refreshTokenResponse = tokenService.refreshAccessToken(request.refreshToken)
-        return Api.ok(refreshTokenResponse)
+        return Response.ok(refreshTokenResponse)
     }
 }

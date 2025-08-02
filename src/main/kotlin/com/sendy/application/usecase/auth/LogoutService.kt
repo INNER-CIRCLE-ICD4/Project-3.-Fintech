@@ -3,7 +3,7 @@ package com.sendy.application.usecase.auth
 import com.sendy.domain.auth.token.business.TokenBusiness
 import com.sendy.domain.auth.token.ifs.TokenHelperIfs
 import com.sendy.domain.auth.token.service.JwtTokenStorageService
-import com.sendy.support.exception.ApiException
+import com.sendy.support.exception.ServiceException
 import org.springframework.stereotype.Service
 
 @Service
@@ -22,7 +22,7 @@ class LogoutService(
 
             // 해당 사용자의 모든 토큰 무효화 (모든 디바이스)
             jwtTokenStorageService.revokeAllTokensByUserId(userId)
-        } catch (e: ApiException) {
+        } catch (e: ServiceException) {
             // 토큰 검증 실패 시에도 JWT에서 jti를 추출해서 무효화 시도
             try {
                 val claims = tokenHelperIfs.validationTokenWithThrow(token)
@@ -51,7 +51,7 @@ class LogoutService(
             if (jti != null) {
                 jwtTokenStorageService.revokeToken(jti)
             }
-        } catch (e: ApiException) {
+        } catch (e: ServiceException) {
             // 토큰 검증 실패 시에도 JWT에서 jti를 추출해서 무효화 시도
             try {
                 val claims = tokenHelperIfs.validationTokenWithThrow(token)

@@ -1,7 +1,7 @@
 package com.sendy.support.response
 
-import com.sendy.support.error.ErrorCode
 import com.sendy.support.error.ErrorCodeIfs
+import org.springframework.http.HttpStatus
 
 data class Result(
     val resultCode: Int? = null,
@@ -9,21 +9,21 @@ data class Result(
     val resultDescription: String? = null,
 ) {
     companion object {
-        fun OK(): Result =
+        fun ok(): Result =
             Result(
-                resultCode = ErrorCode.OK.errorCode,
-                resultMessage = ErrorCode.OK.description,
+                resultCode = HttpStatus.OK.value(),
+                resultMessage = HttpStatus.OK.reasonPhrase,
                 resultDescription = "성공",
             )
 
-        fun ERROR(errorCodeIfs: ErrorCodeIfs): Result =
+        fun fail(errorCodeIfs: ErrorCodeIfs): Result =
             Result(
                 resultCode = errorCodeIfs.errorCode,
                 resultMessage = errorCodeIfs.description,
                 resultDescription = "에러",
             )
 
-        fun ERROR(
+        fun fail(
             errorCodeIfs: ErrorCodeIfs,
             tx: Throwable,
         ): Result =
@@ -33,7 +33,7 @@ data class Result(
                 resultDescription = "에러",
             )
 
-        fun ERROR(
+        fun fail(
             errorCodeIfs: ErrorCodeIfs,
             description: String,
         ): Result =

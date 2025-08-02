@@ -2,9 +2,9 @@ package com.sendy.support.exception
 
 import com.sendy.support.error.ErrorCodeIfs
 
-class ApiException :
+class ServiceException :
     RuntimeException,
-    ApiExceptionIfs {
+    ServiceExceptionIfs {
     private val errorCodeIfs: ErrorCodeIfs
     private val errorDescription: String
 

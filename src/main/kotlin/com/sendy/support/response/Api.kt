@@ -51,10 +51,10 @@ data class Api<T>(
         // Response.kt와 호환되는 간편한 메서드들
         fun <T> ok(value: T): Api<T> = OK(value)
         
-        fun <T> error(errorCode: ErrorCode, message: String): Api<T> =
-            ERROR(errorCode, message) as Api<T>
+        fun <T> error(errorCode: ErrorCode, message: String): Api<Any> =
+            Api.ERROR(errorCode, message)
         
-        fun <T> fail(message: String): Api<T> =
-            ERROR(ErrorCode.BAD_REQUEST, message) as Api<T>
+        fun <T> fail(message: String): Api<Any> =
+            Api.ERROR(ErrorCode.BAD_REQUEST, message)
     }
 }

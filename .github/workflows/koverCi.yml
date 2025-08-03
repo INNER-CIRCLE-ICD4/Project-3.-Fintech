@@ -1,0 +1,40 @@
+name: Kover Coverage Check
+
+on:
+  pull_request:        # PR 생성 및 업데이트 시 자동 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: JDK 21 설정
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Gradle 캐시
+        uses: actions/setup-gradle@v4
+
+      - name: gradlew 권한 설정
+        run: chmod +x ./gradlew
+
+      - name: 커버리지 리포트 생성
+        run: ./gradlew koverXmlReport
+
+      - name: 커버리지 기준 검증 (빌드 실패 방지하려면 생략 가능)
+        run: ./gradlew koverVerify
+
+      # (선택) PR에 커버리지 결과 코멘트 남기기
+      - name: PR에 커버리지 리포트 추가
+        uses: mi-kas/kover-report@v1
+        with:
+          path: |
+            ${{ github.workspace }}/build/reports/kover/report.xml
+          title: Code Coverage
+          update-comment: true
+          min-coverage-overall: 70
+          coverage-counter-type: LINE

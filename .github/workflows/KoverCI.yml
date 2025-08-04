@@ -1,0 +1,45 @@
+name: Kover CI
+
+on:
+  push:
+    branches:
+      - main        # main 브랜치에 push 시 실행
+  pull_request:     # 모든 브랜치의 PR 이벤트에 실행 (branches 필드 없음)
+
+jobs:
+  build-and-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build and Run tests
+        run: ./gradlew build test
+
+      - name: Generate Kover Coverage Report (XML)
+        run: ./gradlew koverXmlReport
+
+      - name: Generate Kover Coverage Report (HTML)
+        run: ./gradlew koverReport
+
+      - name: Add coverage report to PR
+        if: github.event_name == 'pull_request'
+        uses: mi-kas/kover-report@v1
+        with:
+          path: ${{ github.workspace }}/build/reports/kover/report.xml
+          title: "Code Coverage Report"
+          update-comment: true
+          min-coverage-overall: 70
+          min-coverage-changed-files: 70
+          coverage-counter-type: LINE

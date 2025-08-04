@@ -98,7 +98,7 @@ kover {
         filters {
             excludes {
                 // 제외할 클래스들 (필요에 따라 추가)
-                classes("*Application*", "*Config*", )
+                classes("*Application*", "*Config*", "*Test*")
             }
         }
     }

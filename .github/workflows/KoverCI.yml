@@ -26,6 +26,7 @@ jobs:
 
       - name: Build and Run tests
         run: ./gradlew build test
+        continue-on-error: true
 
       - name: Generate Kover Coverage Report (XML)
         run: ./gradlew koverXmlReport

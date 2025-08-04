@@ -3,27 +3,19 @@ package com.sendy.application.usecase.auth.command
 import com.sendy.application.usecase.auth.interfaces.UpdateUserActivity
 import com.sendy.domain.auth.UserRepository
 import com.sendy.domain.model.User
-import org.junit.jupiter.api.Assertions.*
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
+import kotlin.test.*
 
-
-@ExtendWith(MockitoExtension::class)
 class UpdateUserActivityTest {
 
-    @Mock
     private lateinit var userRepository: UserRepository
-
     private lateinit var updateUserActivity: UpdateUserActivity
 
     @BeforeEach
     fun setUp() {
+        userRepository = mockk()
         updateUserActivity = UpdateUserActivityImpl(userRepository)
     }
 
@@ -44,8 +36,7 @@ class UpdateUserActivityTest {
 
         val updatedUser = user.updateLastActivity()
 
-        // null-safe Mockito-Kotlin any() 사용
-        whenever(userRepository.save(any<User>())).thenReturn(updatedUser)
+        every { userRepository.save(any()) } returns updatedUser
 
         // When
         val result = updateUserActivity.execute(user)
@@ -56,10 +47,9 @@ class UpdateUserActivityTest {
         assertEquals(user.email, result.email)
         assertTrue(result.updatedAt.isAfter(originalUpdatedAt))
 
-        verify(userRepository).save(any<User>())
+        verify(exactly = 1) { userRepository.save(any()) }
+        confirmVerified(userRepository)
     }
-
-
 
     @Test
     fun `업데이트된 사용자 객체가 반환되는지 테스트`() {
@@ -76,8 +66,7 @@ class UpdateUserActivityTest {
 
         val updatedUser = user.updateLastActivity()
 
-        // Mock save 동작 설정
-        whenever(userRepository.save(any())).thenReturn(updatedUser)
+        every { userRepository.save(any()) } returns updatedUser
 
         // When
         val result = updateUserActivity.execute(user)
@@ -87,10 +76,9 @@ class UpdateUserActivityTest {
         assertNotEquals(user.updatedAt, result.updatedAt)
         assertTrue(result.updatedAt.isAfter(user.updatedAt))
 
-        //  이 시점에서 호출 검증
-        verify(userRepository).save(any())
+        verify(exactly = 1) { userRepository.save(any()) }
+        confirmVerified(userRepository)
     }
-
 
     @Test
     fun `Repository save 메서드가 정확히 한 번 호출되는지 테스트`() {
@@ -106,13 +94,13 @@ class UpdateUserActivityTest {
         )
 
         val updatedUser = user.updateLastActivity()
-        whenever(userRepository.save(any<User>())).thenReturn(updatedUser)
+        every { userRepository.save(any()) } returns updatedUser
 
         // When
         updateUserActivity.execute(user)
 
         // Then
-        verify(userRepository, times(1)).save(any<User>())
-        verifyNoMoreInteractions(userRepository)
+        verify(exactly = 1) { userRepository.save(any()) }
+        confirmVerified(userRepository)
     }
-} 
+}

@@ -106,7 +106,7 @@ class LoginControllerTest {
             ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.result.resultCode").value(200))
-            .andExpect(jsonPath("$.result.resultMessage").value("성공"))
+            .andExpect(jsonPath("$.result.resultMessage").value("OK"))
             .andExpect(jsonPath("$.body.tokenResponse.accessToken").value(tokenResponse.accessToken))
             .andExpect(jsonPath("$.body.tokenResponse.refreshToken").value(tokenResponse.refreshToken))
             .andExpect(jsonPath("$.body.tokenResponse.accessTokenExpiredAt").exists())

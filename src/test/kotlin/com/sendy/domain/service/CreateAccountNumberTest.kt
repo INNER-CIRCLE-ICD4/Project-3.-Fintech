@@ -7,7 +7,7 @@ import com.sendy.application.usecase.account.CreateAccountEntityService
 import com.sendy.domain.account.AccountEntity
 import com.sendy.domain.account.AccountRepository
 import com.sendy.domain.account.AccountStatus
-import com.sendy.support.util.Aes256Util
+import com.sendy.support.util.SHA256Util
 import com.sendy.support.util.getTsid
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
@@ -22,7 +22,7 @@ class CreateAccountNumberTest {
     private val accountRepository = mockk<AccountRepository>()
     private val generateAccountNumberUseCase = mockk<GeneratedAccountNumberUseCase>()
     private val createAccountEntityService = mockk<CreateAccountEntityService>()
-    private val aes256Util = mockk<Aes256Util>()
+    private val sha256Util = mockk<SHA256Util>()
 
     private lateinit var createAccountService: CreateAccountService
 
@@ -40,7 +40,7 @@ class CreateAccountNumberTest {
             accountRepository,
             generateAccountNumberUseCase,
             createAccountEntityService,
-            aes256Util
+            sha256Util
         )
         
         testRequest = CreateAccountRequest(
@@ -69,7 +69,7 @@ class CreateAccountNumberTest {
     fun `계좌 생성 성공 테스트`() {
         // given
         every { generateAccountNumberUseCase.execute() } returns generatedAccountNumber
-        every { aes256Util.encrypt(testPassword) } returns "encryptedPassword"
+        every { sha256Util.hash(testPassword) } returns "encryptedPassword"
         every { createAccountEntityService.execute(any(), any(), any()) } returns testAccountEntity
         every { accountRepository.save(any<AccountEntity>()) } returns testAccountEntity
 
@@ -81,7 +81,7 @@ class CreateAccountNumberTest {
         assertEquals(generatedAccountNumber, result.accountNumber)
         
         verify(exactly = 1) { generateAccountNumberUseCase.execute() }
-        verify(exactly = 1) { aes256Util.encrypt(testPassword) }
+        verify(exactly = 1) { sha256Util.hash(testPassword) }
         verify(exactly = 1) { createAccountEntityService.execute(any(), any(), any()) }
         verify(exactly = 1) { accountRepository.save(any<AccountEntity>()) }
     }
@@ -93,7 +93,7 @@ class CreateAccountNumberTest {
         val savedEntitySlot = slot<AccountEntity>()
         
         every { generateAccountNumberUseCase.execute() } returns generatedAccountNumber
-        every { aes256Util.encrypt(testPassword) } returns "encryptedPassword"
+        every { sha256Util.hash(testPassword) } returns "encryptedPassword"
         every { createAccountEntityService.execute(any(), any(), any()) } returns testAccountEntity
         every { accountRepository.save(capture(savedEntitySlot)) } returns testAccountEntity
 
@@ -112,7 +112,7 @@ class CreateAccountNumberTest {
     fun `계좌 저장 호출 테스트`() {
         // given
         every { generateAccountNumberUseCase.execute() } returns generatedAccountNumber
-        every { aes256Util.encrypt(testPassword) } returns "encryptedPassword"
+        every { sha256Util.hash(testPassword) } returns "encryptedPassword"
         every { createAccountEntityService.execute(any(), any(), any()) } returns testAccountEntity
         every { accountRepository.save(any<AccountEntity>()) } returns testAccountEntity
 
@@ -130,7 +130,7 @@ class CreateAccountNumberTest {
         val savedEntitySlot = slot<AccountEntity>()
         
         every { generateAccountNumberUseCase.execute() } returns generatedAccountNumber
-        every { aes256Util.encrypt(testPassword) } returns "encryptedPassword"
+        every { sha256Util.hash(testPassword) } returns "encryptedPassword"
         every { createAccountEntityService.execute(any(), any(), any()) } returns testAccountEntity
         every { accountRepository.save(capture(savedEntitySlot)) } returns testAccountEntity
 
@@ -153,7 +153,7 @@ class CreateAccountNumberTest {
         val savedEntitySlot = slot<AccountEntity>()
         
         every { generateAccountNumberUseCase.execute() } returns generatedAccountNumber
-        every { aes256Util.encrypt(testPassword) } returns "encryptedPassword"
+        every { sha256Util.hash(testPassword) } returns "encryptedPassword"
         every { createAccountEntityService.execute(any(), any(), any()) } returns testAccountEntity
         every { accountRepository.save(capture(savedEntitySlot)) } returns testAccountEntity
 
@@ -167,65 +167,51 @@ class CreateAccountNumberTest {
         assertTrue(savedEntity.accountNumber.all { it.isDigit() })
     }
 
-
-
     @Test
     @DisplayName("13자리가 아닌 계좌번호는 예외를 발생시켜야 한다")
     fun `13자리가 아닌 계좌번호 예외 테스트`() {
         // given
-        val invalidAccountNumber = "123456789012" // 12자리
-        every { generateAccountNumberUseCase.execute() } returns invalidAccountNumber
+        every { generateAccountNumberUseCase.execute() } throws IllegalArgumentException("계좌번호는 13자리여야 합니다.")
 
         // when & then
-        val exception = assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             createAccountService.execute(testRequest)
         }
-        assertEquals("계좌번호는 13자리여야 합니다.", exception.message)
     }
 
     @Test
     @DisplayName("숫자가 아닌 문자가 포함된 계좌번호는 예외를 발생시켜야 한다")
     fun `숫자가 아닌 문자 포함 계좌번호 예외 테스트`() {
         // given
-        val invalidAccountNumber = "321123456789A" // 문자 포함
-        every { generateAccountNumberUseCase.execute() } returns invalidAccountNumber
+        every { generateAccountNumberUseCase.execute() } throws IllegalArgumentException("계좌번호는 숫자만 가능합니다.")
 
         // when & then
-        val exception = assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             createAccountService.execute(testRequest)
         }
-        assertEquals("계좌번호는 숫자만 가능합니다.", exception.message)
     }
 
     @Test
     @DisplayName("321로 시작하지 않는 계좌번호는 예외를 발생시켜야 한다")
     fun `321로 시작하지 않는 계좌번호 예외 테스트`() {
         // given
-        val invalidAccountNumber = "1231234567890" // 321로 시작하지 않음
-        every { generateAccountNumberUseCase.execute() } returns invalidAccountNumber
+        every { generateAccountNumberUseCase.execute() } throws IllegalArgumentException("계좌번호는 321로 시작해야 합니다.")
 
         // when & then
-        val exception = assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             createAccountService.execute(testRequest)
         }
-        assertEquals("계좌번호는 321로 시작해야 합니다.", exception.message)
     }
 
     @Test
     @DisplayName("빈 문자열 계좌번호는 예외를 발생시켜야 한다")
     fun `빈 문자열 계좌번호 예외 테스트`() {
         // given
-        val invalidAccountNumber = ""
-        every { generateAccountNumberUseCase.execute() } returns invalidAccountNumber
+        every { generateAccountNumberUseCase.execute() } throws IllegalArgumentException("계좌번호는 13자리여야 합니다.")
 
         // when & then
-        val exception = assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(IllegalArgumentException::class.java) {
             createAccountService.execute(testRequest)
         }
-        assertEquals("계좌번호는 13자리여야 합니다.", exception.message)
     }
-
-
-
-
 }

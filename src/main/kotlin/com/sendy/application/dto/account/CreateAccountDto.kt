@@ -5,7 +5,7 @@ data class CreateAccountRequest(
     val userId: Long,
     val isPrimary: Boolean,
     val isLimitedAccount: Boolean,
-    val password: Int,
+    val password: String,
 )
 
 data class CreateAccountResponse(

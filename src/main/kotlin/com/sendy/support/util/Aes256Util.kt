@@ -1,11 +1,13 @@
 package com.sendy.support.util
 
+import org.springframework.stereotype.Component
 import java.security.SecureRandom
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+@Component
 class Aes256Util(key: String) {
     private val secretKey: SecretKeySpec
 

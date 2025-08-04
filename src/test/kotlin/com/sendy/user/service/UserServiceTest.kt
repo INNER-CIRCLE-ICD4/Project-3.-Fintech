@@ -1,3 +1,4 @@
+ feature/SENDY-5-62
  package com.sendy.user.service
 
  import com.sendy.application.dto.CreateUserDto
@@ -22,8 +23,8 @@ class UserServiceTest {
     @Autowired 
     private lateinit var tokenService: TokenService
 
+
     @Test
-    @Rollback(false)
     fun registerUser() {
         // Given
         val requestDto = CreateUserDto(
@@ -31,19 +32,21 @@ class UserServiceTest {
             password = "1234",
             phoneNumber = "01012345678",
             email = "test@gmail.com",
-            birth = "931208")
+            birth = "19900101"
+        )
 
-       val user= userService.registerUser(requestDto)
+        val user = userService.registerUser(requestDto)
         println(user)
     }
 
     @Test
     fun updateUser() {
-       val user = userRepository.findByEmail("ljkg1208@gmail.com").get()
+        val user = userRepository.findByEmail("test@gmail.com").get()
         val dto = UpdateUserDto(
             name = "",
             password = "",
             phoneNumber = "01011112222",
+ feature/SENDY-5-62
             email = "",
             )
 
@@ -51,20 +54,18 @@ class UserServiceTest {
 
         userService.updateUser(user.id,dto)}
 
+
     @Test
     fun deleteUser() {
-        val user = userRepository.findByEmail("ljkg1208@gmail.com").get()
-        userService.deleteUser("ljkg1208@gmail.com","1234",user.id)
+        val user = userRepository.findByEmail("test@gmail.com").get()
+        userService.deleteUser("test@gmail.com", "1234", user.id)
 
-        println(userService.deleteUser("ljkg1208@gmail.com","1234",user.id))
+        println(userService.deleteUser("test@gmail.com", "1234", user.id))
     }
-
-
-
 
     @Test
     fun verifyEmail() {
-        val result = userService.verifyEmail("123123","test@gmail.com")
+        val result = userService.verifyEmail("123123", "test@gmail.com")
         println(result)
     }
- }
+}

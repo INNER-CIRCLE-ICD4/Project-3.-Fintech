@@ -31,7 +31,7 @@ jobs:
         run: ./gradlew koverXmlReport
 
       - name: Generate Kover Coverage Report (HTML)
-        run: ./gradlew koverReport
+        run: ./gradlew koverHtmlReport
 
       - name: Add coverage report to PR
         if: github.event_name == 'pull_request'

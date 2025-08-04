@@ -6,6 +6,10 @@ on:
       - main        # main 브랜치에 push 시 실행
   pull_request:     # 모든 브랜치의 PR 이벤트에 실행 (branches 필드 없음)
 
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   build-and-coverage:
     runs-on: ubuntu-latest

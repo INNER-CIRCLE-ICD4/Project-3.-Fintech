@@ -1,8 +1,11 @@
 package com.sendy.domain.account
 
 import com.sendy.infrastructure.persistence.Identity
+import com.sendy.support.error.TransferErrorCode
+import com.sendy.support.exception.ServiceException
 import com.sendy.support.exception.account.InActiveAccountException
 import com.sendy.support.exception.account.NotSufficientSendMoneyException
+import com.sendy.support.util.Aes256Util
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -25,7 +28,7 @@ class AccountEntity(
     @Column(name = "user_id", nullable = false)
     val userId: Long,
     @Column(name = "password", nullable = false, length = 4)
-    val password: Int,
+    val password: String,
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: AccountStatus,
@@ -49,6 +52,19 @@ class AccountEntity(
     fun withdraw(amount: Long) {
         this.balance -= amount
         this.updatedAt = LocalDateTime.now()
+    }
+
+    fun checkPasswordAndInvokeError(
+        password: String,
+        key: String,
+    ) {
+        val aes256Util = Aes256Util(key)
+
+        val decrypt = aes256Util.decrypt(this.password)
+
+        if (password != decrypt) {
+            throw ServiceException(TransferErrorCode.INVALID_ACCOUNT_NUMBER_PASSWORD)
+        }
     }
 
     fun checkActiveAndInvokeError() {

@@ -1,11 +1,13 @@
 package com.sendy.support.exception
 
+import com.sendy.support.error.ErrorCode
 import com.sendy.support.error.TokenErrorCode
 import com.sendy.support.response.Response
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -44,6 +46,24 @@ class ServiceExceptionHandler {
                     ?: "엔티티를 찾을 수 없습니다.",
             ),
         )
+
+    @ExceptionHandler(value = [MethodArgumentNotValidException::class])
+    fun methodArgumentNotValidHandler(methodArgumentNotValidException: MethodArgumentNotValidException): ResponseEntity<Response<Any>> {
+        val bindingResult = methodArgumentNotValidException.bindingResult
+
+        bindingResult.fieldErrors.forEach {
+            logger.error("field: {}, message: {}", it.field, it.defaultMessage)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(
+                Response.fail(
+                    it.defaultMessage ?: ErrorCode.INVALID_INPUT_VALUE.description,
+                ),
+            )
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(
+            Response.fail(ErrorCode.INVALID_INPUT_VALUE.description),
+        )
+    }
 
     @ExceptionHandler(value = [RuntimeException::class])
     fun unknownHandler(runtimeException: RuntimeException): ResponseEntity<Response<Any>> =

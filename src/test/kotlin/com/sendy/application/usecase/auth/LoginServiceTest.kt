@@ -141,7 +141,7 @@ class LoginServiceTest {
         `when`(verifyUserCredentials.execute(loginRequestDto.email, loginRequestDto.password)).thenReturn(user)
         doNothing().`when`(invalidateUserTokens).execute(user.id)
         `when`(updateUserActivity.execute(user)).thenReturn(updatedUser)
-        `when`(issueTokenUseCase.execute(eq(user.id), any(), eq(request)))
+        `when`(issueTokenUseCase.execute(user.id, DeviceInfoDto(), request))
             .thenReturn(tokenResponse)
 
         val result = loginService.login(command)
@@ -149,7 +149,7 @@ class LoginServiceTest {
         assertNotNull(result)
         assertEquals(tokenResponse, result.tokenResponse)
 
-        verify(issueTokenUseCase).execute(eq(user.id), any(), eq(request))
+        verify(issueTokenUseCase).execute(user.id, DeviceInfoDto(), request)
     }
 
 

@@ -84,7 +84,7 @@ CREATE TABLE account
     id                 BIGINT      NOT NULL PRIMARY KEY,
     account_number     VARCHAR(13) NOT NULL,
     user_id            BIGINT      NOT NULL,
-    password           VARCHAR(44)  NOT NULL,
+    password           VARCHAR(64)  NOT NULL,
     status             VARCHAR(20) NOT NULL,
     is_primary         BOOLEAN     NOT NULL,
     is_limited_account BOOLEAN     NOT NULL,

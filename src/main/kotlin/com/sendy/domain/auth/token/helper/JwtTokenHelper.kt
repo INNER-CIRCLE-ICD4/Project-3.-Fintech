@@ -3,7 +3,7 @@ package com.sendy.domain.auth.token.helper
 import com.sendy.domain.auth.token.ifs.TokenHelperIfs
 import com.sendy.domain.auth.token.model.TokenDto
 import com.sendy.support.error.TokenErrorCode
-import com.sendy.support.exception.ApiException
+import com.sendy.support.exception.ServiceException
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
@@ -80,11 +80,11 @@ class JwtTokenHelper(
             val result = parser.parseClaimsJws(token)
             HashMap(result.body)
         } catch (e: SignatureException) {
-            throw ApiException(TokenErrorCode.INVALID_TOKEN, e)
+            throw ServiceException(TokenErrorCode.INVALID_TOKEN, e)
         } catch (e: ExpiredJwtException) {
-            throw ApiException(TokenErrorCode.EXPIRED_TOKEN, e)
+            throw ServiceException(TokenErrorCode.EXPIRED_TOKEN, e)
         } catch (e: Exception) {
-            throw ApiException(TokenErrorCode.TOKEN_EXCEPTION, e)
+            throw ServiceException(TokenErrorCode.TOKEN_EXCEPTION, e)
         }
     }
 }

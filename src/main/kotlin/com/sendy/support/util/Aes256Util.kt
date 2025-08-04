@@ -1,5 +1,6 @@
 package com.sendy.support.util
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.security.SecureRandom
 import java.util.Base64
@@ -8,7 +9,9 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 @Component
-class Aes256Util(key: String) {
+class Aes256Util(
+    @Value("\${aes256.key}")
+    key: String) {
     private val secretKey: SecretKeySpec
 
     init {

@@ -2,7 +2,7 @@ package com.sendy.domain.service
 
 import com.sendy.application.dto.account.CreateAccountRequest
 import com.sendy.application.usecase.account.command.CreateAccountNumberUseCase
-import com.sendy.application.usecase.account.command.CreateAccountService
+import com.sendy.application.usecase.account.CreateAccountService
 import com.sendy.domain.account.AccountEntity
 import com.sendy.domain.account.AccountRepository
 import com.sendy.domain.account.AccountStatus

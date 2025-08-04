@@ -22,6 +22,6 @@ class CreateAccountNumberImpl(
         val prefix ="321"
         val body = (1..11).map{('0'..'9').random() }.joinToString("")
 
-        return prefix + random
+        return prefix + body
     }
 }

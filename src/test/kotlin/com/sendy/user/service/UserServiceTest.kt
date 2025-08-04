@@ -40,7 +40,7 @@
             password = "",
             phoneNumber = "01011112222",
             email = "",
-            birth = "900101")
+            )
 
         val TokenResponse= tokenService.issueToken(user.id) // Assuming user ID 1 for testing
 

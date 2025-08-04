@@ -1,16 +1,15 @@
 package com.sendy.application.usecase.account
 
 import com.sendy.application.dto.account.CreateAccountRequest
-import com.sendy.application.usecase.account.command.CreateAccountEntityUseCase
 import com.sendy.domain.account.AccountEntity
 import com.sendy.domain.account.AccountStatus
 import com.sendy.support.util.getTsid
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
-@Service
-class CreateAccountEntityService : CreateAccountEntityUseCase {
-    override fun execute(
+@Component
+class CreateAccountEntityService {
+    fun execute(
         request: CreateAccountRequest,
         accountNumber: String,
         encryptedPassword: String

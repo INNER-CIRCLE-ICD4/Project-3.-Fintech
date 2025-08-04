@@ -2,7 +2,7 @@ package com.sendy.domain.service
 
 import com.sendy.application.dto.account.CreateAccountRequest
 import com.sendy.application.usecase.account.command.CreateAccountNumberUseCase
-import com.sendy.application.usecase.account.CreateAccountService
+import com.sendy.application.usecase.account.command.CreateAccountService
 import com.sendy.domain.account.AccountEntity
 import com.sendy.domain.account.AccountRepository
 import com.sendy.domain.account.AccountStatus
@@ -35,7 +35,7 @@ class CreateAccountNumberTest {
     private lateinit var testRequest: CreateAccountRequest
     private lateinit var testAccountEntity: AccountEntity
     private val testUserId = 1L
-    private val testPassword = 1111
+    private val testPassword = "1111"
     private val generatedAccountNumber = "3219876543210"
 
         @BeforeEach

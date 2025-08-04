@@ -5,5 +5,3 @@ spring:
     activate:
       on-profile: prd
 
-aes256:
-  key: d2f3de5ce2bef6aad4c2b01e2bffdcd6

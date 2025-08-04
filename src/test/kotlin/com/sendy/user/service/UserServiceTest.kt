@@ -10,12 +10,17 @@
  import org.springframework.boot.test.context.SpringBootTest
  import org.springframework.test.annotation.Rollback
 
- @SpringBootTest
- class UserServiceTest(
-    @Autowired private val userService: UserService
-    ,@Autowired private val userRepository: UserRepository
-    ,@Autowired private val tokenService: TokenService
- ) {
+@SpringBootTest
+class UserServiceTest {
+
+    @Autowired 
+    private lateinit var userService: UserService
+    
+    @Autowired 
+    private lateinit var userRepository: UserRepository
+    
+    @Autowired 
+    private lateinit var tokenService: TokenService
 
     @Test
     @Rollback(false)

@@ -85,6 +85,7 @@ class LoginServiceTest {
         // Mock 설정
         `when`(verifyUserCredentials.execute(loginRequestDto.email, loginRequestDto.password))
             .thenReturn(user)
+        doNothing().`when`(invalidateUserTokens).execute(user.id)
         `when`(updateUserActivity.execute(user)).thenReturn(updatedUser)
         `when`(issueTokenUseCase.execute(user.id, loginRequestDto.deviceInfo!!, request))
             .thenReturn(tokenResponse)
@@ -136,10 +137,11 @@ class LoginServiceTest {
             refreshTokenExpiredAt = LocalDateTime.of(2025, 12, 31, 23, 59, 59)
         )
 
-        // Mockito-Kotlin 사용
-        whenever(verifyUserCredentials.execute(loginRequestDto.email, loginRequestDto.password)).thenReturn(user)
-        whenever(updateUserActivity.execute(user)).thenReturn(updatedUser)
-        whenever(issueTokenUseCase.execute(eq(user.id), any(), eq(request)))
+        // Mock 설정
+        `when`(verifyUserCredentials.execute(loginRequestDto.email, loginRequestDto.password)).thenReturn(user)
+        doNothing().`when`(invalidateUserTokens).execute(user.id)
+        `when`(updateUserActivity.execute(user)).thenReturn(updatedUser)
+        `when`(issueTokenUseCase.execute(eq(user.id), any(), eq(request)))
             .thenReturn(tokenResponse)
 
         val result = loginService.login(command)
@@ -209,10 +211,11 @@ class LoginServiceTest {
             refreshTokenExpiredAt = LocalDateTime.of(2025, 12, 31, 23, 59, 59)
         )
 
-        // Mock 설정
-        `when`(verifyUserCredentials.execute(any(), any())).thenReturn(user)
-        `when`(updateUserActivity.execute(any())).thenReturn(updatedUser)
-        `when`(issueTokenUseCase.execute(any(), any(), any())).thenReturn(tokenResponse)
+        // Mock 설정 - 구체적인 값 사용
+        `when`(verifyUserCredentials.execute(loginRequestDto.email, loginRequestDto.password)).thenReturn(user)
+        doNothing().`when`(invalidateUserTokens).execute(user.id)
+        `when`(updateUserActivity.execute(user)).thenReturn(updatedUser)
+        `when`(issueTokenUseCase.execute(user.id, DeviceInfoDto(), request)).thenReturn(tokenResponse)
 
         // When
         loginService.login(command)

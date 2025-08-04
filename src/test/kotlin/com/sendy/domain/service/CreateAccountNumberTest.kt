@@ -1,11 +1,13 @@
 package com.sendy.domain.service
 
 import com.sendy.application.dto.account.CreateAccountRequest
-import com.sendy.application.usecase.account.command.CreateAccountNumberUseCase
 import com.sendy.application.usecase.account.command.CreateAccountService
+import com.sendy.application.usecase.account.command.GeneratedAccountNumberUseCase
+import com.sendy.application.usecase.account.CreateAccountEntityService
 import com.sendy.domain.account.AccountEntity
 import com.sendy.domain.account.AccountRepository
 import com.sendy.domain.account.AccountStatus
+import com.sendy.support.util.Aes256Util
 import com.sendy.support.util.getTsid
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -27,7 +29,13 @@ class CreateAccountNumberTest {
     private lateinit var accountRepository: AccountRepository
 
     @Mock
-    private lateinit var createAccountNumberUseCase: CreateAccountNumberUseCase
+    private lateinit var generateAccountNumberUseCase: GeneratedAccountNumberUseCase
+
+    @Mock 
+    private lateinit var createAccountEntityService: CreateAccountEntityService
+
+    @Mock
+    private lateinit var aes256Util: Aes256Util
 
     @InjectMocks
     private lateinit var createAccountService: CreateAccountService
@@ -65,7 +73,9 @@ class CreateAccountNumberTest {
     @DisplayName("계좌 생성이 성공적으로 완료되어야 한다")
     fun `계좌 생성 성공 테스트`() {
         // given
-        `when`(createAccountNumberUseCase.generate()).thenReturn(generatedAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(generatedAccountNumber)
+        `when`(aes256Util.encrypt(testPassword)).thenReturn("encryptedPassword")
+        `when`(createAccountEntityService.execute(any(), any(), any())).thenReturn(testAccountEntity)
         `when`(accountRepository.save(any(AccountEntity::class.java))).thenReturn(testAccountEntity)
 
         // when
@@ -73,8 +83,10 @@ class CreateAccountNumberTest {
 
         // then
         assertNotNull(result)
-        assertEquals(generatedAccountNumber, result.accountNumber) // 서버에서 생성된 계좌번호
-        verify(createAccountNumberUseCase, times(1)).generate()
+        assertEquals(generatedAccountNumber, result.accountNumber)
+        verify(generateAccountNumberUseCase, times(1)).execute()
+        verify(aes256Util, times(1)).encrypt(testPassword)
+        verify(createAccountEntityService, times(1)).execute(any(), any(), any())
         verify(accountRepository, times(1)).save(any(AccountEntity::class.java))
     }
 
@@ -82,7 +94,9 @@ class CreateAccountNumberTest {
     @DisplayName("계좌 생성 시 올바른 AccountEntity가 저장되어야 한다")
     fun `계좌 생성 시 AccountEntity 검증 테스트`() {
         // given
-        `when`(createAccountNumberUseCase.generate()).thenReturn(generatedAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(generatedAccountNumber)
+        `when`(aes256Util.encrypt(testPassword)).thenReturn("encryptedPassword")
+        `when`(createAccountEntityService.execute(any(), any(), any())).thenReturn(testAccountEntity)
         `when`(accountRepository.save(any(AccountEntity::class.java))).thenReturn(testAccountEntity)
 
         // when
@@ -107,7 +121,9 @@ class CreateAccountNumberTest {
     @DisplayName("계좌 저장이 호출되어야 한다")
     fun `계좌 저장 호출 테스트`() {
         // given
-        `when`(createAccountNumberUseCase.generate()).thenReturn(generatedAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(generatedAccountNumber)
+        `when`(aes256Util.encrypt(testPassword)).thenReturn("encryptedPassword")
+        `when`(createAccountEntityService.execute(any(), any(), any())).thenReturn(testAccountEntity)
         `when`(accountRepository.save(any(AccountEntity::class.java))).thenReturn(testAccountEntity)
 
         // when
@@ -121,7 +137,9 @@ class CreateAccountNumberTest {
     @DisplayName("생성된 계좌번호가 321로 시작하는 13자리여야 한다")
     fun `계좌번호 321 형식 검증 테스트`() {
         // given
-        `when`(createAccountNumberUseCase.generate()).thenReturn(generatedAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(generatedAccountNumber)
+        `when`(aes256Util.encrypt(testPassword)).thenReturn("encryptedPassword")
+        `when`(createAccountEntityService.execute(any(), any(), any())).thenReturn(testAccountEntity)
         `when`(accountRepository.save(any(AccountEntity::class.java))).thenReturn(testAccountEntity)
 
         // when
@@ -141,7 +159,9 @@ class CreateAccountNumberTest {
     @DisplayName("계좌번호가 숫자로만 구성되어야 한다")
     fun `계좌번호 숫자 검증 테스트`() {
         // given
-        `when`(createAccountNumberUseCase.generate()).thenReturn(generatedAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(generatedAccountNumber)
+        `when`(aes256Util.encrypt(testPassword)).thenReturn("encryptedPassword")
+        `when`(createAccountEntityService.execute(any(), any(), any())).thenReturn(testAccountEntity)
         `when`(accountRepository.save(any(AccountEntity::class.java))).thenReturn(testAccountEntity)
 
         // when
@@ -162,7 +182,7 @@ class CreateAccountNumberTest {
     fun `13자리가 아닌 계좌번호 예외 테스트`() {
         // given
         val invalidAccountNumber = "123456789012" // 12자리
-        `when`(createAccountNumberUseCase.generate()).thenReturn(invalidAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(invalidAccountNumber)
 
         // when & then
         val exception = assertThrows(IllegalArgumentException::class.java) {
@@ -176,7 +196,7 @@ class CreateAccountNumberTest {
     fun `숫자가 아닌 문자 포함 계좌번호 예외 테스트`() {
         // given
         val invalidAccountNumber = "321123456789A" // 문자 포함
-        `when`(createAccountNumberUseCase.generate()).thenReturn(invalidAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(invalidAccountNumber)
 
         // when & then
         val exception = assertThrows(IllegalArgumentException::class.java) {
@@ -190,7 +210,7 @@ class CreateAccountNumberTest {
     fun `321로 시작하지 않는 계좌번호 예외 테스트`() {
         // given
         val invalidAccountNumber = "1231234567890" // 321로 시작하지 않음
-        `when`(createAccountNumberUseCase.generate()).thenReturn(invalidAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(invalidAccountNumber)
 
         // when & then
         val exception = assertThrows(IllegalArgumentException::class.java) {
@@ -204,7 +224,7 @@ class CreateAccountNumberTest {
     fun `빈 문자열 계좌번호 예외 테스트`() {
         // given
         val invalidAccountNumber = ""
-        `when`(createAccountNumberUseCase.generate()).thenReturn(invalidAccountNumber)
+        `when`(generateAccountNumberUseCase.execute()).thenReturn(invalidAccountNumber)
 
         // when & then
         val exception = assertThrows(IllegalArgumentException::class.java) {

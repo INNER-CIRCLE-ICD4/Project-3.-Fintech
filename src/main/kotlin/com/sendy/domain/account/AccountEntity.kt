@@ -27,7 +27,7 @@ class AccountEntity(
     val accountNumber: String,
     @Column(name = "user_id", nullable = false)
     val userId: Long,
-    @Column(name = "password", nullable = false, length = 4)
+    @Column(name = "password", nullable = false, length = 64)
     val password: String,
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: sendy
+  data:
+    redis:
+      host: localhost
+      port: 6379
   h2:
     console:
       enabled: true
@@ -41,7 +45,6 @@ spring:
           timeout: 5000
           writetimeout: 5000
       auth-code-expiration-millis: 600,000   # 10 * 60 * 1000 == 10분
-
 # 추후 Secrets Manager 등으로 이관
 aes256:
   key: d2f3de5ce2bef6aad4c2b01e2bffdcd6

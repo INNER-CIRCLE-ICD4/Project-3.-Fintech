@@ -33,8 +33,8 @@ class TokenBusiness(
         val data = mapOf("userId" to userId.toString()) // String으로 변환
         val tokenDto = tokenHelperIfs.issueRefreshToken(data)
 
-        // 데이터베이스에 토큰 저장 (jti 사용)
-        jwtTokenStorageService.saveToken(
+        // 레디스에에 리프레시토큰 저장 (jti 사용)
+        jwtTokenStorageService.saveRefreshToken(
             userId = userId,
             jti = tokenDto.jti,
             tokenType = TokenType.REFRESH,
@@ -70,8 +70,8 @@ class TokenBusiness(
         val data = mapOf("userId" to userId.toString(), "deviceId" to deviceId.toString()) // String으로 변환
         val tokenDto = tokenHelperIfs.issueRefreshToken(data)
 
-        // 데이터베이스에 토큰 저장 (디바이스 ID 포함, jti 사용)
-        jwtTokenStorageService.saveToken(
+        // 레디스에 리프레시토큰 저장 (디바이스 ID 포함, jti 사용)
+        jwtTokenStorageService.saveRefreshToken(
             userId = userId,
             deviceId = deviceId,
             jti = tokenDto.jti,

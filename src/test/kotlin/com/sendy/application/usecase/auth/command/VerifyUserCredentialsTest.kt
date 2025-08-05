@@ -2,7 +2,7 @@ package com.sendy.application.usecase.auth.command
 
 import com.sendy.application.usecase.auth.interfaces.VerifyUserCredentials
 import com.sendy.domain.auth.UserRepository
-import com.sendy.domain.model.User
+import com.sendy.domain.user.UserEntity
 import com.sendy.support.error.ErrorCode
 import com.sendy.support.exception.ServiceException
 import com.sendy.support.util.SHA256Util
@@ -36,12 +36,12 @@ class VerifyUserCredentialsTest {
     @Test
     fun `정상적인 사용자 인증 테스트`() {
         // Given
-        val userId = "1"
+        val userId = 1L
         val password = "password123"
         val hashedPassword = "hashedPassword123"
 
         val user =
-            User(
+            UserEntity(
                 id = 1L,
                 email = "test@example.com",
                 password = hashedPassword,
@@ -71,7 +71,7 @@ class VerifyUserCredentialsTest {
     @Test
     fun `존재하지 않는 사용자 인증 실패 테스트`() {
         // Given
-        val userId = "999"
+        val userId = 999L
         val password = "password123"
 
         `when`(userRepository.findActiveById(999L)).thenReturn(Optional.empty())
@@ -92,12 +92,12 @@ class VerifyUserCredentialsTest {
     @Test
     fun `이메일 미인증 사용자 로그인 실패 테스트`() {
         // Given
-        val userId = "1"
+        val userId = 1L
         val password = "password123"
         val hashedPassword = "hashedPassword123"
 
         val user =
-            User(
+            UserEntity(
                 id = 1L,
                 email = "test@example.com",
                 password = hashedPassword,
@@ -125,11 +125,11 @@ class VerifyUserCredentialsTest {
     @Test
     fun `삭제된 사용자 로그인 실패 테스트`() {
         // Given
-        val userId = "1"
+        val userId = 1L
         val password = "password123"
 
         val user =
-            User(
+            UserEntity(
                 id = 1L,
                 email = "test@example.com",
                 password = "hashedPassword123",
@@ -157,13 +157,13 @@ class VerifyUserCredentialsTest {
     @Test
     fun `잘못된 비밀번호 인증 실패 테스트`() {
         // Given
-        val userId = "1"
+        val userId = 1L
         val password = "wrongPassword"
         val hashedPassword = "hashedPassword123"
         val wrongHashedPassword = "wrongHashedPassword"
 
         val user =
-            User(
+            UserEntity(
                 id = 1L,
                 email = "test@example.com",
                 password = hashedPassword,

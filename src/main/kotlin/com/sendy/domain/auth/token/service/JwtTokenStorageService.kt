@@ -1,9 +1,12 @@
 package com.sendy.domain.auth.token.service
 
+import com.sendy.domain.auth.JwtRefreshTokenRepository
 import com.sendy.domain.auth.JwtTokenRepository
 import com.sendy.domain.enum.TokenStatus
 import com.sendy.domain.enum.TokenType
+import com.sendy.infrastructure.persistence.auth.JwtRefreshTokenEntity
 import com.sendy.infrastructure.persistence.auth.JwtTokenEntity
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -15,6 +18,7 @@ import java.time.LocalDateTime
 @Transactional
 class JwtTokenStorageService(
     private val jwtTokenRepository: JwtTokenRepository,
+    private val jwtRefreshTokenRepository: JwtRefreshTokenRepository
 //    private val sha256Util: SHA256Util
 ) {
     /**
@@ -29,6 +33,7 @@ class JwtTokenStorageService(
         // 기존의 같은 타입 토큰들 무효화 (예: 새로운 access token 발급 시 기존 access token 무효화)
         revokeTokensByUserIdAndType(userId, tokenType)
 
+
         val jwtTokenEntity =
             JwtTokenEntity(
                 userId = userId,
@@ -39,6 +44,28 @@ class JwtTokenStorageService(
             )
 
         return jwtTokenRepository.save(jwtTokenEntity)
+    }
+
+    /**
+     * 리프레시 토큰을 레디스에 저장 (jti 사용)
+     */
+    fun saveRefreshToken(
+        userId: Long,
+        jti: String,
+        tokenType: TokenType,
+        expiredAt: LocalDateTime,
+    ) {
+        // 기존의 같은 타입 토큰들 무효화 (예: 새로운 access token 발급 시 기존 access token 무효화)
+        revokeTokensByUserIdAndType(userId, tokenType)
+
+        jwtRefreshTokenRepository.save(
+            JwtRefreshTokenEntity(
+                userId = userId,
+                tokenHash = jti, // jti를 tokenHash 필드에 저장
+                expiredAt = expiredAt,
+                status = TokenStatus.ACTIVE,
+            )
+        )
     }
 
     /**
@@ -65,6 +92,30 @@ class JwtTokenStorageService(
             )
 
         return jwtTokenRepository.save(jwtTokenEntity)
+    }
+
+    /**
+     * 리프레시토큰을 데이터베이스에 저장 (디바이스 ID 포함, jti 사용)
+     */
+    fun saveRefreshToken(
+        userId: Long,
+        deviceId: Long,
+        jti: String,
+        tokenType: TokenType,
+        expiredAt: LocalDateTime,
+    ){
+        // 기존의 같은 타입 토큰들 무효화 (예: 새로운 access token 발급 시 기존 access token 무효화)
+        revokeTokensByUserIdAndType(userId, tokenType)
+
+        jwtRefreshTokenRepository.save(
+            JwtRefreshTokenEntity(
+                userId = userId,
+                tokenHash = jti, // jti를 tokenHash 필드에 저장
+                expiredAt = expiredAt,
+                status = TokenStatus.ACTIVE,
+            )
+        )
+
     }
 
     /**

@@ -8,7 +8,7 @@ plugins {
 
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("plugin.allopen") version "1.9.25"
-    
+
     // Kover 플러그인 추가 (Kotlin 코드 커버리지) - 최신 버전
     id("org.jetbrains.kotlinx.kover") version "0.9.1"
 }
@@ -66,8 +66,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-prometheus")
 
-    // mokito
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1") // 최신 버전 확인 가능
+    //mokito
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")  // 최신 버전 확인 가능
+
+    //redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 }
 
 tasks.withType<JavaCompile> {

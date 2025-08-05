@@ -1,8 +1,7 @@
-package com.sendy.infrastructure.persistence.user
+package com.sendy.infrastructure.persistence.user//package com.sendy.infrastructure.persistence.user
 
 import com.sendy.domain.auth.UserEntityRepository
 import com.sendy.domain.auth.UserRepository
-import com.sendy.domain.model.User
 import com.sendy.domain.user.UserEntity
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -15,41 +14,33 @@ import java.util.*
 class UserRepositoryImpl(
     private val userEntityRepository: UserEntityRepository,
 ) : UserRepository {
-    override fun findById(id: Long): Optional<User> =
+    override fun findById(id: Long): Optional<UserEntity> =
         userEntityRepository
             .findById(id)
-            .map { it.toUser() }
 
-    override fun findByEmail(email: String): Optional<User> =
+    override fun findByEmail(email: String): Optional<UserEntity> =
         userEntityRepository
             .findByEmail(email)
-            .map { it.toUser() }
 
-    override fun findByPhoneNumber(phoneNumber: String): Optional<User> =
+    override fun findByPhoneNumber(phoneNumber: String): Optional<UserEntity> =
         userEntityRepository
             .findByPhoneNumber(phoneNumber)
-            .map { it.toUser() }
 
-    override fun findActiveById(id: Long): Optional<User> =
+    override fun findActiveById(id: Long): Optional<UserEntity> =
         userEntityRepository
             .findByIdAndIsDeleteFalse(id)
-            .map { it.toUser() }
 
-    override fun findActiveByEmail(email: String): Optional<User> =
+    override fun findActiveByEmail(email: String): Optional<UserEntity> =
         userEntityRepository
             .findByEmail(email)
             .filter { !it.isDelete }
-            .map { it.toUser() }
 
-    override fun findActiveByPhoneNumber(phoneNumber: String): Optional<User> =
+    override fun findActiveByPhoneNumber(phoneNumber: String): Optional<UserEntity> =
         userEntityRepository
             .findByPhoneNumberAndIsDeleteFalse(phoneNumber)
-            .map { it.toUser() }
 
-    override fun save(user: User): User {
-        val userEntity = user.toUserEntity()
-        val savedEntity = userEntityRepository.save(userEntity)
-        return savedEntity.toUser()
+    override fun save(user: UserEntity): UserEntity {
+        return userEntityRepository.save(user)
     }
 
     override fun existsByEmail(email: String): Boolean = userEntityRepository.existsByEmail(email)
@@ -61,38 +52,38 @@ class UserRepositoryImpl(
     override fun existsActiveByPhoneNumber(phoneNumber: String): Boolean =
         userEntityRepository.existsByPhoneNumberAndIsDeleteFalse(phoneNumber)
 
-    /**
-     * UserEntity를 User 도메인 모델로 변환
-     */
-    private fun UserEntity.toUser(): User =
-        User(
-            id = this.id,
-            email = this.email,
-            password = this.password,
-            name = this.name,
-            phoneNumber = this.phoneNumber,
-            isDelete = this.isDelete,
-            emailVerified = this.emailVerified,
-            createdAt = this.createAt,
-            updatedAt = this.updateAt ?: this.createAt,
-        )
-
-    /**
-     * User 도메인 모델을 UserEntity로 변환
-     */
-    private fun User.toUserEntity(): UserEntity =
-        UserEntity(
-            id = this.id,
-            name = this.name,
-            phoneNumber = this.phoneNumber,
-            password = this.password,
-            email = this.email,
-            ci = null, // User 도메인 모델에는 ci 필드가 없으므로 null
-            birth = "", // User 도메인 모델에는 birth 필드가 없으므로 기본값
-            isDelete = this.isDelete,
-            createAt = this.createdAt,
-            updateAt = this.updatedAt,
-            deleteAt = if (this.isDelete) this.updatedAt else null,
-            emailVerified = this.emailVerified,
-        )
-} 
+//    /**
+//     * UserEntity를 User 도메인 모델로 변환
+//     */
+//    private fun UserEntity.toUser(): User =
+//        User(
+//            id = this.id,
+//            email = this.email,
+//            password = this.password,
+//            name = this.name,
+//            phoneNumber = this.phoneNumber,
+//            isDelete = this.isDelete,
+//            emailVerified = this.emailVerified,
+//            createdAt = this.createAt,
+//            updatedAt = this.updateAt ?: this.createAt,
+//        )
+//
+//    /**
+//     * User 도메인 모델을 UserEntity로 변환
+//     */
+//    private fun User.toUserEntity(): UserEntity =
+//        UserEntity(
+//            id = this.id,
+//            name = this.name,
+//            phoneNumber = this.phoneNumber,
+//            password = this.password,
+//            email = this.email,
+//            ci = null, // User 도메인 모델에는 ci 필드가 없으므로 null
+//            birth = "", // User 도메인 모델에는 birth 필드가 없으므로 기본값
+//            isDelete = this.isDelete,
+//            createAt = this.createdAt,
+//            updateAt = this.updatedAt,
+//            deleteAt = if (this.isDelete) this.updatedAt else null,
+//            emailVerified = this.emailVerified,
+//        )
+}

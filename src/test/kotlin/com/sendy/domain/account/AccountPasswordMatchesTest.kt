@@ -2,7 +2,7 @@ package com.sendy.domain.account
 
 import com.sendy.support.error.TransferErrorCode
 import com.sendy.support.exception.ServiceException
-import com.sendy.support.util.Aes256Util
+import com.sendy.support.util.SHA256Util
 import com.sendy.support.util.getTsid
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -10,8 +10,7 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 class AccountPasswordMatchesTest {
-    private val key = "12345678901234567890123456789012"
-    private val aes256Util = Aes256Util(key)
+    private val sha256Util = SHA256Util()
 
     @Test
     fun `계좌 비밀번호 검증 시 불일치 예외를 발생시켜야된다`() {
@@ -24,7 +23,7 @@ class AccountPasswordMatchesTest {
                 id = getTsid(),
                 accountNumber = generatedAccountNumber,
                 userId = testUserId,
-                password = aes256Util.encrypt("abcde"),
+                password = sha256Util.hash("abcde"),
                 status = AccountStatus.ACTIVE,
                 isPrimary = true,
                 isLimitedAccount = false,
@@ -35,9 +34,20 @@ class AccountPasswordMatchesTest {
 
         val transferException =
             assertThrows<ServiceException> {
-                accountEntity.checkPasswordAndInvokeError(actualPassword, key)
+                privateMatchesFunc(actualPassword, accountEntity.password)
             }
 
         assertEquals(transferException.message, TransferErrorCode.INVALID_ACCOUNT_NUMBER_PASSWORD.description)
+    }
+
+    private fun privateMatchesFunc(
+        actualPassword: String,
+        accountPassword: String,
+    ) {
+        val matches = sha256Util.matches(actualPassword, accountPassword)
+
+        if (matches.not()) {
+            throw ServiceException(TransferErrorCode.INVALID_ACCOUNT_NUMBER_PASSWORD)
+        }
     }
 }

@@ -22,4 +22,9 @@ class SHA256Util {
      * 같은 입력에 대해 항상 같은 결과를 보장
      */
     fun createFixedHash(input: String): String = hash(input)
-} 
+
+    fun matches(
+        rawValue: String,
+        hashValue: String,
+    ) = hash(rawValue) == hashValue
+}

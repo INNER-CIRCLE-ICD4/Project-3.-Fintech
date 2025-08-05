@@ -5,9 +5,9 @@ data class CreateAccountRequest(
     val isPrimary: Boolean,
     val isLimitedAccount: Boolean,
     val password: String,
+    val initBalance: Long,
 )
 
 data class CreateAccountResponse(
-    val accountNumber: String
+    val accountNumber: String,
 )
-

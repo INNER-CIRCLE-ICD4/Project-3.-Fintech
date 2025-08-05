@@ -8,15 +8,11 @@ import org.springframework.stereotype.Component
 @Component
 @Converter
 class Aes256Converter(
-    @Value("\${aes256.key}") private val key: String
+    @Value("\${aes256.key}") private val key: String,
 ) : AttributeConverter<String, String> {
     private val aesUtil = Aes256Util(key)
 
-    override fun convertToDatabaseColumn(attribute: String?): String? {
-        return attribute?.let { aesUtil.encrypt(it) }
-    }
+    override fun convertToDatabaseColumn(attribute: String?): String? = attribute?.let { aesUtil.encrypt(it) }
 
-    override fun convertToEntityAttribute(dbData: String?): String? {
-        return dbData?.let { aesUtil.decrypt(it) }
-    }
+    override fun convertToEntityAttribute(dbData: String?): String? = dbData?.let { aesUtil.decrypt(it) }
 }

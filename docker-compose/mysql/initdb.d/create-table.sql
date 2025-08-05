@@ -19,14 +19,14 @@ CREATE TABLE transfer
 -- 이체 한도 관리 테이블
 CREATE TABLE transfer_limit
 (
-    id              char(13) PRIMARY KEY COMMENT "id",
-    daily_dt        varchar(8) NOT NULL COMMENT "일자(8자리)",
-    daily_limit     bigint     NOT NULL COMMENT "일일 최대 한도",
-    single_tx_limit bigint     NOT NULL COMMENT "1회 이체시 최대 한도",
-    daily_count     bigint     NOT NULL COMMENT "일일 이체 횟수",
-    created_at      DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "생성 일자",
-    updated_at      DATETIME   NULL     DEFAULT CURRENT_TIMESTAMP COMMENT "수정 일자",
-    user_id         bigint     NULL,
+    id                       bigint PRIMARY KEY COMMENT "id",
+    daily_dt                 varchar(8) NOT NULL COMMENT "일자(8자리)",
+    daily_limit              bigint     NOT NULL COMMENT "일일 최대 한도",
+    single_transaction_limit bigint     NOT NULL COMMENT "1회 이체시 최대 한도",
+    daily_count              bigint     NOT NULL COMMENT "일일 이체 횟수",
+    created_at               DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "생성 일자",
+    updated_at               DATETIME   NULL     DEFAULT CURRENT_TIMESTAMP COMMENT "수정 일자",
+    user_id                  bigint     NULL,
 
     -- 추후 account 외래키 추가
     INDEX (user_id),
@@ -54,28 +54,29 @@ CREATE TABLE transaction_history
 -- 사용자 테이블
 CREATE TABLE users
 (
-    id        BIGINT       NOT NULL PRIMARY KEY,
+    id             BIGINT       NOT NULL PRIMARY KEY,
     password       VARCHAR(100) NOT NULL,
     name           VARCHAR(50)  NOT NULL,
     phone_number   VARCHAR(20)  NOT NULL,
     email          VARCHAR(255) NOT NULL,
     ci             VARCHAR(100),
-    birth          CHAR(8)  NOT NULL,
-    is_delete      TINYINT(1) NOT NULL,
-    email_verified TINYINT(1) NOT NULL DEFAULT 0,
+    birth          CHAR(8)      NOT NULL,
+    is_delete      TINYINT(1)   NOT NULL,
+    email_verified TINYINT(1)   NOT NULL DEFAULT 0,
     create_at      TIMESTAMP    NOT NULL,
     update_at      TIMESTAMP,
     delete_at      TIMESTAMP
 ) engine = InnoDB;
 
 -- 사용자 메일인증 발송기록 테이블
-CREATE TABLE email_auth (
-    email_id BIGINT NOT NULL PRIMARY KEY,
-    code VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    is_verified TINYINT(1) NOT NULL DEFAULT 0,
-    user_id BIGINT NOT NULL
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE email
+(
+    id          BIGINT       NOT NULL PRIMARY KEY,
+    code        VARCHAR(255) NOT NULL,
+    email       VARCHAR(255) NOT NULL,
+    is_verified TINYINT(1)   NOT NULL DEFAULT 0,
+    user_id     BIGINT       NOT NULL,
+    send_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) engine = InnoDB;
 
 -- 계좌 테이블
@@ -84,7 +85,7 @@ CREATE TABLE account
     id                 BIGINT      NOT NULL PRIMARY KEY,
     account_number     VARCHAR(13) NOT NULL,
     user_id            BIGINT      NOT NULL,
-    password           VARCHAR(64)  NOT NULL,
+    password           VARCHAR(64) NOT NULL,
     status             VARCHAR(20) NOT NULL,
     is_primary         BOOLEAN     NOT NULL,
     is_limited_account BOOLEAN     NOT NULL,

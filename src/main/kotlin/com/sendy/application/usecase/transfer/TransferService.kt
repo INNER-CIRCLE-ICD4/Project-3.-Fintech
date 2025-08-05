@@ -11,6 +11,9 @@ import com.sendy.domain.enum.TransferStatusEnum
 import com.sendy.domain.transfer.TransferEntity
 import com.sendy.domain.transfer.TransferLimitCountProcessor
 import com.sendy.domain.transfer.TransferRepository
+import com.sendy.support.error.TransferErrorCode
+import com.sendy.support.exception.ServiceException
+import com.sendy.support.util.SHA256Util
 import com.sendy.support.util.getTsid
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.LoggerFactory
@@ -26,6 +29,7 @@ class TransferService(
     private val accountRepository: AccountRepository,
     private val platformTransactionManager: PlatformTransactionManager,
     private val transferLimitCountProcessor: TransferLimitCountProcessor,
+    private val shA256Util: SHA256Util,
 ) : TransferMoneyUseCase {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -41,8 +45,6 @@ class TransferService(
                 ),
             )
 
-        // 계좌 비밀번호 인증 체크
-
         try {
             logger.debug("start transfer transaction")
             TransactionTemplate(platformTransactionManager).execute {
@@ -51,8 +53,15 @@ class TransferService(
                     accountRepository.findOneBySenderAccountNumber(command.senderAccountNumber)
                         ?: throw EntityNotFoundException("계좌 번호가 없습니다.")
 
+                // 계좌 비밀번호 인증 체크
+                val matches = shA256Util.matches(command.password, senderAccount.password)
+                if (matches.not()) {
+                    throw ServiceException(TransferErrorCode.INVALID_ACCOUNT_NUMBER_PASSWORD)
+                }
+
                 // 출금 계좌 유효한지 체크 -> 예외 발생 이후 진행X
                 senderAccount.checkActiveAndInvokeError()
+
                 // 출금 계좌 잔액 체크 -> 예외 발생 이후 진행X
                 senderAccount.checkRemainAmountAndInvokeError(command.amount)
 

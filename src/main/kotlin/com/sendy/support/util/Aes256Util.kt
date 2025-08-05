@@ -11,16 +11,24 @@ import javax.crypto.spec.SecretKeySpec
 @Component
 class Aes256Util(
     @Value("\${aes256.key}")
-    key: String) {
-    private val secretKey: SecretKeySpec
+    key: String,
+) {
+    private lateinit var secretKey: SecretKeySpec
+
+    companion object {
+        private const val ALGORITHM = "AES"
+        private const val TRANSFORMATION = "AES/CBC/PKCS5Padding"
+        private const val IV_SIZE = 16
+        private const val KEY_SIZE = 32
+    }
 
     init {
-        require(key.length == 32) { "AES-256 알고리즘 사용 시 32바이트 키가 필수입니다." }
+        require(key.length == KEY_SIZE) { "AES-256 알고리즘 사용 시 32바이트 키가 필수입니다." }
         secretKey = SecretKeySpec(key.toByteArray(), ALGORITHM)
     }
 
-    fun encrypt(plainText: String): String {
-        return try {
+    fun encrypt(plainText: String): String =
+        try {
             val iv = ByteArray(IV_SIZE)
             SecureRandom().nextBytes(iv)
             val cipher = Cipher.getInstance(TRANSFORMATION)
@@ -31,10 +39,9 @@ class Aes256Util(
         } catch (e: Exception) {
             throw RuntimeException("AES encryption error", e)
         }
-    }
 
-    fun decrypt(cipherText: String): String {
-        return try {
+    fun decrypt(cipherText: String): String =
+        try {
             val ivAndEncrypted = Base64.getDecoder().decode(cipherText)
             val iv = ivAndEncrypted.copyOfRange(0, IV_SIZE)
             val encrypted = ivAndEncrypted.copyOfRange(IV_SIZE, ivAndEncrypted.size)
@@ -45,11 +52,4 @@ class Aes256Util(
         } catch (e: Exception) {
             throw RuntimeException("AES decryption error", e)
         }
-    }
-
-    companion object {
-        private const val ALGORITHM = "AES"
-        private const val TRANSFORMATION = "AES/CBC/PKCS5Padding"
-        private const val IV_SIZE = 16
-    }
 }

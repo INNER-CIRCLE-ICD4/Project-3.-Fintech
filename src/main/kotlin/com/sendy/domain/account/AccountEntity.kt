@@ -40,6 +40,18 @@ class AccountEntity(
     @Column(name = "balance", nullable = false)
     var balance: Long,
 ) : Identity(id) {
+    companion object {
+        private const val PREFIX = "321"
+        private const val MAX_LENGTH = 11
+
+        fun generateAccountNumber(): String {
+            val prefix = PREFIX
+            val body = (1..<MAX_LENGTH).map { ('0'..'9').random() }.joinToString("")
+
+            return prefix + body
+        }
+    }
+
     fun deposit(amount: Long) {
         require(amount > 0) { "입금 금액은 0보다 커야 합니다." }
         this.balance += amount

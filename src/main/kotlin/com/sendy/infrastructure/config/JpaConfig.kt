@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
  *
  * spring configuration
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = ["com.sendy.domain", "com.sendy.infrastructure.persistence"])
 class JpaConfig

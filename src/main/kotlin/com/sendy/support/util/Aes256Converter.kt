@@ -1,6 +1,5 @@
-package com.sendy.infrastructure.persistence
+package com.sendy.support.util
 
-import com.sendy.support.util.Aes256Util
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 import org.springframework.beans.factory.annotation.Value

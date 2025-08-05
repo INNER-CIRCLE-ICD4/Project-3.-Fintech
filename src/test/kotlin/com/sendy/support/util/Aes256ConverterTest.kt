@@ -1,5 +1,6 @@
 package com.sendy.support.util
 
+import com.sendy.infrastructure.persistence.Aes256Converter
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test

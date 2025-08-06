@@ -2,7 +2,6 @@ package com.sendy.domain.user
 
 import com.sendy.application.dto.user.UpdateUserDto
 import com.sendy.infrastructure.persistence.Identity
-import com.sendy.support.util.Aes256Converter
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -21,16 +20,16 @@ class UserEntity(
     id: Long,
     @Column(name = "name", length = 50, nullable = false)
     val name: String,
+    //    @Convert(converter = Aes256Converter::class)
     @Column(name = "phone_number", length = 100, nullable = false)
-    @Convert(converter = Aes256Converter::class)
     val phoneNumber: String,
     @Column(name = "password", length = 100, nullable = false)
     val password: String,
+    //    @Convert(converter = Aes256Converter::class)
     @Column(name = "email", columnDefinition = "VARCHAR(255)", nullable = false)
-    @Convert(converter = Aes256Converter::class)
     val email: String,
+    //    @Convert(converter = Aes256Converter::class)
     @Column(name = "ci", length = 100, nullable = true)
-    @Convert(converter = Aes256Converter::class)
     val ci: String? = null,
     @Column(name = "birth", nullable = false, columnDefinition = "CHAR(8)")
     val birth: String = "", // YYYYMMDD format with default value

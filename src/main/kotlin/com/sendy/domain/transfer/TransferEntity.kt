@@ -14,6 +14,14 @@ import java.time.LocalDateTime
 class TransferEntity(
     id: Long,
     @Column
+    val sendUserId: Long,
+    @Column
+    val sendAccountNumber: String,
+    @Column(nullable = true)
+    val receivePhoneNumber: String? = null,
+    @Column(nullable = true)
+    val receiveAccountNumber: String? = null,
+    @Column
     var amount: Long,
     @Enumerated(EnumType.STRING)
     var status: TransferStatusEnum,

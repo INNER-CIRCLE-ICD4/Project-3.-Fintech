@@ -4,9 +4,8 @@ import com.sendy.domain.account.TransactionHistoryRepository
 import com.sendy.domain.transfer.TransferLimitCountProcessor
 import com.sendy.domain.transfer.TransferLimitEntity
 import com.sendy.domain.transfer.TransferLimitRepository
-import com.sendy.support.exception.transfer.DailyMaxLimitException
-import com.sendy.support.exception.transfer.PastNotTransferException
-import com.sendy.support.exception.transfer.SingleTxLimitException
+import com.sendy.support.error.TransferErrorCode
+import com.sendy.support.exception.ServiceException
 import com.sendy.support.util.getTsid
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -33,7 +32,7 @@ class TransferProcessor(
                     dailyDt.toLocalDate(),
                 ).not()
         ) {
-            throw PastNotTransferException()
+            throw ServiceException(TransferErrorCode.PAST_NOT_TRANSFER)
         }
 
         val dailyDtString = dailyDt.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
@@ -66,9 +65,10 @@ class TransferProcessor(
             // 현재 보내려는 송금액, 일일 최대 한도 금액, 1회 요청 최대 한도 금액 모두 체크
             when {
                 amount > findEntity.singleTransactionLimit ->
-                    throw SingleTxLimitException(findEntity.singleTransactionLimit)
+                    throw ServiceException(TransferErrorCode.INVALID_SINGLE_TRANSACTION_LIMIT)
+
                 totalAmount + amount > findEntity.dailyLimit ->
-                    throw DailyMaxLimitException(amount, findEntity.dailyLimit - totalAmount)
+                    throw ServiceException(TransferErrorCode.DAILY_MAX_LIMIT)
             }
 
             findEntity.dailyCount++

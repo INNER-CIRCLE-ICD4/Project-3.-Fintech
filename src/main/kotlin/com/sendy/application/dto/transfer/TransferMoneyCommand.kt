@@ -5,7 +5,8 @@ import org.hibernate.validator.constraints.Length
 import java.time.LocalDateTime
 
 data class TransferMoneyCommand(
-    val userId: Long,
+    val sendUserId: Long,
+    val sendAccountNumber: String,
     val receivePhoneNumber: String,
     val receiveName: String,
     val amount: Long,

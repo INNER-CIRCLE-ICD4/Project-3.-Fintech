@@ -44,29 +44,19 @@ class TransferService(
                     amount = command.amount,
                     status = TransferStatusEnum.PENDING,
                     requestedAt = command.requestedAt,
+                    sendUserId = command.sendUserId,
+                    sendAccountNumber = command.sendAccountNumber,
+                    receivePhoneNumber = command.receivePhoneNumber,
                 ),
             )
 
         try {
             logger.debug("start transfer transaction")
             TransactionTemplate(platformTransactionManager).execute {
-                val sender = userEntityRepository.findByIdAndIsDeleteFalse(command.userId).orElseThrow()
-
-                // Active 한 송금자 검증
-                val sendUserAccount =
-                    accountRepository.findByActive(sender.id)
-                        ?: throw EntityNotFoundException("송금자의 계좌가 없습니다.")
-
                 // 출금 계좌 조회 시 lock 획득 후 진행
                 val senderAccount =
-                    accountRepository.findOneBySenderAccountNumber(sendUserAccount.accountNumber)
-                        ?: throw EntityNotFoundException("유효 하지 않은 계좌 입니다.")
-
-                // 계좌 비밀번호 인증 체크
-                val matches = shA256Util.matches(command.password, senderAccount.password)
-                if (matches.not()) {
-                    throw ServiceException(TransferErrorCode.INVALID_ACCOUNT_NUMBER_PASSWORD)
-                }
+                    accountRepository.findOneBySenderAccountNumber(command.sendAccountNumber)
+                        ?: throw EntityNotFoundException("송금자의 계좌를 찾을 수 없습니다.")
 
                 // 출금 계좌 유효한지 체크 -> 예외 발생 이후 진행X
                 senderAccount.checkActiveAndInvokeError()
@@ -74,26 +64,29 @@ class TransferService(
                 // 출금 계좌 잔액 체크 -> 예외 발생 이후 진행X
                 senderAccount.checkRemainAmountAndInvokeError(command.amount)
 
+                // 일일 이체 한도 체크
+                transferLimitCountProcessor.processLimitCount(command.sendUserId, LocalDateTime.now(), command.amount)
+
+                // 계좌 비밀번호 인증 체크
+                val matches = shA256Util.matches(command.password, senderAccount.password)
+                if (matches.not()) {
+                    throw ServiceException(TransferErrorCode.INVALID_ACCOUNT_NUMBER_PASSWORD)
+                }
+
                 // 계좌 출금
                 senderAccount.withdraw(command.amount)
 
-                // 일일 이체 한도 체크
-                transferLimitCountProcessor.processLimitCount(command.userId, LocalDateTime.now(), command.amount)
-
                 // 수취인 휴대폰 기반으로 계좌 조회
+
                 val receiver =
                     userEntityRepository
                         .findByPhoneNumberAndIsDeleteFalse(command.receivePhoneNumber)
-                        .orElseThrow()
-
-                // Active 한 수취인 검증
-                val receiveUser =
-                    accountRepository.findByActive(receiver.id) ?: throw EntityNotFoundException("수취자의 계좌가 없습니다.")
+                        .orElseThrow { throw ServiceException(TransferErrorCode.INVALID_RECEIVER_PHONE_NUMBER) }
 
                 // 수취인 계좌 유효한지 체크 -> 예외 발생 시 롤백
                 val receiveAccount =
-                    accountRepository.findOneByReceiveAccountNumber(receiveUser.accountNumber)
-                        ?: throw EntityNotFoundException("계좌 번호가 없습니다.")
+                    accountRepository.findOneByReceiveAccountNumber(command.receiveAccountNumber)
+                        ?: throw ServiceException(TransferErrorCode.NOT_FOUND_RECEIVER_ACCOUNT)
 
                 // 수취인 계좌로 입금 -> 예외 발생 시 롤백
                 receiveAccount.checkActiveAndInvokeError()
@@ -110,6 +103,7 @@ class TransferService(
                         balanceAfter = senderAccount.balance,
                         description = "계좌 출금",
                         createdAt = LocalDateTime.now(),
+                        accountId = senderAccount.id,
                     ),
                 )
 
@@ -122,6 +116,7 @@ class TransferService(
                         balanceAfter = receiveAccount.balance,
                         description = "계좌 입금",
                         createdAt = LocalDateTime.now(),
+                        accountId = receiveAccount.id,
                     ),
                 )
 
@@ -130,11 +125,14 @@ class TransferService(
 
             // 송금 완료 상태 변경
             transfer.changeToSuccess()
-        } catch (e: RuntimeException) {
+            transferRepository.save(transfer)
+            return TransferMoneyResponse(transfer.status)
+        } catch (e: ServiceException) {
             transfer.changeToFail()
+            transferRepository.save(transfer)
             logger.debug("rollback transaction")
+
+            throw e
         }
-        transferRepository.save(transfer)
-        return TransferMoneyResponse(transfer.status)
     }
 }

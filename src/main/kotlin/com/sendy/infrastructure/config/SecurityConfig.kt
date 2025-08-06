@@ -19,14 +19,14 @@ class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
 ) {
     @Bean
-    @Profile("!prd")
+    @Profile("prd")
     fun webSecurityCustomizer(): WebSecurityCustomizer =
         WebSecurityCustomizer {
             it.debug(true).ignoring().requestMatchers("/**")
         }
 
     @Bean
-    @Profile("prd")
+    @Profile("!prd")
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }

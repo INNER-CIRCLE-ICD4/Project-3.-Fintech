@@ -1,8 +1,8 @@
 package com.sendy.domain.account
 
 import com.sendy.infrastructure.persistence.Identity
-import com.sendy.support.exception.account.InActiveAccountException
-import com.sendy.support.exception.account.NotSufficientSendMoneyException
+import com.sendy.support.error.TransferErrorCode
+import com.sendy.support.exception.ServiceException
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -16,6 +16,7 @@ import java.time.LocalDateTime
     name = "account",
     uniqueConstraints = [
         UniqueConstraint(name = "account_account_number_uk", columnNames = ["account_number"]),
+        UniqueConstraint(name = "account_user_id_account_number_index", columnNames = ["user_id, account_number"]),
     ],
 )
 class AccountEntity(
@@ -65,14 +66,14 @@ class AccountEntity(
 
     fun checkActiveAndInvokeError() {
         if (status != AccountStatus.ACTIVE) {
-            throw InActiveAccountException()
+            throw ServiceException(TransferErrorCode.IN_ACTIVE_ACCOUNT)
         }
     }
 
     fun checkRemainAmountAndInvokeError(amount: Long) {
         require(amount > 0) { "출금 금액은 0보다 커야 합니다." }
         if (balance < amount) {
-            throw NotSufficientSendMoneyException()
+            throw ServiceException(TransferErrorCode.NOT_SUFFICIENT_SEND_MONEY)
         }
     }
 }

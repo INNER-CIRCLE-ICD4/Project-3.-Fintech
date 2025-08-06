@@ -66,11 +66,11 @@ class ServiceExceptionHandler {
     }
 
     @ExceptionHandler(value = [RuntimeException::class])
-    fun unknownHandler(runtimeException: RuntimeException): ResponseEntity<Response<Any>> =
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(
-            Response.fail(
-                runtimeException.message
-                    ?: "알 수 없는 서버 오류",
-            ),
+    fun unknownHandler(runtimeException: RuntimeException): ResponseEntity<Response<Any>> {
+        logger.error("origin error: {}", runtimeException.message)
+        runtimeException.printStackTrace()
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(
+            Response.fail("알 수 없는 서버 오류"),
         )
+    }
 }

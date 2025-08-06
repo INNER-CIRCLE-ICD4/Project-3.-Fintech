@@ -32,4 +32,9 @@ enum class TransferErrorCode(
         HttpStatus.NOT_FOUND.value(),
         "수취자의 휴대 전화 번호가 유효하지 않습니다.",
     ),
+    INVALID_RECEIVER_NAME(
+        HttpStatus.NOT_FOUND.value(),
+        HttpStatus.NOT_FOUND.value(),
+        "수취자 이름이 맞지 않습니다.",
+    ),
 }

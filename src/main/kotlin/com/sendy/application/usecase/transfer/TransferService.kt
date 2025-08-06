@@ -82,6 +82,11 @@ class TransferService(
                     userEntityRepository
                         .findByPhoneNumberAndIsDeleteFalse(command.receivePhoneNumber)
                         .orElseThrow { throw ServiceException(TransferErrorCode.INVALID_RECEIVER_PHONE_NUMBER) }
+                        .also {
+                            if (it.name != command.receiveName) {
+                                throw ServiceException(TransferErrorCode.INVALID_RECEIVER_NAME)
+                            }
+                        }
 
                 // 수취인 계좌 유효한지 체크 -> 예외 발생 시 롤백
                 val receiveAccount =

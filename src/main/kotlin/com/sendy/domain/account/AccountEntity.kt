@@ -1,8 +1,8 @@
 package com.sendy.domain.account
 
 import com.sendy.infrastructure.persistence.Identity
-import com.sendy.support.exception.account.InActiveAccountException
-import com.sendy.support.exception.account.NotSufficientSendMoneyException
+import com.sendy.support.error.TransferErrorCode
+import com.sendy.support.exception.ServiceException
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 @Table(
     name = "account",
     uniqueConstraints = [
-        UniqueConstraint(name = "account_account_number_uk", columnNames = ["account_number"]),
+        UniqueConstraint(name = "account_user_id_uk", columnNames = ["user_id"]),
     ],
 )
 class AccountEntity(
@@ -29,10 +29,6 @@ class AccountEntity(
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: AccountStatus,
-    @Column(name = "is_primary", nullable = false)
-    var isPrimary: Boolean,
-    @Column(name = "is_limited_account", nullable = false)
-    var isLimitedAccount: Boolean,
     @Column(name = "created_at", nullable = false)
     val createdAt: LocalDateTime,
     @Column(name = "updated_at", nullable = false)
@@ -65,14 +61,14 @@ class AccountEntity(
 
     fun checkActiveAndInvokeError() {
         if (status != AccountStatus.ACTIVE) {
-            throw InActiveAccountException()
+            throw ServiceException(TransferErrorCode.IN_ACTIVE_ACCOUNT)
         }
     }
 
     fun checkRemainAmountAndInvokeError(amount: Long) {
         require(amount > 0) { "출금 금액은 0보다 커야 합니다." }
         if (balance < amount) {
-            throw NotSufficientSendMoneyException()
+            throw ServiceException(TransferErrorCode.NOT_SUFFICIENT_SEND_MONEY)
         }
     }
 }

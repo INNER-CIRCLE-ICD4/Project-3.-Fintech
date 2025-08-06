@@ -11,7 +11,12 @@ import java.time.LocalDateTime
  * jpa entity
  */
 @Entity
-@Table(name = "users")
+@Table(
+    name = "users",
+    uniqueConstraints = [
+        UniqueConstraint(name = "users_phone_number_uk", columnNames = ["phone_number"]),
+    ],
+)
 class UserEntity(
     id: Long,
     @Column(name = "name", length = 50, nullable = false)

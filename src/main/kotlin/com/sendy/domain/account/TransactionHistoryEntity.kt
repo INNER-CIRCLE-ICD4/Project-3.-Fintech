@@ -26,4 +26,6 @@ class TransactionHistoryEntity(
     val createdAt: LocalDateTime,
     @Column
     var transferId: Long? = null,
+    @Column
+    val accountId: Long,
 ) : Identity(id)

@@ -70,6 +70,11 @@ services:
       - '--web.enable-lifecycle'
     networks:
       - sendy-net
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    ports:
+      - "6379:6379"
 
 networks:
   sendy-net:

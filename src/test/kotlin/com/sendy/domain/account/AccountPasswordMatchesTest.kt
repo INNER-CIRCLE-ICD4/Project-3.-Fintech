@@ -25,8 +25,6 @@ class AccountPasswordMatchesTest {
                 userId = testUserId,
                 password = sha256Util.hash("abcde"),
                 status = AccountStatus.ACTIVE,
-                isPrimary = true,
-                isLimitedAccount = false,
                 createdAt = LocalDateTime.now(),
                 updatedAt = LocalDateTime.now(),
                 balance = 0L,

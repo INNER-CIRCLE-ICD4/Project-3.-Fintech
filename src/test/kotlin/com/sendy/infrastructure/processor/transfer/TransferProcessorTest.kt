@@ -127,7 +127,7 @@ class TransferProcessorTest(
                 amount = 100_000,
                 balanceAfter = 4_900_000,
                 createdAt = createdAt,
-                transferId = 1,
+                accountId = 1,
             ),
             TransactionHistoryEntity(
                 id = getTsid(),
@@ -135,7 +135,8 @@ class TransferProcessorTest(
                 amount = 100_000,
                 balanceAfter = 4_800_000,
                 createdAt = createdAt,
-                transferId = 1,
+                transferId = null,
+                accountId = 1L
             ),
             TransactionHistoryEntity(
                 id = getTsid(),
@@ -143,7 +144,7 @@ class TransferProcessorTest(
                 amount = 100_000,
                 balanceAfter = 4_700_000,
                 createdAt = createdAt,
-                transferId = 1,
+                accountId = 1,
             ),
             TransactionHistoryEntity(
                 id = getTsid(),
@@ -151,7 +152,7 @@ class TransferProcessorTest(
                 amount = 100_000,
                 balanceAfter = 4_600_000,
                 createdAt = createdAt,
-                transferId = 1,
+                accountId = 1,
             ),
         )
 
@@ -163,7 +164,7 @@ class TransferProcessorTest(
                 amount = 9_000_001,
                 balanceAfter = 10_000_000,
                 createdAt = createdAt,
-                transferId = 1,
+                accountId = 1,
             ),
         )
 }

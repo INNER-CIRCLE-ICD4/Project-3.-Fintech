@@ -7,11 +7,10 @@ import org.springframework.data.redis.core.RedisHash
 import java.time.LocalDateTime
 
 /**
- * JWT 토큰 저장을 위한 엔티티
+ * redis에 refesth 토큰 저장을 위한 엔티티 / 데이터 7일후 자동삭제
  */
-@Entity
-@Table(name = "jwt_token")
-data class JwtTokenEntity(
+@RedisHash(value = "refresh_token", timeToLive = 604800)
+data class JwtRefreshTokenEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "token_id")
@@ -24,7 +23,7 @@ data class JwtTokenEntity(
     val tokenHash: String,
     @Enumerated(EnumType.STRING)
     @Column(name = "token_type", nullable = false)
-    val tokenType: TokenType = TokenType.ACCESS,
+    val tokenType: TokenType = TokenType.REFRESH,
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: TokenStatus = TokenStatus.ACTIVE,

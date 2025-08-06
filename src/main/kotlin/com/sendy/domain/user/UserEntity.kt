@@ -71,4 +71,51 @@ class UserEntity(
             updateAt = this.createAt,
             deleteAt = LocalDateTime.now(),
         )
+
+    fun updateActivity(): UserEntity =
+        UserEntity(
+            id = this.id,
+            password = this.password,
+            name = this.name,
+            phoneNumber = this.phoneNumber,
+            email = this.email,
+            ci = this.ci,
+            birth = this.birth,
+            isDelete = this.isDelete,
+            emailVerified = this.emailVerified,
+            createAt = this.createAt,
+            updateAt = LocalDateTime.now(),
+            deleteAt = this.deleteAt,
+        )
+
+    /**
+     * 이메일 인증 완료 처리
+     */
+    fun verifyEmail() {
+        this.emailVerified = true
+        this.updateAt = LocalDateTime.now()
+    }
+
+    /**
+     * 사용자 활성화 상태 확인
+     */
+    fun canLogin(): Boolean = !isDelete && emailVerified
+
+    /**
+     * 비밀번호 검증
+     */
+    fun validatePassword(inputPassword: String): Boolean = password == inputPassword
+
+    /**
+     * 사용자 활성화 상태 확인
+     */
+    fun isActive(): Boolean = !isDelete
+
+    /**
+     * 마지막 업데이트 시간 갱신
+     */
+    fun updateLastActivity() {
+       this.updateAt = LocalDateTime.now()
+    }
+
 }

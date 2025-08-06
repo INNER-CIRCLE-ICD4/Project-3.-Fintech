@@ -33,7 +33,7 @@ data class DeviceInfoEntity(
     val screenResolution: String? = null,
     @Column(name = "timezone", length = 50, nullable = true)
     val timezone: String? = null,
-    @Column(name = "language", length = 10, nullable = true)
+    @Column(name = "language", length = 50, nullable = true)
     val language: String? = null,
     @Column(name = "is_mobile", nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     val isMobile: Boolean = false,

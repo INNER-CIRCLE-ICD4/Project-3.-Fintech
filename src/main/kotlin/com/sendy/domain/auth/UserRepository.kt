@@ -1,6 +1,6 @@
 package com.sendy.domain.auth
 
-import com.sendy.domain.model.User
+import com.sendy.domain.user.UserEntity
 import java.util.*
 
 /**
@@ -11,37 +11,37 @@ interface UserRepository {
     /**
      * ID로 사용자 조회
      */
-    fun findById(id: Long): Optional<User>
+    fun findById(id: Long): Optional<UserEntity>
 
     /**
      * 이메일로 사용자 조회
      */
-    fun findByEmail(email: String): Optional<User>
+    fun findByEmail(email: String): Optional<UserEntity>
 
     /**
      * 전화번호로 사용자 조회
      */
-    fun findByPhoneNumber(phoneNumber: String): Optional<User>
+    fun findByPhoneNumber(phoneNumber: String): Optional<UserEntity>
 
     /**
      * 활성 사용자 ID로 조회
      */
-    fun findActiveById(id: Long): Optional<User>
+    fun findActiveById(id: Long): Optional<UserEntity>
 
     /**
      * 활성 사용자 이메일로 조회
      */
-    fun findActiveByEmail(email: String): Optional<User>
+    fun findActiveByEmail(email: String): Optional<UserEntity>
 
     /**
      * 활성 사용자 전화번호로 조회
      */
-    fun findActiveByPhoneNumber(phoneNumber: String): Optional<User>
+    fun findActiveByPhoneNumber(phoneNumber: String): Optional<UserEntity>
 
     /**
      * 사용자 저장
      */
-    fun save(user: User): User
+    fun save(user: UserEntity): UserEntity
 
     /**
      * 사용자 존재 여부 확인
@@ -62,4 +62,5 @@ interface UserRepository {
      * 활성 사용자 전화번호 존재 여부 확인
      */
     fun existsActiveByPhoneNumber(phoneNumber: String): Boolean
+
 }

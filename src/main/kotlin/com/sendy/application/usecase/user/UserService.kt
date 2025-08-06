@@ -87,7 +87,7 @@ class UserService(
     }
 
     // 이메일 발송 로직
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     fun sendVerificationEmail(
         email: String,
         userId: Long,

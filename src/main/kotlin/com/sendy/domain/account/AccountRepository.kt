@@ -6,7 +6,14 @@ import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Query
 
 interface AccountRepository : JpaRepository<AccountEntity, Long> {
-    fun findByUserId(userId: Long): List<AccountEntity>
+    @Query(
+        "select account " +
+            "from AccountEntity account " +
+            "where account.userId = :userId " +
+            "and account.status='ACTIVE' " +
+            "and account.isPrimary = true and account.isLimitedAccount = false",
+    )
+    fun findByActive(userId: Long): AccountEntity?
 
     fun findByUserIdAndAccountNumber(
         userId: Long,

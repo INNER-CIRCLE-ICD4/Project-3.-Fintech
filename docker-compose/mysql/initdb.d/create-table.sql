@@ -65,7 +65,8 @@ CREATE TABLE users
     email_verified TINYINT(1)   NOT NULL DEFAULT 0,
     create_at      TIMESTAMP    NOT NULL,
     update_at      TIMESTAMP,
-    delete_at      TIMESTAMP
+    delete_at      TIMESTAMP,
+    UNIQUE KEY `users_phone_number_uk` (phone_number)
 ) engine = InnoDB;
 
 -- 사용자 메일인증 발송기록 테이블

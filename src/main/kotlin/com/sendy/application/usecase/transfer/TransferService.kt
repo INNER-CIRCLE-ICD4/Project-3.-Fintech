@@ -6,6 +6,7 @@ import com.sendy.application.usecase.transfer.command.TransferMoneyUseCase
 import com.sendy.domain.account.AccountRepository
 import com.sendy.domain.account.TransactionHistoryEntity
 import com.sendy.domain.account.TransactionHistoryRepository
+import com.sendy.domain.auth.UserEntityRepository
 import com.sendy.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.domain.enum.TransferStatusEnum
 import com.sendy.domain.transfer.TransferEntity
@@ -24,6 +25,7 @@ import java.time.LocalDateTime
 
 @Service
 class TransferService(
+    private val userEntityRepository: UserEntityRepository,
     private val transferRepository: TransferRepository,
     private val transactionHistoryRepository: TransactionHistoryRepository,
     private val accountRepository: AccountRepository,
@@ -48,10 +50,17 @@ class TransferService(
         try {
             logger.debug("start transfer transaction")
             TransactionTemplate(platformTransactionManager).execute {
+                val sender = userEntityRepository.findByIdAndIsDeleteFalse(command.userId).orElseThrow()
+
+                // Active 한 송금자 검증
+                val sendUserAccount =
+                    accountRepository.findByActive(sender.id)
+                        ?: throw EntityNotFoundException("송금자의 계좌가 없습니다.")
+
                 // 출금 계좌 조회 시 lock 획득 후 진행
                 val senderAccount =
-                    accountRepository.findOneBySenderAccountNumber(command.senderAccountNumber)
-                        ?: throw EntityNotFoundException("계좌 번호가 없습니다.")
+                    accountRepository.findOneBySenderAccountNumber(sendUserAccount.accountNumber)
+                        ?: throw EntityNotFoundException("유효 하지 않은 계좌 입니다.")
 
                 // 계좌 비밀번호 인증 체크
                 val matches = shA256Util.matches(command.password, senderAccount.password)
@@ -71,9 +80,19 @@ class TransferService(
                 // 일일 이체 한도 체크
                 transferLimitCountProcessor.processLimitCount(command.userId, LocalDateTime.now(), command.amount)
 
+                // 수취인 휴대폰 기반으로 계좌 조회
+                val receiver =
+                    userEntityRepository
+                        .findByPhoneNumberAndIsDeleteFalse(command.receivePhoneNumber)
+                        .orElseThrow()
+
+                // Active 한 수취인 검증
+                val receiveUser =
+                    accountRepository.findByActive(receiver.id) ?: throw EntityNotFoundException("수취자의 계좌가 없습니다.")
+
                 // 수취인 계좌 유효한지 체크 -> 예외 발생 시 롤백
                 val receiveAccount =
-                    accountRepository.findOneByReceiveAccountNumber(command.receiveAccountNumber)
+                    accountRepository.findOneByReceiveAccountNumber(receiveUser.accountNumber)
                         ?: throw EntityNotFoundException("계좌 번호가 없습니다.")
 
                 // 수취인 계좌로 입금 -> 예외 발생 시 롤백

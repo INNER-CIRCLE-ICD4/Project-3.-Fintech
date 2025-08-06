@@ -86,16 +86,13 @@ CREATE TABLE account
     user_id            BIGINT      NOT NULL,
     password           VARCHAR(64) NOT NULL,
     status             VARCHAR(20) NOT NULL,
-    is_primary         BOOLEAN     NOT NULL,
-    is_limited_account BOOLEAN     NOT NULL,
     created_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     balance            BIGINT      NOT NULL,
 
-    UNIQUE KEY `account_account_number_uk` (account_number)
+    UNIQUE KEY `account_user_id_uk` (user_id)
 ) engine = InnoDB;
 
-CREATE INDEX `account_user_id_account_number_index` on account (user_id, account_number);
 
 -- jwt 토큰 정보
 create table jwt_token

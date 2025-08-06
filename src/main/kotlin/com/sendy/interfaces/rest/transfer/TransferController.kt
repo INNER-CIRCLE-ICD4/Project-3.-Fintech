@@ -1,5 +1,6 @@
 package com.sendy.interfaces.rest.transfer
 
+import com.sendy.application.dto.transfer.TransferMoneyCommand
 import com.sendy.application.dto.transfer.TransferMoneyResponse
 import com.sendy.application.usecase.transfer.command.TransferMoneyUseCase
 import com.sendy.support.response.Response
@@ -16,6 +17,6 @@ class TransferController(
 ) {
     @PostMapping
     fun transferSendMoney(
-        @RequestBody @Valid request: TransferMoneyToPhoneNumberCommand,
+        @RequestBody @Valid request: TransferMoneyCommand,
     ): Response<TransferMoneyResponse> = Response.ok(transferSendMoneyUseCase.transferMoney(request))
 }

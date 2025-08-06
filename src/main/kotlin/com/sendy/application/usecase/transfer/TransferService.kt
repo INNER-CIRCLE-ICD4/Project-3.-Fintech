@@ -55,7 +55,7 @@ class TransferService(
             TransactionTemplate(platformTransactionManager).execute {
                 // 출금 계좌 조회 시 lock 획득 후 진행
                 val senderAccount =
-                    accountRepository.findOneBySenderAccountNumber(command.sendAccountNumber)
+                    accountRepository.findOneBySenderUserId(command.sendUserId)
                         ?: throw EntityNotFoundException("송금자의 계좌를 찾을 수 없습니다.")
 
                 // 출금 계좌 유효한지 체크 -> 예외 발생 이후 진행X
@@ -85,7 +85,7 @@ class TransferService(
 
                 // 수취인 계좌 유효한지 체크 -> 예외 발생 시 롤백
                 val receiveAccount =
-                    accountRepository.findOneByReceiveAccountNumber(command.receiveAccountNumber)
+                    accountRepository.findOneByReceiverUserId(receiver.id)
                         ?: throw ServiceException(TransferErrorCode.NOT_FOUND_RECEIVER_ACCOUNT)
 
                 // 수취인 계좌로 입금 -> 예외 발생 시 롤백

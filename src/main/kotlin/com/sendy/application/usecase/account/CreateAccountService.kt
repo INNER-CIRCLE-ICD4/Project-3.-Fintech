@@ -37,8 +37,6 @@ class CreateAccountService(
                 userId = request.userId,
                 password = encryptedPassword,
                 status = AccountStatus.ACTIVE,
-                isPrimary = request.isPrimary,
-                isLimitedAccount = request.isLimitedAccount,
                 createdAt = LocalDateTime.now(),
                 updatedAt = LocalDateTime.now(),
                 balance = request.initBalance,

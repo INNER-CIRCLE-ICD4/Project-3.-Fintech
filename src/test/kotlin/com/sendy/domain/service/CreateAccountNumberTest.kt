@@ -48,8 +48,6 @@ class CreateAccountNumberTest {
             CreateAccountRequest(
                 userId = testUserId,
                 password = testPassword,
-                isPrimary = true,
-                isLimitedAccount = false,
                 initBalance = 1_000L,
             )
 
@@ -60,8 +58,6 @@ class CreateAccountNumberTest {
                 userId = testUserId,
                 password = "encryptedPassword",
                 status = AccountStatus.ACTIVE,
-                isPrimary = true,
-                isLimitedAccount = false,
                 createdAt = LocalDateTime.now(),
                 updatedAt = LocalDateTime.now(),
                 balance = 0L,

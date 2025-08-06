@@ -6,25 +6,16 @@ import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Query
 
 interface AccountRepository : JpaRepository<AccountEntity, Long> {
-    @Query(
-        "select account " +
-            "from AccountEntity account " +
-            "where account.userId = :userId " +
-            "and account.status='ACTIVE' " +
-            "and account.isPrimary = true and account.isLimitedAccount = false",
-    )
-    fun findByActive(userId: Long): AccountEntity?
-
     fun findByUserIdAndAccountNumber(
         userId: Long,
         accountNumber: String,
     ): AccountEntity?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select account from AccountEntity account where 1=1 and account.accountNumber = :accountNumber")
-    fun findOneBySenderAccountNumber(accountNumber: String): AccountEntity?
+    @Query("select account from AccountEntity account where 1=1 and account.userId = :userId")
+    fun findOneBySenderUserId(userId: Long): AccountEntity?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select account from AccountEntity account where 1=1 and account.accountNumber = :accountNumber")
-    fun findOneByReceiveAccountNumber(accountNumber: String): AccountEntity?
+    @Query("select account from AccountEntity account where 1=1 and account.userId = :userId")
+    fun findOneByReceiverUserId(userId: Long): AccountEntity?
 }

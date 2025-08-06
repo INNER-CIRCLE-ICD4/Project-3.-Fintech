@@ -15,8 +15,7 @@ import java.time.LocalDateTime
 @Table(
     name = "account",
     uniqueConstraints = [
-        UniqueConstraint(name = "account_account_number_uk", columnNames = ["account_number"]),
-        UniqueConstraint(name = "account_user_id_account_number_index", columnNames = ["user_id, account_number"]),
+        UniqueConstraint(name = "account_user_id_uk", columnNames = ["user_id"]),
     ],
 )
 class AccountEntity(
@@ -30,10 +29,6 @@ class AccountEntity(
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: AccountStatus,
-    @Column(name = "is_primary", nullable = false)
-    var isPrimary: Boolean,
-    @Column(name = "is_limited_account", nullable = false)
-    var isLimitedAccount: Boolean,
     @Column(name = "created_at", nullable = false)
     val createdAt: LocalDateTime,
     @Column(name = "updated_at", nullable = false)

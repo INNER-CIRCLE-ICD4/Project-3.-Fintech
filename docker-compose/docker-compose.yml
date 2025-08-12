@@ -7,12 +7,20 @@ services:
     container_name: sendy-api
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prd
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://mysql-master:3306/sendy
+      - SPRING_DATASOURCE_USERNAME=sendy_master
+      - SPRING_DATASOURCE_PASSWORD=sendy_master
+    restart: always
     networks:
       - sendy-net
   mysql-master:
     image: mysql:8.0.42
+    container_name: mysql-master
     ports:
       - "3306:3306"
+    restart: always
     environment:
       - MYSQL_DATABASE=sendy
       - MYSQL_ROOT_PASSWORD=root
@@ -24,10 +32,62 @@ services:
       - --collation-server=utf8mb4_unicode_ci
       - --lower_case_table_names=1
     volumes:
-      - ./mysql/master-data:/var/lib/mysql
       - ./mysql/cnf/master.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
     networks:
       - sendy-net
+    tmpfs:
+      - /var/lib/mysql
 
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - sendy-net
+    depends_on:
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - sendy-net
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data
+      - ./redis/conf/redis.conf:/usr/local/conf/redis.conf
+    restart: always
+    command: redis-server /usr/local/conf/redis.conf
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    networks:
+      - sendy-net
 networks:
   sendy-net:
+
+volumes:
+  grafana-data:
+  prometheus-data:

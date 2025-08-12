@@ -53,7 +53,7 @@ CREATE TABLE transaction_history
 CREATE TABLE users
 (
     id             BIGINT       NOT NULL PRIMARY KEY,
-    password       VARCHAR(100) NOT NULL,
+    password       VARCHAR(120) NOT NULL,
     name           VARCHAR(50)  NOT NULL,
     phone_number   VARCHAR(20)  NOT NULL,
     email          VARCHAR(255) NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE account
     id                 BIGINT      NOT NULL PRIMARY KEY,
     account_number     VARCHAR(13) NOT NULL,
     user_id            BIGINT      NOT NULL,
-    password           VARCHAR(64) NOT NULL,
+    password           VARCHAR(120) NOT NULL,
     status             VARCHAR(20) NOT NULL,
     created_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,

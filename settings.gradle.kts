@@ -1,4 +1,4 @@
 rootProject.name = "sendy"
 
 // application
-include("sendy-legacy-api", "sendy-shared-kafka")
+include("sendy-legacy-api", "sendy-shared-kafka", "sendy-transfer-scheduler")

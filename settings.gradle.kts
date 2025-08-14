@@ -1,3 +1,3 @@
 rootProject.name = "sendy"
 
-include("sendy-legacy-api")
+include("sendy-legacy-api", "sendy-transfer-scheduler")

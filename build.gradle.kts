@@ -35,9 +35,8 @@ subprojects {
 
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-        implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-        implementation("org.springframework.boot:spring-boot-starter-validation")
+
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         runtimeOnly("com.h2database:h2")
         implementation("mysql:mysql-connector-java:8.0.33")
@@ -55,20 +54,6 @@ subprojects {
         // tsid
         implementation("com.github.f4b6a3:tsid-creator:5.2.6")
 
-        // swagger
-        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
-
-        // jwt
-        implementation("io.jsonwebtoken:jjwt-api:0.11.2")
-        runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
-        runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
-
-        // springSecurity
-        implementation("org.springframework.boot:spring-boot-starter-security")
-
-        // mail
-        implementation("org.springframework.boot:spring-boot-starter-mail")
-
         // monitoring
         implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("io.micrometer:micrometer-registry-prometheus")
@@ -76,10 +61,8 @@ subprojects {
         // mokito
         testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1") // 최신 버전 확인 가능
 
-        // redis
-        implementation("org.springframework.boot:spring-boot-starter-data-redis")
-
         kover(project(":sendy-legacy-api"))
+        kover(project(":sendy-transfer-scheduler"))
     }
 
     tasks.withType<JavaCompile> {

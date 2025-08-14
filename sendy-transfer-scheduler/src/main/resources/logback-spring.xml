@@ -16,4 +16,8 @@
     <logger name="com.sendy.transferScheduler" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
+
+    <logger name="org.hibernate.SQL">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
 </configuration>

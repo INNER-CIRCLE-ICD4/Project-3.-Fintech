@@ -1,9 +1,0 @@
-package com.sendy.support.exception
-
-import com.sendy.support.error.ErrorCodeIfs
-
-interface ServiceExceptionIfs {
-    fun getErrorCodeIfs(): ErrorCodeIfs?
-
-    fun getErrorDescription(): String?
-}

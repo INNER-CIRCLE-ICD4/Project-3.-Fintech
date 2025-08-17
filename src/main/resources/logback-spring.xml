@@ -2,18 +2,49 @@
 <configuration>
     <springProperty name="name" source="spring.application.name" />
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %cyan(%logger) - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-    </root>
+
+    <!-- SiftingAppender for dynamically routing logs -->
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+
+    <discriminator class="ch.qos.logback.classic.sift.MDCBasedDiscriminator">
+        <key>apipath</key>
+        <defaultValue>etc</defaultValue>
+    </discriminator>
+
+    <sift>
+        <appender name="FILE_${apipath}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                <fileNamePattern>logs/${apipath}/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
+                <maxFileSize>10MB</maxFileSize>
+            </rollingPolicy>
+
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} [%thread] %5level %logger [%X{schedulerStep},%X{entityId}] - %msg%n</pattern>
+            </encoder>
+        </appender>
+    </sift>
+    </appender>
+    <springProfile name="dev,local">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="SIFT" />
+        </root>
+    </springProfile>
 
     <!-- 특정패키지 로깅레벨 설정 -->
-    <logger name="com.sendy" level="DEBUG" additivity="false">
+<!--    <logger name="com.sendy" level="DEBUG" additivity="false">-->
+    <logger name="com.sendy" level="DEBUG">
         <appender-ref ref="CONSOLE"/>
     </logger>
+
 </configuration>

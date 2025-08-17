@@ -61,3 +61,5 @@ jwt:
 logging:
   level:
     com.sendy: INFO
+  file:
+    name: ./sendy/logs

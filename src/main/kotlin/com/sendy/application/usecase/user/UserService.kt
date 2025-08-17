@@ -11,6 +11,7 @@ import com.sendy.infrastructure.persistence.email.EmailRepository
 import com.sendy.support.exception.ResponseException
 import com.sendy.support.response.Result
 import com.sendy.support.util.Aes256Util
+import com.sendy.support.util.LogUtillService
 import com.sendy.support.util.SHA256Util
 import com.sendy.support.util.getTsid
 import org.springframework.beans.factory.annotation.Value
@@ -27,6 +28,7 @@ class UserService(
     private val mailSender: JavaMailSender,
     private val sha256Util: SHA256Util,
     private val mailAsyncSend: MailAsyncSend,
+    private val logUtillService : LogUtillService,
     @Value("\${aes256.key}") private val key: String,
 ) {
     private val aesUtil = Aes256Util(key)
@@ -38,7 +40,9 @@ class UserService(
     @Transactional
     fun registerUser(requestDto: CreateUserDto): UserEntity {
         // ci 값 등록
+        logUtillService.logMdc("START",null)
         val entity = requestDto.toEntity(getTsid(), sha256Util.hash(requestDto.password))
+        logUtillService.logMdc("end",entity.id)
         return userEntityRepository.save(entity)
     }
 

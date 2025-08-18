@@ -1,6 +1,5 @@
 package com.sendy.sharedKafka.support.config
 
-import jakarta.annotation.PostConstruct
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -18,11 +17,6 @@ import org.springframework.kafka.support.serializer.JsonDeserializer
 class SharedKafkaConsumerConfig(
     private val properties: SharedKafkaProperties,
 ) {
-    @PostConstruct
-    fun init() {
-        println("SharedKafkaConsumerConfig")
-    }
-
     val consumerConfigProps =
         mapOf(
             ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to (properties.bootstrapServers ?: "localhost:9092"),

@@ -45,13 +45,25 @@ class UserController(
         // 로그인된 사용자 엔티티 조회
         return Response.ok(UserService.deleteUser(email, password, id))
     }
+    
+    @GetMapping("/{id}")
+    @Operation(summary = "사용자 조회", description = "사용자 정보를 조회합니다")
+    fun getUser(
+        @PathVariable("id") id: Long
+    ): Response<UserEntity> {
+        return Response.ok(UserService.findUser(id))
+    }
+
+
 
     @PostMapping("/auth/email/send")
     @Operation(summary = "본인인증 이메일 발송", description = "회원가입시 본인인증 이메일을 발송합니다.")
     fun authEmailSent(
         @RequestParam email: String,
-        @RequestParam userId: Long,
-    ): Response<String> = Response.ok(UserService.sendVerificationEmail(email, userId))
+        @RequestParam emailCode: String,
+    ): Response<Result> {
+        return Response.ok(UserService.verifyEmail(email, emailCode))
+    }
 
     @PostMapping("/auth/email/verify")
     @Operation(summary = "본인인증 이메일 코드 검증", description = "이메일로 발송한 본인인증 코드를 확인합니다.")

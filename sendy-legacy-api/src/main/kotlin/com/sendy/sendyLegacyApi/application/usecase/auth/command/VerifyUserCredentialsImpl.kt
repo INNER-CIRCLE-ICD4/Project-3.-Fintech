@@ -29,7 +29,6 @@ class VerifyUserCredentialsImpl(
         }
 
         // SHA-256 해시로 비밀번호 검증
-        // SHA-256 + Salt 해시로 비밀번호 검증
         if (!sha256Util.matches(password, userEntity.password)) {
             throw ServiceException(ErrorCode.INVALID_INPUT_VALUE, "비밀번호가 일치하지 않습니다")
         }

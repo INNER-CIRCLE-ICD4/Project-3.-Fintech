@@ -62,7 +62,6 @@ subprojects {
         testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1") // 최신 버전 확인 가능
 
         kover(project(":sendy-legacy-api"))
-        kover(project(":sendy-transfer-scheduler"))
     }
 
     tasks.withType<JavaCompile> {

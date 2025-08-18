@@ -18,9 +18,9 @@ class TransferEntity(
     @Column
     val sendAccountNumber: String,
     @Column(nullable = true)
-    val receivePhoneNumber: String? = null,
+    var receivePhoneNumber: String? = null,
     @Column(nullable = true)
-    val receiveAccountNumber: String? = null,
+    var receiveAccountNumber: String? = null,
     @Column
     var amount: Long,
     @Enumerated(EnumType.STRING)

@@ -14,7 +14,7 @@ interface UserEntityRepository : JpaRepository<UserEntity, Long> {
 
     fun findByIdAndIsDeleteFalse(id: Long): Optional<UserEntity>
 
-    fun findByPhoneNumberAndIsDeleteFalse(phoneNumber: String): Optional<UserEntity>
+    fun findByPhoneNumberAndIsDeleteFalse(phoneNumber: String): UserEntity?
 
     fun existsByEmail(email: String): Boolean
 

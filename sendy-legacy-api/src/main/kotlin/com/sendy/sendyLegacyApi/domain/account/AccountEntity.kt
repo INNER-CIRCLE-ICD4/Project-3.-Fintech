@@ -59,6 +59,12 @@ class AccountEntity(
         this.updatedAt = LocalDateTime.now()
     }
 
+    fun checkSelfAndInvokeError(accountNumber: String) {
+        if (this.accountNumber == accountNumber) {
+            throw ServiceException(TransferErrorCode.INVALID_SELF_ACCOUNT)
+        }
+    }
+
     fun checkActiveAndInvokeError() {
         if (status != AccountStatus.ACTIVE) {
             throw ServiceException(TransferErrorCode.IN_ACTIVE_ACCOUNT)

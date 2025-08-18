@@ -11,6 +11,8 @@ interface AccountRepository : JpaRepository<AccountEntity, Long> {
         accountNumber: String,
     ): AccountEntity?
 
+    fun findByAccountNumber(accountNumber: String): AccountEntity?
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select account from AccountEntity account where 1=1 and account.userId = :userId")
     fun findOneBySenderUserId(userId: Long): AccountEntity?

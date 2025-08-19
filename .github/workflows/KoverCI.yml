@@ -33,10 +33,10 @@ jobs:
         continue-on-error: true
 
       - name: Generate Kover Coverage Report (XML)
-        run: ./gradlew koverXmlReport
+        run: ./gradlew :sendy-legacy-api:koverXmlReport
 
       - name: Generate Kover Coverage Report (HTML)
-        run: ./gradlew koverHtmlReport
+        run: ./gradlew :sendy-legacy-api:koverHtmlReport
 
       - name: Add coverage report to PR
         if: github.event_name == 'pull_request'

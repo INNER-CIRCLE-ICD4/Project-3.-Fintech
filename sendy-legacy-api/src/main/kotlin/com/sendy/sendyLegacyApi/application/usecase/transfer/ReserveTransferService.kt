@@ -10,7 +10,6 @@ import com.sendy.sendyLegacyApi.domain.transfer.TransferEntity
 import com.sendy.sendyLegacyApi.domain.transfer.TransferRepository
 import com.sendy.sendyLegacyApi.support.error.TransferErrorCode
 import com.sendy.sendyLegacyApi.support.exception.ServiceException
-import com.sendy.sendyLegacyApi.support.util.Aes256Util
 import com.sendy.sendyLegacyApi.support.util.SHA256Util
 import com.sendy.sendyLegacyApi.support.util.getTsid
 import org.springframework.data.repository.findByIdOrNull
@@ -23,7 +22,6 @@ class ReserveTransferService(
     private val accountRepository: AccountRepository,
     private val transferRepository: TransferRepository,
     private val sha256Util: SHA256Util,
-    private val aes256Util: Aes256Util,
 ) : ReserveTransferUseCase {
     @Transactional
     override fun reserveTransfer(command: ReserveTransferCommand): TransferId {

@@ -11,7 +11,6 @@ import com.sendy.sendyLegacyApi.domain.transfer.TransferRepository
 import com.sendy.sendyLegacyApi.domain.user.UserEntity
 import com.sendy.sendyLegacyApi.support.error.TransferErrorCode
 import com.sendy.sendyLegacyApi.support.exception.ServiceException
-import com.sendy.sendyLegacyApi.support.util.Aes256Util
 import com.sendy.sendyLegacyApi.support.util.SHA256Util
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -44,8 +43,6 @@ class ReserveTransferServiceTest(
     private val transferRepository: TransferRepository,
     @Autowired
     private val sha256Util: SHA256Util,
-    @Autowired
-    private val aes256Util: Aes256Util,
 ) {
     private val reserveTransferService =
         ReserveTransferService(
@@ -53,7 +50,6 @@ class ReserveTransferServiceTest(
             accountRepository,
             transferRepository,
             sha256Util,
-            aes256Util,
         )
 
     @BeforeEach

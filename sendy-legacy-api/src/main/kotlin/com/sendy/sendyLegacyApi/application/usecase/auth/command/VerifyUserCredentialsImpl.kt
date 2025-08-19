@@ -29,8 +29,7 @@ class VerifyUserCredentialsImpl(
         }
 
         // SHA-256 해시로 비밀번호 검증
-        val hashedPassword = sha256Util.hash(password)
-        if (!userEntity.validatePassword(hashedPassword)) {
+        if (!sha256Util.matches(password, userEntity.password)) {
             throw ServiceException(ErrorCode.INVALID_INPUT_VALUE, "비밀번호가 일치하지 않습니다")
         }
 

@@ -42,13 +42,11 @@ class UserService(
     }
 
     @Transactional
-    fun findUserId(email: String): Long {
-        val user =
-            userEntityRepository.findByEmail(email).get()
-                ?: throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
-        // 사용자 ID 반환
-        return user.id
-    }
+    fun findUserId(email: String): Long =
+        userEntityRepository
+            .findByEmail(email)
+            ?.id
+            ?: throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
 
     @Transactional
     fun updateUser(
@@ -134,5 +132,19 @@ class UserService(
         emailRepository.save(emailEntity)
 
         return Result(200, "이메일 인증 성공")
+    }
+
+    /**
+     * 유저 조회
+     * @param id 유저 아이디
+     */
+    @Transactional(readOnly = true)
+    fun findUser(id: Long): UserEntity {
+        val getUser =
+            userEntityRepository
+                .findByIdAndIsDeleteFalse(id)
+                .orElseThrow { throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) }
+
+        return getUser
     }
 }

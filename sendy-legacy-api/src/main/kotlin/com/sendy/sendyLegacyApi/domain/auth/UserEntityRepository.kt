@@ -8,7 +8,7 @@ import java.util.*
  * UserEntity repository (인프라스트럭처 계층용)
  */
 interface UserEntityRepository : JpaRepository<UserEntity, Long> {
-    fun findByEmail(email: String): Optional<UserEntity>
+    fun findByEmail(email: String): UserEntity?
 
     fun findByPhoneNumber(phoneNumber: String): Optional<UserEntity>
 

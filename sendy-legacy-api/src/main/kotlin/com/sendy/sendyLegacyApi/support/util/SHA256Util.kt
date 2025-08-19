@@ -37,30 +37,6 @@ class SHA256Util {
         return md.digest()
     }
 
-    data class StoredHash(
-        val alg: String,
-        val iterations: Int,
-        val saltB64: String,
-        val hashB64: String
-    )
-
-    fun createSha256Record(password: String): StoredHash {
-        val salt = generateSalt()
-        val hash = sha256WithSalt(password, salt)
-        return StoredHash("SHA256", 0, salt.toBase64(), hash.toBase64())
-    }
-
-    fun verify(inputPassword: String, record: StoredHash): Boolean {
-        val salt = Base64.getDecoder().decode(record.saltB64)
-        val expected = Base64.getDecoder().decode(record.hashB64)
-
-        val actual = when(record.alg) {
-            "SHA256" -> sha256WithSalt(inputPassword, salt)
-            else -> error("Unknown alg: ${record.alg}")
-        }
-        return constantTimeEquals(actual, expected)
-    }
-
     private fun constantTimeEquals(a: ByteArray?, b: ByteArray?): Boolean {
         if (a == null || b == null) return false
         if (a.size != b.size) return false
@@ -68,8 +44,6 @@ class SHA256Util {
         for (i in a.indices) r = r or (a[i].toInt() xor b[i].toInt())
         return r == 0
     }
-
-
 
     /**
      * 기본 해시 메서드 (Salt 포함)

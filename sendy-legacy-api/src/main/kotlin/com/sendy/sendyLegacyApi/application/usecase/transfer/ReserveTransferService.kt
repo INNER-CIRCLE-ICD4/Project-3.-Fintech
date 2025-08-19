@@ -8,9 +8,9 @@ import com.sendy.sendyLegacyApi.domain.auth.UserEntityRepository
 import com.sendy.sendyLegacyApi.domain.enum.TransferStatusEnum
 import com.sendy.sendyLegacyApi.domain.transfer.TransferEntity
 import com.sendy.sendyLegacyApi.domain.transfer.TransferRepository
-import com.sendy.sendyLegacyApi.support.error.ErrorCode
 import com.sendy.sendyLegacyApi.support.error.TransferErrorCode
 import com.sendy.sendyLegacyApi.support.exception.ServiceException
+import com.sendy.sendyLegacyApi.support.util.Aes256Util
 import com.sendy.sendyLegacyApi.support.util.SHA256Util
 import com.sendy.sendyLegacyApi.support.util.getTsid
 import org.springframework.data.repository.findByIdOrNull
@@ -23,6 +23,7 @@ class ReserveTransferService(
     private val accountRepository: AccountRepository,
     private val transferRepository: TransferRepository,
     private val sha256Util: SHA256Util,
+    private val aes256Util: Aes256Util,
 ) : ReserveTransferUseCase {
     @Transactional
     override fun reserveTransfer(command: ReserveTransferCommand): TransferId {
@@ -54,7 +55,8 @@ class ReserveTransferService(
         command.receiveAccountNumber?.let {
             senderAccount.checkSelfAndInvokeError(it)
             // 상대방 계좌 유효 하지않으면 -> 예외 발생
-            accountRepository.findByAccountNumber(it) ?: throw ServiceException(TransferErrorCode.NOT_FOUND_RECEIVER_ACCOUNT)
+            accountRepository.findByAccountNumber(it)
+                ?: throw ServiceException(TransferErrorCode.NOT_FOUND_RECEIVER_ACCOUNT)
 
             transferEntity.receiveAccountNumber = it
         }
@@ -62,10 +64,9 @@ class ReserveTransferService(
         // 휴대폰 번호로 송금 하는 경우
         command.receivePhoneNumber?.let {
             val receiveUser =
-                userEntityRepository.findByPhoneNumberAndIsDeleteFalse(it)
-                    ?: throw ServiceException(ErrorCode.NOT_FOUND)
+                userEntityRepository.findByPhoneNumber(it)
 
-            receiveUser.checkSelfAndInvokeError(it)
+            receiveUser?.checkSelfAndInvokeError(it)
 
             transferEntity.receivePhoneNumber = it
         }

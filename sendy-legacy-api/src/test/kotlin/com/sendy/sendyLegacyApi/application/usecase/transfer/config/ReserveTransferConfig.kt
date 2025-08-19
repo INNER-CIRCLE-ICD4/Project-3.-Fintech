@@ -5,6 +5,7 @@ import com.sendy.sendyLegacyApi.domain.auth.UserEntityRepository
 import com.sendy.sendyLegacyApi.domain.transfer.TransferRepository
 import com.sendy.sendyLegacyApi.support.util.Aes256Util
 import com.sendy.sendyLegacyApi.support.util.SHA256Util
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -21,10 +22,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ],
 )
 @EntityScan(basePackages = ["com.sendy.sendyLegacyApi"])
-class ReserveTransferConfig {
+class ReserveTransferConfig(
+    @Value("\${aes256.key}")
+    private val key: String,
+) {
     @Bean
     fun sha256Util(): SHA256Util = SHA256Util()
 
     @Bean
-    fun aes256Util() = Aes256Util("d2f3de5ce2bef6aad4c2b01e2bffdcd6")
+    fun aes256Util() = Aes256Util(key)
 }

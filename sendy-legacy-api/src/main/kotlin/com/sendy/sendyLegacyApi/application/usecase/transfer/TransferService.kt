@@ -79,7 +79,7 @@ class TransferService(
                 // 수취인 휴대폰 기반으로 계좌 조회
                 val receiver =
                     userEntityRepository
-                        .findByPhoneNumberAndIsDeleteFalse(command.receivePhoneNumber)
+                        .findByPhoneNumberAndDeleteAtIsNull(command.receivePhoneNumber)
                         ?.also {
                             if (it.name != command.receiveName) {
                                 throw ServiceException(TransferErrorCode.INVALID_RECEIVER_NAME)

@@ -20,20 +20,20 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/users")
 class UserController(
-    private val UserService: UserService,
+    private val userService: UserService,
 ) {
     @PostMapping("")
     @Operation(summary = "사용자 등록", description = "사용자 정보로 회원가입을 합니다.")
     fun registerUser(
         @RequestBody @Valid requestDto: CreateUserDto,
-    ): Response<UserEntity> = Response.ok(UserService.registerUser(requestDto))
+    ): Response<UserEntity> = Response.ok(userService.registerUser(requestDto))
 
     @PutMapping("/{id}")
     @Operation(summary = "사용자 수정", description = "사용자 정보를 수정합니다.")
     fun updateUser(
         @RequestBody @Valid updateDto: UpdateUserDto,
         @PathVariable("id") id: Long,
-    ): Response<UserEntity> = Response.ok(UserService.updateUser(id, updateDto))
+    ): Response<UserEntity> = Response.ok(userService.updateUser(id, updateDto))
 
     @DeleteMapping("/{id}")
     @Operation(summary = "사용자 삭제", description = "사용자 정보를 삭제합니다.")
@@ -43,7 +43,7 @@ class UserController(
         @PathVariable("id") id: Long,
     ): Response<UserEntity> {
         // 로그인된 사용자 엔티티 조회
-        return Response.ok(UserService.deleteUser(email, password, id))
+        return Response.ok(userService.deleteUser(email, password, id))
     }
 
     @PostMapping("/auth/email/send")
@@ -51,12 +51,12 @@ class UserController(
     fun authEmailSent(
         @RequestParam email: String,
         @RequestParam userId: Long,
-    ): Response<String> = Response.ok(UserService.sendVerificationEmail(email, userId))
+    ): Response<String> = Response.ok(userService.sendVerificationEmail(email, userId))
 
     @PostMapping("/auth/email/verify")
     @Operation(summary = "본인인증 이메일 코드 검증", description = "이메일로 발송한 본인인증 코드를 확인합니다.")
     fun authEmailVerify(
         email: String,
         emailCode: String,
-    ): Response<Result> = Response.ok(UserService.verifyEmail(email, emailCode))
+    ): Response<Result> = Response.ok(userService.verifyEmail(email, emailCode))
 }

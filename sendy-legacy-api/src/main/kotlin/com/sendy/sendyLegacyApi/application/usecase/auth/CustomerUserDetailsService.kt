@@ -23,7 +23,7 @@ class CustomerUserDetailsService(
                     .orElseThrow { UsernameNotFoundException("해당 사용자가 없습니다: $username") }
             } catch (e: NumberFormatException) {
                 // 일반 로그인 시에는 email로 조회
-                userEntityRepository.findByEmail(username!!).orElseThrow { throw UsernameNotFoundException("해당 사용자가 없습니다: $username") }
+                userEntityRepository.findByEmail(username!!) ?: throw UsernameNotFoundException("해당 사용자가 없습니다: $username")
             }
 
         return org.springframework.security.core.userdetails.User(

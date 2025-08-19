@@ -7,4 +7,10 @@ interface TransferRepository {
         start: LocalDateTime,
         end: LocalDateTime,
     ): List<Transfer>
+
+    fun getReservedTransferByCursor(
+        id: Long,
+        startDt: LocalDateTime,
+        endDt: LocalDateTime,
+    ): List<Transfer>
 }

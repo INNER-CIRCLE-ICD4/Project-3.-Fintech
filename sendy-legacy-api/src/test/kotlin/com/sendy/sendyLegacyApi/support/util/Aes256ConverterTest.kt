@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 
 class Aes256ConverterTest {
     private val key = "12345678901234567890123456789012"
-    private val converter = Aes256Converter(key)
+    private val converter = Aes256Converter(Aes256Util(key))
 
     @Test
     fun `DB 저장시 암호화, 조회시 복호화가 정상 동작해야 한다`() {

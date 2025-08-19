@@ -10,7 +10,7 @@ import javax.crypto.spec.SecretKeySpec
 
 @Component
 class Aes256Util(
-    @Value("\${aes256.key}")
+    @Value("{aes256.key}")
     key: String,
 ) {
     private lateinit var secretKey: SecretKeySpec
@@ -23,6 +23,7 @@ class Aes256Util(
     }
 
     init {
+        println("key: $key")
         require(key.length == KEY_SIZE) { "AES-256 알고리즘 사용 시 32바이트 키가 필수입니다." }
         secretKey = SecretKeySpec(key.toByteArray(), ALGORITHM)
     }

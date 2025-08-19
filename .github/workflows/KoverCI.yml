@@ -33,16 +33,16 @@ jobs:
         continue-on-error: true
 
       - name: Generate Kover Coverage Report (XML)
-        run: ./gradlew koverXmlReport
+        run: ./gradlew :sendy-legacy-api:koverXmlReport
 
       - name: Generate Kover Coverage Report (HTML)
-        run: ./gradlew koverHtmlReport
+        run: ./gradlew :sendy-legacy-api:koverHtmlReport
 
       - name: Add coverage report to PR
         if: github.event_name == 'pull_request'
         uses: mi-kas/kover-report@v1
         with:
-          path: ${{ github.workspace }}/build/reports/kover/report.xml
+          path: ${{ github.workspace }}/sendy-legacy-api/build/reports/kover/report.xml
           title: "Code Coverage Report"
           update-comment: true
           min-coverage-overall: 70

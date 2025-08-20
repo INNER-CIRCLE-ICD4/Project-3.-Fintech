@@ -70,8 +70,8 @@ class TransferRepositoryCursorTest(
     @Test
     fun `cursor 방식으로 fetchSize 만큼 목록을 조회할 수 있어야된다`() {
         val expectList = mutableListOf<ReservationTransfer>()
-        val startDt = LocalDateTime.of(2025, Month.JANUARY, 1, 0, 0, 0)
-        val endDt = LocalDateTime.of(2025, Month.JANUARY, 1, 1, 0, 0)
+        val startDt = LocalDateTime.of(2025, Month.JANUARY, 1, 0, 0, 0).toString()
+        val endDt = LocalDateTime.of(2025, Month.JANUARY, 1, 1, 0, 0).toString()
         val initExecute = transferRepository.getReservedTransferByCursor(startDt, endDt, fetchSize = FETCH_SIZE)
         var nextCursor = initExecute.nextCursor
         expectList.add(initExecute)

@@ -5,9 +5,8 @@ import com.sendy.transferDomain.domain.vo.TransferId
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class ScheduledReserveTransferService(
@@ -17,17 +16,21 @@ class ScheduledReserveTransferService(
 
     @Scheduled(fixedDelayString = "10s")
     fun scheduled() {
-        val fetchSize = 100
-        val dateNow = LocalDate.now()
-        val start = LocalDateTime.of(dateNow, LocalTime.of(0, 0, 0))
-        val end = LocalDateTime.of(dateNow, LocalTime.of(23, 59, 59))
+        val dateNow = LocalDateTime.now()
+        val truncatedTo = dateNow.truncatedTo(ChronoUnit.HOURS)
+        val startDt = "${truncatedTo.minus(1, ChronoUnit.HOURS)}:00"
+        val endDt = "$truncatedTo:00"
+
+        val readReservationTransfer = readReservationTransfer(startDt, endDt)
+
+        readReservationTransfer.forEach { logger.info("size: {}, reservation: {}", it.size, it) }
     }
 
     private fun readReservationTransfer(
-        startDt: LocalDateTime,
-        endDt: LocalDateTime,
-        fetchSize: Int,
+        startDt: String,
+        endDt: String,
     ): List<List<TransferId>> {
+        val fetchSize = 100
         val list = mutableListOf<List<TransferId>>()
 
         val initResult = transferRepository.getReservedTransferByCursor(startDt, endDt, fetchSize = fetchSize)

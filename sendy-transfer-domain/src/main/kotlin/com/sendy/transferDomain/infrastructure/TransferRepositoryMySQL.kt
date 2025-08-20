@@ -6,7 +6,6 @@ import com.sendy.transferDomain.domain.vo.TransferId
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 internal class TransferRepositoryMySQL(
@@ -14,8 +13,8 @@ internal class TransferRepositoryMySQL(
     private val jdbcTemplate: JdbcTemplate,
 ) : TransferRepository {
     override fun getReservedTransferByCursor(
-        startDt: LocalDateTime,
-        endDt: LocalDateTime,
+        startDt: String,
+        endDt: String,
         id: Long?,
         fetchSize: Int?,
     ): ReservationTransfer {

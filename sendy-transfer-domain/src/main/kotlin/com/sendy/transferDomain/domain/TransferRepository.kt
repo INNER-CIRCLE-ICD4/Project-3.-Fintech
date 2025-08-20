@@ -9,8 +9,9 @@ interface TransferRepository {
     ): List<Transfer>
 
     fun getReservedTransferByCursor(
-        id: Long,
         startDt: LocalDateTime,
         endDt: LocalDateTime,
-    ): List<Transfer>
+        id: Long? = null,
+        fetchSize: Int? = 1_000,
+    ): ReservationTransfer
 }

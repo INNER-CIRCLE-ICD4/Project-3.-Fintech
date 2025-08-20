@@ -1,38 +1,30 @@
 package com.sendy.transferScheduler.application.service
 
+import com.sendy.sharedKafka.event.EventMessage
+import com.sendy.sharedKafka.event.EventPublisher
 import com.sendy.transferDomain.domain.TransferRepository
 import org.slf4j.LoggerFactory
+import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 
 @Service
 class ScheduledReserveTransferService(
     private val transferRepository: TransferRepository,
+    private val eventPublisher: EventPublisher,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    @Scheduled(fixedDelayString = "10s")
+    @Scheduled(fixedDelayString = "1h")
     fun scheduled() {
-        val dateNow = LocalDate.now()
-        val start = LocalDateTime.of(dateNow, LocalTime.of(0, 0, 0))
-        val end = LocalDateTime.of(dateNow, LocalTime.of(23, 59, 59))
-        val findReservedTransfer = transferRepository.findReservedTransfer(start, end)
-        logger.info("scheduled.. start")
+        eventPublisher.publish(
+            "transfer-scheduler.transfer.reservation.started",
+            EventMessage(id = 1L, source = "test", aggregateId = 1234L, payload = "test"),
+        )
+    }
 
-        findReservedTransfer.forEach {
-            logger.info(
-                "id: {}, amount: {}, status: {}, scheduledAt: {}, completedAt: {}",
-                it.id,
-                it.amount,
-                it.status,
-                it.scheduledAt,
-                it.completedAt,
-            )
-        }
-
-        logger.info("scheduled.. end")
+    @KafkaListener(topics = ["transfer-scheduler.transfer.reservation.started"])
+    fun consumer(message: EventMessage<String>) {
+        logger.info("self consume message: {}", message)
     }
 }

@@ -17,7 +17,6 @@ class DateTest {
         val startDt = "${truncatedTo.minus(1, ChronoUnit.HOURS)}:00"
         val endDt = "$truncatedTo:00"
 
-        LocalDateTime.parse(startDt).let { println(it) }
         assertEquals(
             startDt.split("T")[1],
             LocalDateTime

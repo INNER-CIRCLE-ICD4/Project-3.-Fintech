@@ -10,5 +10,5 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @Configuration(proxyBeanMethods = false)
 @EnableScheduling
 @Import(TransferDomainJpaConfig::class, SharedKafkaConfig::class)
-@ComponentScan(value = ["com.sendy.transferDomain", "com.sendy.sharedKafka"])
+@ComponentScan(value = ["com.sendy.transferDomain"])
 class SchedulingConfig

@@ -112,6 +112,24 @@ services:
     networks:
       - sendy-net
 
+  mongo:
+    image: mongo:8.0
+    container_name: sendy-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: sendy-mongoDB
+      MONGO_INITDB_ROOT_PASSWORD: sendy123!
+      # 기본 데이터베이스 생성
+      MONGO_INITDB_DATABASE: notification
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db/mongo:/data/db
+      - ./db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - sendy-net
+
+
 networks:
   sendy-net:
 

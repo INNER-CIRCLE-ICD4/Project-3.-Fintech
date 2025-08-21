@@ -16,4 +16,4 @@ spring:
       password:
   kafka:
     consumer:
-      group-id: reservation-transfer
+      group-id: transfer-scheduler2

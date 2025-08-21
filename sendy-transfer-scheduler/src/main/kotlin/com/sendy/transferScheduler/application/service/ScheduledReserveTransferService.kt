@@ -30,8 +30,8 @@ class ScheduledReserveTransferService(
         readReservationTransfer.forEach { logger.info("size: {}, reservation: {}", it.size, it) }
 
         eventPublisher.publish(
-                "transfer-scheduler.transfer.reservation.started",
-                EventMessage(id = 1L, source = "test", aggregateId = 1234L, payload = "test"),
+            "transfer-scheduler.transfer.reservation.started",
+            EventMessage(eventId = 1L, aggregateId = 1234L, payload = "test"),
         )
     }
 

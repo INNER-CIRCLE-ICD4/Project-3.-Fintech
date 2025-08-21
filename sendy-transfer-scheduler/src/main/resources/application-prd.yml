@@ -12,7 +12,7 @@ spring:
       password: ${SPRING_DATASOURCE_PASSWORD:sendy_master}
   kafka:
     consumer:
-      group-id: reservation-transfer
+      group-id: transfer-scheduler
 
 
 logging:

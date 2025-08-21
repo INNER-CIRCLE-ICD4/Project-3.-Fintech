@@ -10,6 +10,10 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       username: ${SPRING_DATASOURCE_USERNAME:sendy_master}
       password: ${SPRING_DATASOURCE_PASSWORD:sendy_master}
+  kafka:
+    consumer:
+      group-id: reservation-transfer
+
 
 logging:
   level:

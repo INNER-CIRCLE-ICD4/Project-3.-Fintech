@@ -5,7 +5,6 @@ import com.sendy.sharedKafka.event.EventPublisher
 import com.sendy.transferDomain.domain.TransferRepository
 import com.sendy.transferDomain.domain.vo.TransferId
 import org.slf4j.LoggerFactory
-import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -33,11 +32,6 @@ class ScheduledReserveTransferService(
             "transfer-scheduler.transfer.reservation.started",
             EventMessage(eventId = 1L, aggregateId = 1234L, payload = "test"),
         )
-    }
-
-    @KafkaListener(topics = ["transfer-scheduler.transfer.reservation.started"])
-    fun consumer(message: EventMessage<String>) {
-        logger.info("self consume message: {}", message)
     }
 
     private fun readReservationTransfer(

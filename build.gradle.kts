@@ -71,6 +71,9 @@ dependencies {
 
     //redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    implementation ("com.linecorp.armeria:armeria-bom:1.24.3")
+    implementation ("com.linecorp.armeria:armeria-logback")
 }
 
 tasks.withType<JavaCompile> {

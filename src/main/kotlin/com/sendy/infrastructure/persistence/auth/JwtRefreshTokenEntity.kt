@@ -14,7 +14,7 @@ data class JwtRefreshTokenEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "token_id")
-    var id: Long = 0,
+    var id: Long? = null,
     @Column(name = "user_id", nullable = false)
     val userId: Long,
     @Column(name = "device_id", nullable = true)

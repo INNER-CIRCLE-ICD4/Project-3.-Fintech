@@ -56,7 +56,8 @@ class UserController(
     @PostMapping("/auth/email/verify")
     @Operation(summary = "본인인증 이메일 코드 검증", description = "이메일로 발송한 본인인증 코드를 확인합니다.")
     fun authEmailVerify(
-        email: String,
-        emailCode: String,
-    ): Response<Result> = Response.ok(UserService.verifyEmail(email, emailCode))
+        @RequestParam email: String,
+        @RequestParam emailCode: String,
+        @RequestParam userId: Long,
+    ): Response<Result> = Response.ok(UserService.verifyEmail(userId, email, emailCode))
 }

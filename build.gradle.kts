@@ -62,6 +62,9 @@ subprojects {
         testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1") // 최신 버전 확인 가능
 
         kover(project(":sendy-legacy-api"))
+
+        //redis
+        implementation("org.springframework.boot:spring-boot-starter-data-redis")
     }
 
     tasks.withType<JavaCompile> {

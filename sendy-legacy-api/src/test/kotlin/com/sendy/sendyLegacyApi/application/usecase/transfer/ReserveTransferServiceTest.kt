@@ -5,7 +5,7 @@ import com.sendy.sendyLegacyApi.application.usecase.transfer.config.ReserveTrans
 import com.sendy.sendyLegacyApi.domain.account.AccountEntity
 import com.sendy.sendyLegacyApi.domain.account.AccountRepository
 import com.sendy.sendyLegacyApi.domain.account.AccountStatus
-import com.sendy.sendyLegacyApi.domain.auth.UserEntityRepository
+import com.sendy.sendyLegacyApi.domain.authorities.UserEntityRepository
 import com.sendy.sendyLegacyApi.domain.enum.TransferStatusEnum
 import com.sendy.sendyLegacyApi.domain.transfer.TransferRepository
 import com.sendy.sendyLegacyApi.domain.user.UserEntity

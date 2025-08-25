@@ -1,6 +1,6 @@
 package com.sendy.sendyLegacyApi.interfaces.rest.auth
 
-import com.sendy.sendyLegacyApi.application.usecase.auth.DeviceService
+import com.sendy.sendyLegacyApi.application.usecase.authorities.DeviceService
 import com.sendy.sendyLegacyApi.infrastructure.persistence.auth.DeviceInfoEntity
 import com.sendy.sendyLegacyApi.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
@@ -32,4 +32,7 @@ class DeviceController(
 
     // 단일 디바이스 정책에서는 특정 디바이스 로그아웃이 불필요하므로 제거
     // 새 디바이스에서 로그인하면 자동으로 기존 디바이스가 로그아웃됨
+
+
+
 }

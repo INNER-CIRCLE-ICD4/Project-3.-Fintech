@@ -2,11 +2,10 @@ package com.sendy.sendyLegacyApi.interfaces.rest.user
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import com.sendy.sendyLegacyApi.application.dto.auth.DeviceInfoDto
-import com.sendy.sendyLegacyApi.application.dto.auth.LoginRequestDto
-import com.sendy.sendyLegacyApi.application.usecase.auth.LoginService
-import com.sendy.sendyLegacyApi.application.usecase.auth.interfaces.LoginResult
-import com.sendy.sendyLegacyApi.domain.auth.token.controller.model.TokenResponse
+import com.sendy.sendyLegacyApi.application.dto.authorities.TokenResponseDto
+import com.sendy.sendyLegacyApi.application.dto.login.DeviceInfoDto
+import com.sendy.sendyLegacyApi.application.dto.login.LoginRequestDto
+import com.sendy.sendyLegacyApi.application.usecase.authorities.LoginService
 import com.sendy.sendyLegacyApi.interfaces.filter.JwtAuthenticationFilter
 import com.sendy.sendyLegacyApi.interfaces.rest.auth.LoginController
 import io.mockk.MockKAnnotations
@@ -87,18 +86,18 @@ class LoginControllerTest {
                     ),
             )
 
-        val tokenResponse =
-            TokenResponse(
+        val tokenResponseDto =
+            TokenResponseDto(
                 accessToken = "access_token_123",
                 accessTokenExpiredAt = LocalDateTime.now().plusHours(1),
                 refreshToken = "refresh_token_456",
                 refreshTokenExpiredAt = LocalDateTime.now().plusHours(24),
             )
 
-        val loginResult = LoginResult(tokenResponse)
+        val loginResult = tokenResponseDto
 
         every {
-            loginService.login(any())
+            loginService.login(loginRequestDto, mockRequest)
         } returns loginResult
 
         // When & Then
@@ -111,8 +110,8 @@ class LoginControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.result.resultCode").value(200))
             .andExpect(jsonPath("$.result.resultMessage").value("OK"))
-            .andExpect(jsonPath("$.body.tokenResponse.accessToken").value(tokenResponse.accessToken))
-            .andExpect(jsonPath("$.body.tokenResponse.refreshToken").value(tokenResponse.refreshToken))
+            .andExpect(jsonPath("$.body.tokenResponse.accessToken").value(tokenResponseDto.accessToken))
+            .andExpect(jsonPath("$.body.tokenResponse.refreshToken").value(tokenResponseDto.refreshToken))
             .andExpect(jsonPath("$.body.tokenResponse.accessTokenExpiredAt").exists())
             .andExpect(jsonPath("$.body.tokenResponse.refreshTokenExpiredAt").exists())
     }

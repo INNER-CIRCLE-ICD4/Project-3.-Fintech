@@ -1,9 +1,9 @@
 package com.sendy.sendyLegacyApi.interfaces.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.sendy.sendyLegacyApi.application.usecase.auth.CustomerUserDetailsService
-import com.sendy.sendyLegacyApi.domain.auth.token.helper.JwtTokenHelper
-import com.sendy.sendyLegacyApi.domain.auth.token.service.JwtTokenStorageService
+import com.sendy.sendyLegacyApi.application.usecase.authorities.CustomerUserDetailsService
+import com.sendy.sendyLegacyApi.application.usecase.authorities.JwtTokenHelper
+import com.sendy.sendyLegacyApi.application.usecase.authorities.JwtTokenStorageService
 import com.sendy.sendyLegacyApi.domain.enum.TokenStatus
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

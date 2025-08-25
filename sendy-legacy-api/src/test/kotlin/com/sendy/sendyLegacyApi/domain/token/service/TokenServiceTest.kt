@@ -1,11 +1,11 @@
 package com.sendy.sendyLegacyApi.domain.token.service
 
-import com.sendy.sendyLegacyApi.application.dto.auth.RefreshTokenResponseDto
-import com.sendy.sendyLegacyApi.domain.auth.token.business.TokenBusiness
-import com.sendy.sendyLegacyApi.domain.auth.token.controller.model.TokenResponse
-import com.sendy.sendyLegacyApi.domain.auth.token.converter.TokenConverter
-import com.sendy.sendyLegacyApi.domain.auth.token.model.TokenDto
-import com.sendy.sendyLegacyApi.domain.auth.token.service.TokenService
+import com.sendy.sendyLegacyApi.application.dto.authorities.RefreshTokenResponseDto
+import com.sendy.sendyLegacyApi.application.usecase.authorities.TokenBusiness
+import com.sendy.sendyLegacyApi.application.dto.authorities.TokenResponseDto
+import com.sendy.sendyLegacyApi.application.usecase.authorities.TokenConverter
+import com.sendy.sendyLegacyApi.application.dto.authorities.TokenDto
+import com.sendy.sendyLegacyApi.application.usecase.authorities.TokenService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -48,7 +48,7 @@ class TokenServiceTest {
                 expiredAt = LocalDateTime.now().plusHours(24),
             )
         val expectedResponse =
-            TokenResponse(
+            TokenResponseDto(
                 accessToken = accessToken.token,
                 accessTokenExpiredAt = accessToken.expiredAt,
                 refreshToken = refreshToken.token,

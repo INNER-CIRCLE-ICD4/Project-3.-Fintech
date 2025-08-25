@@ -10,7 +10,7 @@ import javax.crypto.spec.SecretKeySpec
 
 @Component
 class Aes256Util(
-    @Value("{aes256.key}")
+    @Value("\${aes256.key}")
     key: String,
 ) {
     private lateinit var secretKey: SecretKeySpec

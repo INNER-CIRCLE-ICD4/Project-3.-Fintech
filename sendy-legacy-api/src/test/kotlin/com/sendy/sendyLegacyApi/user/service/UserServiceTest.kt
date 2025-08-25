@@ -1,9 +1,9 @@
 package com.sendy.sendyLegacyApi.user.service
 
-import com.sendy.sendyLegacyApi.application.dto.user.CreateUserDto
-import com.sendy.sendyLegacyApi.application.dto.user.UpdateUserDto
-import com.sendy.sendyLegacyApi.application.usecase.user.UserService
-import com.sendy.sendyLegacyApi.domain.auth.UserRepository
+import com.sendy.sendyLegacyApi.application.dto.users.CreateUserDto
+import com.sendy.sendyLegacyApi.application.dto.users.UpdateUserDto
+import com.sendy.sendyLegacyApi.application.usecase.users.UserService
+import com.sendy.sendyLegacyApi.domain.authorities.UserEntityRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 class UserServiceTest(
     @Autowired private val userService: UserService,
-    @Autowired private val userRepository: UserRepository,
+    @Autowired private val userRepository: UserEntityRepository,
 ) {
     @Test
     fun registerUser() {
@@ -31,7 +31,7 @@ class UserServiceTest(
 
     @Test
     fun updateUser() {
-        val user = userRepository.findByEmail("test@gmail.com").get()
+        val user = userRepository.findByEmail("test@gmail.com") ?: return
         val dto =
             UpdateUserDto(
                 name = "",
@@ -44,7 +44,7 @@ class UserServiceTest(
 
     @Test
     fun deleteUser() {
-        val user = userRepository.findByEmail("test@gmail.com").get()
+        val user = userRepository.findByEmail("test@gmail.com") ?: return
         userService.deleteUser("test@gmail.com", "1234", user.id)
 
         println(userService.deleteUser("test@gmail.com", "1234", user.id))

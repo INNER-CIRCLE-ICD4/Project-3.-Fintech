@@ -1,6 +1,6 @@
 package com.sendy.sendyLegacyApi.domain.user
 
-import com.sendy.sendyLegacyApi.application.dto.user.UpdateUserDto
+import com.sendy.sendyLegacyApi.application.dto.users.UpdateUserDto
 import com.sendy.sendyLegacyApi.infrastructure.persistence.Identity
 import com.sendy.sendyLegacyApi.support.error.ErrorCode
 import com.sendy.sendyLegacyApi.support.exception.ServiceException
@@ -26,7 +26,7 @@ class UserEntity(
     @Column(name = "phone_number", length = 100, nullable = false)
     @Convert(converter = Aes256Converter::class)
     val phoneNumber: String,
-    @Column(name = "password", length = 100, nullable = false)
+    @Column(name = "password", nullable = false)
     val password: String,
     @Column(name = "email", columnDefinition = "VARCHAR(255)", nullable = false)
     @Convert(converter = Aes256Converter::class)

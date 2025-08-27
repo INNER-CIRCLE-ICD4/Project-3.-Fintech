@@ -112,17 +112,21 @@ class UserService(
 
     @Transactional
     fun verifyEmail(
+        userId : Long,
         email: String,
         emailCode: String,
     ): Result {
-        val emailEntity = emailRepository.findByEmail(email) ?: throw ResponseException("이메일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+
         val user =
-            userEntityRepository.findById(emailEntity.userId).orElseThrow {
+            userEntityRepository.findById(userId).orElseThrow {
                 throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
             }
         if (!user.email.equals(email)) {
             throw ResponseException("이메일 정보가 다릅니다.", HttpStatus.NOT_FOUND)
         }
+
+        val emailEntity =  emailRepository.findByUserId(userId)
+            ?: throw ResponseException("이메일 인증 정보가 없습니다.", HttpStatus.NOT_FOUND)
 
         if (emailEntity.code != emailCode) {
             throw ResponseException("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST)

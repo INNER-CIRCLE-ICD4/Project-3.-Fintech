@@ -1,25 +1,44 @@
 package com.sendy.sendyLegacyApi.interfaces.rest.auth
 
-import com.sendy.sendyLegacyApi.domain.auth.token.service.JwtTokenStorageService
+import com.sendy.sendyLegacyApi.application.dto.authorities.RefreshTokenRequestDto
+import com.sendy.sendyLegacyApi.application.dto.authorities.RefreshTokenResponseDto
+import com.sendy.sendyLegacyApi.application.usecase.authorities.JwtTokenStorageService
+import com.sendy.sendyLegacyApi.application.usecase.authorities.TokenService
 import com.sendy.sendyLegacyApi.domain.enum.TokenStatus
 import com.sendy.sendyLegacyApi.interfaces.filter.JwtAuthenticationFilter
 import com.sendy.sendyLegacyApi.support.response.Response
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@Tag(name = "Auth Conflict", description = "디바이스 충돌 상황 처리 API")
+@Tag(name = "Auth Conflict", description = "사용자 인증/인가 API")
 @RestController
 @RequestMapping("/authorities")
 class AuthConflictController(
+    private val tokenService: TokenService,
     private val jwtTokenStorageService: JwtTokenStorageService,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
 ) {
     private val logger = LoggerFactory.getLogger(AuthConflictController::class.java)
+
+    @Operation(
+        summary = "Access Token 갱신",
+        description = "Refresh Token을 사용하여 새로운 Access Token을 발급받습니다. Refresh Token이 만료된 경우 재로그인이 필요합니다.",
+    )
+    @PostMapping("/refresh")
+    fun refreshToken(
+        @Valid @RequestBody request: RefreshTokenRequestDto,
+    ): Response<RefreshTokenResponseDto> {
+        val refreshTokenResponse = tokenService.refreshAccessToken(request.refreshToken)
+        return Response.ok(refreshTokenResponse)
+    }
+
 
     @Operation(
         summary = "현재 세션 계속 사용",
@@ -43,17 +62,12 @@ class AuthConflictController(
         }
 
         // 사용자 ID 추출
-        val userId = jwtAuthenticationFilter.getUserIdFromToken(token)
-        if (userId == null) {
-            return Response.fail("유효하지 않은 토큰입니다.")
-        }
+        val userId = jwtAuthenticationFilter.getUserIdFromToken(token) ?: return Response.fail("유효하지 않은 토큰입니다.")
 
         // 현재 사용자의 PENDING_LOGOUT 토큰들을 ACTIVE로 복원
         jwtTokenStorageService.restorePendingTokensByUserId(userId)
 
-        logger.info("사용자 ID $userId 의 세션을 계속 사용하도록 복원했습니다.")
-
-        return Response.ok("현재 세션을 계속 사용합니다. 새로운 로그인은 차단되었습니다.")
+        return Response.ok("$userId 현재 세션을 계속 사용합니다. 새로운 로그인은 차단되었습니다.")
     }
 
     @Operation(
@@ -83,8 +97,8 @@ class AuthConflictController(
         // 현재 사용자의 모든 토큰을 REVOKED로 변경 (완전 로그아웃)
         jwtTokenStorageService.revokeAllTokensByUserId(userId)
 
-        logger.info("사용자 ID $userId 가 로그아웃을 확인했습니다.")
-
-        return Response.ok("로그아웃되었습니다. 새로운 디바이스에서 로그인이 허용됩니다.")
+        return Response.ok("$userId 로그아웃되었습니다. 새로운 디바이스에서 로그인이 허용됩니다.")
     }
+
+
 }

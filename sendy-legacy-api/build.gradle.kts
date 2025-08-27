@@ -9,6 +9,7 @@ allOpen {
 
 tasks.bootJar {
     archiveFileName.set("sendy-legacy-api.jar")
+    mainClass.set("com.sendy.sendyLegacyApi.SendyLegacyApiKt")
 }
 
 dependencies {
@@ -31,4 +32,7 @@ dependencies {
 
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    //kafka
+    implementation(project(":sendy-shared-kafka"))
 }

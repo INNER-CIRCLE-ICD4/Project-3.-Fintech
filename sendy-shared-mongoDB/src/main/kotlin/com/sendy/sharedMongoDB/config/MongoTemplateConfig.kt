@@ -1,4 +1,4 @@
-package com.sendy.config
+package com.sendy.sharedMongoDB.config
 
 import org.springframework.context.annotation.Configuration
 

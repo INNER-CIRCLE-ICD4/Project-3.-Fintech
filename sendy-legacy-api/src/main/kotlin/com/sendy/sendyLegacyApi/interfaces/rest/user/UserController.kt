@@ -1,8 +1,8 @@
 package com.sendy.sendyLegacyApi.interfaces.rest.user
 
-import com.sendy.sendyLegacyApi.application.dto.users.CreateUserDto
-import com.sendy.sendyLegacyApi.application.dto.users.UpdateUserDto
-import com.sendy.sendyLegacyApi.application.usecase.users.UserService
+import com.sendy.sendyLegacyApi.application.dto.user.CreateUserDto
+import com.sendy.sendyLegacyApi.application.dto.user.UpdateUserDto
+import com.sendy.sendyLegacyApi.application.usecase.user.UserService
 import com.sendy.sendyLegacyApi.domain.user.UserEntity
 import com.sendy.sendyLegacyApi.support.response.Response
 import com.sendy.sendyLegacyApi.support.response.Result

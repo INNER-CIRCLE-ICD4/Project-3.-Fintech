@@ -10,5 +10,7 @@ interface EmailRepository : JpaRepository<EmailEntity, Long> {
 
     fun findByEmail(email: String): EmailEntity?
 
+    fun findByUserId(UserId: Long): EmailEntity?
+
     fun deleteByEmail(emailEntity: EmailEntity): EmailEntity?
 }

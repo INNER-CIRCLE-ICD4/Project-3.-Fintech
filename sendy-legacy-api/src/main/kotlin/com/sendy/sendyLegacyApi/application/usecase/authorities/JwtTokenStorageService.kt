@@ -111,8 +111,8 @@ class JwtTokenStorageService(
                 userId = userId,
                 tokenHash = jti, // jti를 tokenHash 필드에 저장
                 expiredAt = expiredAt,
-                status = TokenStatus.ACTIVE,
-            ),
+                status = TokenStatus.ACTIVE
+            )
         )
     }
 

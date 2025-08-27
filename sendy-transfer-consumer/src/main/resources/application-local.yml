@@ -17,3 +17,11 @@ spring:
   kafka:
     consumer:
       group-id: transfer-scheduler
+
+logging:
+  level:
+    feign: debug
+
+feign:
+  transfer:
+    url: http://localhost:8080/transfers

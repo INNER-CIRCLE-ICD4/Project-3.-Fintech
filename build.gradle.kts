@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+ext["springCloudVersion"] = "2025.0.0"
+
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25" apply false
@@ -57,6 +59,11 @@ subprojects {
         // monitoring
         implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("io.micrometer:micrometer-registry-prometheus")
+
+        // spring cloud
+        implementation(platform("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}"))
+        // open feign
+        implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
         // mokito
         testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1") // 최신 버전 확인 가능

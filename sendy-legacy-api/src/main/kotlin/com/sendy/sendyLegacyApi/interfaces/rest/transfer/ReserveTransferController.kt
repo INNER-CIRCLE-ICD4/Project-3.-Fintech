@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("transfer/reserve")
+@RequestMapping("transfers/reserve")
 class ReserveTransferController(
     private val reserveTransferUseCase: ReserveTransferUseCase,
 ) {

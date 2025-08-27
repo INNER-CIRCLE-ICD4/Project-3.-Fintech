@@ -1,8 +1,8 @@
 package com.sendy.sendyLegacyApi.interfaces.rest.user
 
-import com.sendy.sendyLegacyApi.application.dto.user.CreateUserDto
-import com.sendy.sendyLegacyApi.application.dto.user.UpdateUserDto
-import com.sendy.sendyLegacyApi.application.usecase.user.UserService
+import com.sendy.sendyLegacyApi.application.dto.users.CreateUserDto
+import com.sendy.sendyLegacyApi.application.dto.users.UpdateUserDto
+import com.sendy.sendyLegacyApi.application.usecase.users.UserService
 import com.sendy.sendyLegacyApi.domain.user.UserEntity
 import com.sendy.sendyLegacyApi.support.response.Response
 import com.sendy.sendyLegacyApi.support.response.Result
@@ -56,7 +56,8 @@ class UserController(
     @PostMapping("/auth/email/verify")
     @Operation(summary = "본인인증 이메일 코드 검증", description = "이메일로 발송한 본인인증 코드를 확인합니다.")
     fun authEmailVerify(
-        email: String,
-        emailCode: String,
-    ): Response<Result> = Response.ok(userService.verifyEmail(email, emailCode))
+        @RequestParam email: String,
+        @RequestParam emailCode: String,
+        @RequestParam userId: Long,
+    ): Response<Result> = Response.ok(userService.verifyEmail(userId, email, emailCode))
 }

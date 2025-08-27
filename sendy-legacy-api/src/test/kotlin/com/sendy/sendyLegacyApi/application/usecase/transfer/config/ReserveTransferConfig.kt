@@ -1,7 +1,7 @@
 package com.sendy.sendyLegacyApi.application.usecase.transfer.config
 
 import com.sendy.sendyLegacyApi.domain.account.AccountRepository
-import com.sendy.sendyLegacyApi.domain.auth.UserEntityRepository
+import com.sendy.sendyLegacyApi.domain.authorities.UserEntityRepository
 import com.sendy.sendyLegacyApi.domain.transfer.TransferRepository
 import com.sendy.sendyLegacyApi.support.util.Aes256Util
 import com.sendy.sendyLegacyApi.support.util.SHA256Util

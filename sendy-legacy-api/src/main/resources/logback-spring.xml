@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <springProperty name="name" source="spring.application.name" />
-    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <springProperty name="name" source="spring.application.name"/>
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
 
-    <property name="LOG_PATTERN" value="%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] %clr(%5level) %cyan(%logger) - %msg%n"/>
+    <property name="LOG_PATTERN"
+              value="%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] %clr(%5level) %cyan(%logger) - %msg%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -16,14 +17,17 @@
 
         <discriminator class="ch.qos.logback.classic.sift.MDCBasedDiscriminator">
             <key>basePath</key>
-            <defaultValue>etc</defaultValue> </discriminator>
+            <defaultValue>etc</defaultValue>
+        </discriminator>
 
         <sift>
             <appender name="FILE-${basePath}" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
                 <encoder>
-<!--                    <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] (%5level) (%logger) - %msg %n</pattern>-->
-                    <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] [%5level] %logger{0} - %msg %n</pattern>
+                    <!--                    <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] (%5level) (%logger) - %msg %n</pattern>-->
+                    <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] [%5level] %logger{0} - %msg
+                        %n
+                    </pattern>
                 </encoder>
 
                 <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -40,18 +44,10 @@
     <logger name="org.hibernate.SQL" level="DEBUG"/>
     <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
 
-    <springProfile name="dev">
+    <springProfile name="local,prd">
         <root level="INFO">
-            <appender-ref ref="CONSOLE" />
-            <appender-ref ref="SIFT" />
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="SIFT"/>
         </root>
     </springProfile>
-
-    <springProfile name="local">
-        <root level="INFO">
-            <appender-ref ref="CONSOLE" />
-            <appender-ref ref="SIFT" />
-        </root>
-    </springProfile>
-
 </configuration>

@@ -11,11 +11,17 @@ import com.sendy.sendyLegacyApi.support.response.Result
 import com.sendy.sendyLegacyApi.support.util.Aes256Util
 import com.sendy.sendyLegacyApi.support.util.SHA256Util
 import com.sendy.sendyLegacyApi.support.util.getTsid
+import com.sendy.sharedKafka.event.EventMessage
+import com.sendy.sharedKafka.event.EventPublisher
+import com.sendy.sharedKafka.event.EventTypes
+import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
+import java.util.*
 
 @Service
 class UserService(
@@ -24,6 +30,7 @@ class UserService(
     private val mailSender: JavaMailSender,
     private val sha256Util: SHA256Util,
     private val mailAsyncSend: MailAsyncSend,
+    private val eventPublisher: EventPublisher, // Kafka EventPublisher 추가
     @Value("\${aes256.key}") private val key: String,
 ) {
     private val aesUtil = Aes256Util(key)
@@ -104,7 +111,35 @@ class UserService(
             throw ResponseException("이메일 발송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
+        // 실제 이메일 발송
         val mailFlag = mailAsyncSend.sendEmailAsync(mailSender, email, randomCode)
+        
+        // 이메일 발송 후 Kafka 알림 메시지 발송
+        val user = userEntityRepository.findById(userId).orElseThrow { 
+            throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) 
+        }
+        
+        val eventMessage = EventMessage(
+            id = getTsid().toString(),
+            source = "sendy-legacy-api",
+            aggregateId = userId.toString(),
+            payload = EmailVerificationSentEvent(
+                userId = userId,
+                email = email,
+                username = user.name,
+                verificationToken = randomCode,
+                expiresAt = Instant.now().plusSeconds(3600)
+            ),
+            type = EventTypes.USER_VERIFICATION,
+            createdAt = java.time.LocalDateTime.now().toString()
+        )
+        
+        eventPublisher.publish(
+            topic = "user-registration.user.register.email",
+            key = email,
+            data = eventMessage,
+        )
+        
         return "인증 코드 발송" + mailFlag
     }
 

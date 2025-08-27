@@ -1,0 +1,42 @@
+# 보안이 강화된 MongoDB 설정 (애플리케이션 전용 사용자)
+
+# 기본 설정 (Docker 내부)
+spring:
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      database: notification
+      username: notification-user  # 초기화 스크립트에서 생성한 사용자
+      password: notification123
+      authentication-database: notification  # notification DB로 인증
+
+---
+# 로컬 개발 환경
+spring:
+  config:
+    activate:
+      on-profile: local
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: notification_local
+      username: notification-user
+      password: notification123
+      authentication-database: notification
+
+---  
+# Docker 내부 환경
+spring:
+  config:
+    activate:
+      on-profile: docker
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      database: notification
+      username: notification-user
+      password: notification123
+      authentication-database: notification

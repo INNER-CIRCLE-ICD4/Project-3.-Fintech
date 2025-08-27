@@ -3,7 +3,7 @@ package com.sendy.sendyLegacyApi.domain.service // package com.sendy.domain.serv
 // import com.sendy.sendyLegacyApi.support.util.SHA256Util
 // import com.common.domain.error.ErrorCode
 // import com.common.domain.exceptions.ApiException
-// import com.sendy.sendyLegacyApi.application.dto.auth.LoginRequestDto
+// import com.sendy.sendyLegacyApi.application.dto.login.LoginRequestDto
 // import com.sendy.sendyLegacyApi.domain.model.User
 // import com.sendy.sendyLegacyApi.domain.auth.UserRepository
 // import com.sendy.sendyLegacyApi.domain.token.controller.model.TokenResponse

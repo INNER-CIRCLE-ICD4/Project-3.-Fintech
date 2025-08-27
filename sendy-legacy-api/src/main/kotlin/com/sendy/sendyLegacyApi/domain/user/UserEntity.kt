@@ -1,7 +1,9 @@
 package com.sendy.sendyLegacyApi.domain.user
 
-import com.sendy.sendyLegacyApi.application.dto.user.UpdateUserDto
+import com.sendy.sendyLegacyApi.application.dto.users.UpdateUserDto
 import com.sendy.sendyLegacyApi.infrastructure.persistence.Identity
+import com.sendy.sendyLegacyApi.support.error.ErrorCode
+import com.sendy.sendyLegacyApi.support.exception.ServiceException
 import com.sendy.sendyLegacyApi.support.util.Aes256Converter
 import jakarta.persistence.*
 import java.time.LocalDateTime
@@ -121,5 +123,11 @@ class UserEntity(
      */
     fun updateLastActivity() {
         this.updateAt = LocalDateTime.now()
+    }
+
+    fun checkSelfAndInvokeError(phoneNumber: String) {
+        if (this.phoneNumber == phoneNumber) {
+            throw ServiceException(ErrorCode.INVALID_INPUT_VALUE)
+        }
     }
 }

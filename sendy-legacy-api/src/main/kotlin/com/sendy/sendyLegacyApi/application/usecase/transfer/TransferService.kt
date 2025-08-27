@@ -6,7 +6,7 @@ import com.sendy.sendyLegacyApi.application.usecase.transfer.command.TransferMon
 import com.sendy.sendyLegacyApi.domain.account.AccountRepository
 import com.sendy.sendyLegacyApi.domain.account.TransactionHistoryEntity
 import com.sendy.sendyLegacyApi.domain.account.TransactionHistoryRepository
-import com.sendy.sendyLegacyApi.domain.auth.UserEntityRepository
+import com.sendy.sendyLegacyApi.domain.authorities.UserEntityRepository
 import com.sendy.sendyLegacyApi.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.sendyLegacyApi.domain.enum.TransferStatusEnum
 import com.sendy.sendyLegacyApi.domain.transfer.TransferEntity
@@ -79,13 +79,12 @@ class TransferService(
                 // 수취인 휴대폰 기반으로 계좌 조회
                 val receiver =
                     userEntityRepository
-                        .findByPhoneNumberAndIsDeleteFalse(command.receivePhoneNumber)
-                        .orElseThrow { throw ServiceException(TransferErrorCode.INVALID_RECEIVER_PHONE_NUMBER) }
-                        .also {
+                        .findByPhoneNumberAndDeleteAtIsNull(command.receivePhoneNumber)
+                        ?.also {
                             if (it.name != command.receiveName) {
                                 throw ServiceException(TransferErrorCode.INVALID_RECEIVER_NAME)
                             }
-                        }
+                        } ?: throw ServiceException(TransferErrorCode.INVALID_RECEIVER_PHONE_NUMBER)
 
                 // 수취인 계좌 유효한지 체크 -> 예외 발생 시 롤백
                 val receiveAccount =

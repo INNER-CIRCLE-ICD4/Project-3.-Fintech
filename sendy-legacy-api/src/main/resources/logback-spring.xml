@@ -2,18 +2,56 @@
 <configuration>
     <springProperty name="name" source="spring.application.name" />
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+
+    <property name="LOG_PATTERN" value="%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] %clr(%5level) %cyan(%logger) - %msg%n"/>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %cyan(%logger) - %msg%n</pattern>
+            <Pattern>${LOG_PATTERN}</Pattern>
         </encoder>
     </appender>
 
-    <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-    </root>
 
-    <!-- 특정패키지 로깅레벨 설정 -->
-    <logger name="com.sendy" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+
+        <discriminator class="ch.qos.logback.classic.sift.MDCBasedDiscriminator">
+            <key>basePath</key>
+            <defaultValue>etc</defaultValue> </discriminator>
+
+        <sift>
+            <appender name="FILE-${basePath}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+                <encoder>
+<!--                    <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] (%5level) (%logger) - %msg %n</pattern>-->
+                    <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} [traceId=%X{traceId}] [%thread] [%5level] %logger{0} - %msg %n</pattern>
+                </encoder>
+
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>logs/${basePath}/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                    <maxFileSize>10MB</maxFileSize>
+                    <maxHistory>30</maxHistory>
+                    <totalSizeCap>1GB</totalSizeCap>
+                </rollingPolicy>
+
+            </appender>
+        </sift>
+    </appender>
+
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
+
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="SIFT" />
+        </root>
+    </springProfile>
+
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="SIFT" />
+        </root>
+    </springProfile>
+
 </configuration>

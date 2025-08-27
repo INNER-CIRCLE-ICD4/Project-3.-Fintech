@@ -69,3 +69,10 @@ jwt:
   secret-key: DYS6feNXKYnsLOebpSU0Ljm05bgit9j3sc3YYoBYh2E=
   access-token-expire-time: 300
   refresh-token-expire-time: 7200
+logging:
+  level:
+    com.sendy: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+  file:
+    name: ./logs

@@ -37,4 +37,9 @@ enum class TransferErrorCode(
         HttpStatus.NOT_FOUND.value(),
         "수취자 이름이 맞지 않습니다.",
     ),
+    INVALID_SELF_ACCOUNT(
+        HttpStatus.NOT_FOUND.value(),
+        HttpStatus.NOT_FOUND.value(),
+        "본인 계좌로 예약 송금은 할수 없습니다.",
+    )
 }

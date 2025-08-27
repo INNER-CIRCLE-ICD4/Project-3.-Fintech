@@ -1,13 +1,13 @@
 services:
-  api-server:
+  sendy-legacy-api:
     build:
       context: ..
       dockerfile: sendy-legacy-api/Dockerfile
-    container_name: sendy-api
+    container_name: sendy-legacy-api
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prd
       - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://mysql-master:3306/sendy
       - SPRING_DATASOURCE_USERNAME=sendy_master
       - SPRING_DATASOURCE_PASSWORD=sendy_master

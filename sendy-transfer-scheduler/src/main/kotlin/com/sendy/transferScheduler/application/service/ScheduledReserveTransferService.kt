@@ -1,6 +1,5 @@
 package com.sendy.transferScheduler.application.service
 
-import com.sendy.sharedKafka.event.EventMessage
 import com.sendy.sharedKafka.event.EventPublisher
 import com.sendy.transferDomain.domain.TransferRepository
 import com.sendy.transferDomain.domain.vo.TransferId
@@ -19,6 +18,7 @@ class ScheduledReserveTransferService(
 
     @Scheduled(fixedDelayString = "1h")
     fun scheduled() {
+        val topic = "transfer-scheduler.transfer.reservation.started"
         val dateNow = LocalDateTime.now()
         val truncatedTo = dateNow.truncatedTo(ChronoUnit.HOURS)
         val startDt = "${truncatedTo.minus(1, ChronoUnit.HOURS)}:00"
@@ -26,12 +26,11 @@ class ScheduledReserveTransferService(
 
         val readReservationTransfer = readReservationTransfer(startDt, endDt)
 
-        readReservationTransfer.forEach { logger.info("size: {}, reservation: {}", it.size, it) }
+        readReservationTransfer.forEach {
+            logger.info("reservation publish, size: {}", it.size)
 
-        eventPublisher.publish(
-            "transfer-scheduler.transfer.reservation.started",
-            EventMessage(eventId = 1L, aggregateId = 1234L, payload = "test"),
-        )
+            eventPublisher.publish(topic, it)
+        }
     }
 
     private fun readReservationTransfer(

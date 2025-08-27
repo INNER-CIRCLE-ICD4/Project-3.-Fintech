@@ -8,6 +8,11 @@ interface EventPublisher {
 
     fun <T> publish(
         topic: String,
+        data: T,
+    )
+
+    fun <T> publish(
+        topic: String,
         key: String,
         data: EventMessage<T>,
     )

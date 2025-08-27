@@ -69,6 +69,8 @@ class ReserveTransferService(
             transferEntity.receivePhoneNumber = it
         }
 
+        // TODO. 수취인 이름 맞는지 체크
+
         transferRepository.save(transferEntity)
 
         return TransferId(transferEntity.id)

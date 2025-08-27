@@ -83,11 +83,21 @@ subprojects {
         ignoreFailures = true
     }
 
-    tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-        enabled = true
-    }
-    tasks.getByName<Jar>("jar") {
-        enabled = false
+    // 라이브러리 모듈들은 bootJar 비활성화
+    if (project.name in listOf("sendy-shared-kafka", "sendy-shared-mongoDB", "sendy-notification-api", "sendy-notification-producer", "sendy-notificaiton-mongoDB")) {
+        tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+            enabled = false
+        }
+        tasks.getByName<Jar>("jar") {
+            enabled = true
+        }
+    } else {
+        tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+            enabled = true
+        }
+        tasks.getByName<Jar>("jar") {
+            enabled = false
+        }
     }
 
     kover {

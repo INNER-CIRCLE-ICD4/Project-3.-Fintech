@@ -24,7 +24,7 @@ class UserEntity(
     @Column(name = "phone_number", length = 100, nullable = false)
     @Convert(converter = Aes256Converter::class)
     val phoneNumber: String,
-    @Column(name = "password", length = 100, nullable = false)
+    @Column(name = "password", length = 255, nullable = false)
     val password: String,
     @Column(name = "email", columnDefinition = "VARCHAR(255)", nullable = false)
     @Convert(converter = Aes256Converter::class)

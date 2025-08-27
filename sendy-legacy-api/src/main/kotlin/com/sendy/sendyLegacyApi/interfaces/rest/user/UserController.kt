@@ -59,4 +59,6 @@ class UserController(
         email: String,
         emailCode: String,
     ): Response<Result> = Response.ok(UserService.verifyEmail(email, emailCode))
+
+
 }

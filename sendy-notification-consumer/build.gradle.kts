@@ -9,6 +9,7 @@ allOpen {
 
 tasks.bootJar {
     archiveFileName.set("sendy-notification-consumer.jar")
+    mainClass.set("com.sendy.consumer.NotificationConsumerApplicationKt")
 }
 
 dependencies {
@@ -20,5 +21,4 @@ dependencies {
     
     // Web 및 Kafka 의존성
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.kafka:spring-kafka")
 }

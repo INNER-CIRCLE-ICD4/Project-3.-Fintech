@@ -1,0 +1,76 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: sendy
+  data:
+    redis:
+      host: my-redis
+      port: 6379
+  kafka:
+    bootstrap-servers: kafka:29092
+    producer:
+      bootstrap-servers: kafka:29092
+    consumer:
+      group-id: sendy-legacy-api-group
+      auto-offset-reset: earliest
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mysql://mysql-master:3306/sendy?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: sendy_master
+      password: sendy_master
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        use_sql_comments: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sendy.smtp.test@gmail.com
+    password: pmdfdbayumogvcea
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+      auth-code-expiration-millis: 600,000   # 10 * 60 * 1000 == 10분
+
+# 추후 Secrets Manager 등으로 이관
+aes256:
+  key: d2f3de5ce2bef6aad4c2b01e2bffdcd6
+
+springdoc:
+  override-with-generic-response: false
+  packages-to-scan: com
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: alpha
+
+jwt:
+  secret-key: DYS6feNXKYnsLOebpSU0Ljm05bgit9j3sc3YYoBYh2E=
+  access-token-expire-time: 300
+  refresh-token-expire-time: 7200
+
+logging:
+  level:
+    com.sendy: INFO

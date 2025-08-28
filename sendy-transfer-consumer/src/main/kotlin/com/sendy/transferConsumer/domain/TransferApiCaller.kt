@@ -1,12 +1,15 @@
 package com.sendy.transferConsumer.domain
 
-import com.sendy.transferDomain.domain.vo.TransferId
+import com.sendy.transferConsumer.infrastructure.config.FeignEnvConfig
 import org.springframework.cloud.openfeign.FeignClient
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 
-@FeignClient(name = "transfer-internal-api", url = "\${feign.transfer.url}")
+@FeignClient(name = "transfer-internal-api", url = "\${feign.transfer.url}", configuration = [FeignEnvConfig::class])
 interface TransferApiCaller {
-    @RequestMapping(method = [RequestMethod.PATCH], value = ["/reserve"])
-    fun callReservedTransfer(transferIds: List<TransferId>)
+    @PostMapping("/reserve", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun callReservedTransfer(
+        @RequestBody(required = true) request: ReservedRequestDto,
+    )
 }

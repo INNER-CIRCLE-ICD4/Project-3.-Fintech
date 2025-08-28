@@ -135,7 +135,7 @@ class ReserveTransferServiceTest(
         val transfer = transferRepository.findByIdOrNull(reserveTransfer.transferId)
 
         // then
-        assertEquals(transfer?.status, TransferStatusEnum.RESERVED)
+        assertEquals(transfer?.status, TransferStatusEnum.RESERVE)
         assertNull(transfer?.receiveAccountNumber)
     }
 
@@ -206,7 +206,7 @@ class ReserveTransferServiceTest(
         val transfer = transferRepository.findByIdOrNull(reserveTransfer.transferId)
 
         // then
-        assertEquals(transfer?.status, TransferStatusEnum.RESERVED)
+        assertEquals(transfer?.status, TransferStatusEnum.RESERVE)
         assertNull(transfer?.receivePhoneNumber)
     }
 }

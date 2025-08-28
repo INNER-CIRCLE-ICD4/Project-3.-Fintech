@@ -25,8 +25,10 @@ class ReservedTransferSendMoneyService(
                 transferProcessor.doTransferNoPassword(transfer)
             }.onSuccess {
                 transferHistoryProcessor.saveSuccess(transfer)
+                // TODO. outbox 테이블 저장(성공)
             }.onFailure {
                 transferHistoryProcessor.saveFail(transfer)
+                // TODO. outbox 테이블 저장(실패)
             }
         }
     }

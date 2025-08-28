@@ -1,4 +1,4 @@
-package com.sendy.transferDomain.support.config
+package com.sendy.transferDomain.infrastructure.config
 
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Configuration

@@ -1,4 +1,4 @@
-package com.sendy.transferDomain.support.config
+package com.sendy.transferDomain.infrastructure.config
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Bean

@@ -1,6 +1,5 @@
 package com.sendy.transferDomain.domain.vo
 
-@JvmInline
-value class TransferId(
-    val id: Long,
+data class TransferId(
+    val value: Long,
 )

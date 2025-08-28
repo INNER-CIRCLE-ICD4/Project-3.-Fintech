@@ -1,5 +1,6 @@
 package com.sendy.transferScheduler.application.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.sendy.sharedKafka.event.EventPublisher
 import com.sendy.transferDomain.domain.TransferRepository
 import com.sendy.transferDomain.domain.vo.TransferId
@@ -26,10 +27,13 @@ class ScheduledReserveTransferService(
 
         val readReservationTransfer = readReservationTransfer(startDt, endDt)
 
-        readReservationTransfer.forEach {
-            logger.info("reservation publish, size: {}", it.size)
+        logger.info("read reservation transfer total size: {}", readReservationTransfer.size)
 
-            eventPublisher.publish(topic, it)
+        readReservationTransfer.forEach {
+            if (it.isNotEmpty()) {
+                logger.info("reservation publish, size: {}", it.size)
+                eventPublisher.publish(topic, ObjectMapper().writeValueAsString(it))
+            }
         }
     }
 
@@ -43,10 +47,12 @@ class ScheduledReserveTransferService(
         val initResult = transferRepository.getReservedTransferByCursor(startDt, endDt, fetchSize = fetchSize)
         var nextCursor = initResult.nextCursor
 
-        list.add(initResult.transferIds)
+        if (initResult.transferIds.isNotEmpty()) {
+            list.add(initResult.transferIds)
+        }
 
         while (nextCursor != null) {
-            val next = transferRepository.getReservedTransferByCursor(startDt, endDt, fetchSize = fetchSize, id = nextCursor.id)
+            val next = transferRepository.getReservedTransferByCursor(startDt, endDt, fetchSize = fetchSize, id = nextCursor.value)
             nextCursor = next.nextCursor
 
             next.nextCursor?.let { list.add(next.transferIds) }

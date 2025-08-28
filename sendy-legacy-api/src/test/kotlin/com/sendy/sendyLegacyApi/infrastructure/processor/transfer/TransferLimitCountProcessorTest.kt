@@ -27,14 +27,14 @@ import java.time.format.DateTimeFormatter
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [TestTransferProcessorConfig::class])
 @Transactional
-class TransferProcessorTest(
+class TransferLimitCountProcessorTest(
     @Autowired
     private val transferLimitRepository: TransferLimitRepository,
     @Autowired
     private val transactionHistoryRepository: TransactionHistoryRepository,
 ) {
     private val transferLimitWithdrawId = getTsid()
-    private val transferLimitCountProcessor = TransferProcessor(transferLimitRepository, transactionHistoryRepository)
+    private val transferLimitCountProcessor = TransferLimitCountProcessor(transferLimitRepository, transactionHistoryRepository)
     private val fixed = Clock.fixed(Instant.now(), ZoneId.systemDefault())
     private val dailyDt = LocalDateTime.now(fixed)
     private val formatDailyDt = dailyDt.format(DateTimeFormatter.ofPattern("yyyyMMdd"))

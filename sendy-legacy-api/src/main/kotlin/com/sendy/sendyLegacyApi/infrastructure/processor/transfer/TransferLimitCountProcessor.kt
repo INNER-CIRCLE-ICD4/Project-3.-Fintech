@@ -15,7 +15,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Component
-class TransferProcessor(
+class TransferLimitCountProcessor(
     private val transferLimitRepository: TransferLimitRepository,
     private val transactionHistoryRepository: TransactionHistoryRepository,
 ) : TransferLimitCountProcessor {

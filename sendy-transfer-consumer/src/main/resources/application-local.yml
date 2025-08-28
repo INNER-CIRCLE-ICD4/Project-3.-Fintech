@@ -24,4 +24,4 @@ logging:
 
 feign:
   transfer:
-    url: http://localhost:8080/transfers
+    url: http://localhost:8080/inner/transfers

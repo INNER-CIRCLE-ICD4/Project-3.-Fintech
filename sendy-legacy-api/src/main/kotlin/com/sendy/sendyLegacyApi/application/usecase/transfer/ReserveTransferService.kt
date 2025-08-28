@@ -43,7 +43,7 @@ class ReserveTransferService(
                 sendUserId = command.sendUserId,
                 sendAccountNumber = command.sendAccountNumber,
                 amount = command.amount,
-                status = TransferStatusEnum.RESERVED,
+                status = TransferStatusEnum.RESERVE,
                 scheduledAt = command.scheduledAt,
                 requestedAt = command.requestedAt,
             )

@@ -19,3 +19,7 @@ logging:
   level:
     org.hibernate.type: trace
     org.springframework.jdbc: trace
+
+feign:
+  transfer:
+    url: http://sendy-legacy-api:8080/inner/transfers

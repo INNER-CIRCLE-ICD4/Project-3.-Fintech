@@ -5,7 +5,7 @@ import com.sendy.sendyLegacyApi.domain.account.AccountEntity
 import com.sendy.sendyLegacyApi.domain.account.AccountRepository
 import com.sendy.sendyLegacyApi.domain.account.TransactionHistoryEntity
 import com.sendy.sendyLegacyApi.domain.account.TransactionHistoryRepository
-import com.sendy.sendyLegacyApi.domain.auth.UserEntityRepository
+import com.sendy.sendyLegacyApi.domain.authorities.UserEntityRepository
 import com.sendy.sendyLegacyApi.domain.enum.TransactionHistoryTypeEnum
 import com.sendy.sendyLegacyApi.domain.transfer.TransferEntity
 import com.sendy.sendyLegacyApi.domain.transfer.TransferLimitCountProcessor
@@ -106,6 +106,8 @@ class TransferProcessor(
             accountRepository.findOneBySenderUserId(transfer.sendUserId)
                 ?: throw EntityNotFoundException("송금자의 계좌를 찾을 수 없습니다.")
 
+        println("senderAccount: $senderAccount")
+        println("transfer: $transfer")
         // 출금 계좌 유효한지 체크 -> 예외 발생 이후 진행X
         senderAccount.checkActiveAndInvokeError()
 
@@ -124,7 +126,7 @@ class TransferProcessor(
                 (transfer.receivePhoneNumber != null) -> {
                     val userEntity =
                         userEntityRepository
-                            .findByPhoneNumberAndDeleteAtIsNull(transfer.receivePhoneNumber!!)
+                            .findByPhoneNumber(transfer.receivePhoneNumber!!)
                             ?: throw ServiceException(TransferErrorCode.INVALID_RECEIVER_PHONE_NUMBER)
 
                     accountRepository.findOneByReceiverUserId(userEntity.id)

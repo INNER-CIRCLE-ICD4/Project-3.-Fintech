@@ -23,7 +23,7 @@ class NotificationEventService(
         notificationId: Long = generateNotificationId(),
         createdAt: Instant = Instant.now()
     ): VerifiedNotification {
-        log.info("📝 알림 생성 시작 - 사용자: {}, 타입: {}", userId, type)
+        log.info("알림 생성 시작 - 사용자: {}, 타입: {}", userId, type)
         
         val notification = VerifiedNotification(
             notificationId = notificationId,
@@ -37,7 +37,7 @@ class NotificationEventService(
         )
         
         return notificationRepository.save(notification).also {
-            log.info("✅ MongoDB에 알림 저장 완료 - ID: {}, 사용자: {}", 
+            log.info(" MongoDB에 알림 저장 완료 - ID: {}, 사용자: {}",
                 it.notificationId, it.userId)
         }
     }

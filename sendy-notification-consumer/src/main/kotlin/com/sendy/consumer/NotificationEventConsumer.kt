@@ -2,9 +2,11 @@ package com.sendy.consumer
 
 import com.sendy.consumer.handler.EmailVerifiedEventHandler
 import com.sendy.sharedKafka.event.EventMessage
-import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
 import com.sendy.sharedKafka.support.constant.EventTypes
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.sendy.consumer.handler.EmailVerifiedSucceedEventHandler
+import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
+import com.sendy.sharedKafka.event.user.email.EmailVerificationSucceedEventHandler
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
@@ -14,12 +16,15 @@ import org.springframework.stereotype.Component
 @Component
 class NotificationEventConsumer(
     private val objectMapper: ObjectMapper,
-    private val emailVerifiedEventHandler: EmailVerifiedEventHandler
+    private val emailVerifiedEventHandler: EmailVerifiedEventHandler,
+    private val emailVerifiedSucceedEventHandler: EmailVerifiedSucceedEventHandler
 ) {
     private val log = LoggerFactory.getLogger(NotificationEventConsumer::class.java)
-    
+
+
+    //이메일 인증 발송
     @KafkaListener(
-        topics = ["user-registration.user.register.email"],
+        topics = ["user-api.user.verified.email","user-api.user.verifiedSucceed.email"],
         groupId = "notification-service"
     )
     fun handleUserRegistrationEvents(@Payload message: String, ack: Acknowledgment) {
@@ -35,7 +40,10 @@ class NotificationEventConsumer(
                     val event = eventMessage.payload?.let { convertPayload(it, EmailVerificationSentEvent::class.java) }
                     event?.let { handleEmailVerificationSent(it) }
                 }
-                
+                EventTypes.USER_VERIFICATION_SUCCESS ->{
+                    val event = eventMessage.payload?.let {convertPayload(it, EmailVerificationSucceedEventHandler::class.java) }
+                    event?.let{handlerEmailVerificationSucceed(it)}
+                }
                 else -> {
                     log.warn("처리되지 않는 이벤트 타입: {}", eventMessage.type)
                 }
@@ -49,9 +57,9 @@ class NotificationEventConsumer(
             // 에러 발생 시 재처리를 위해 acknowledge 하지 않음
         }
     }
-    
+
     private fun handleEmailVerificationSent(event: EmailVerificationSentEvent) {
-        log.info("이메일 인증 발송 이벤트 처리 - 사용자: {}, 이메일: {}, 토큰: {}", 
+        log.info("이메일 인증 발송 이벤트 처리 - 사용자: {}, 이메일: {}, 토큰: {}",
             event.userId, event.email, event.verificationToken)
         
         try {
@@ -71,6 +79,22 @@ class NotificationEventConsumer(
             log.error("MongoDB 저장 실패 - 사용자: {}, 오류: {}", event.userId, e.message, e)
             throw e // 재처리를 위해 예외 다시 던지기
         }
+    }
+
+    //성공 handler
+    private fun handlerEmailVerificationSucceed(event: EmailVerificationSucceedEventHandler) {
+        log.info("이메일 인증 성공 이벤트 처리 - 사용자: {}, 이메일: {}, 토큰: {}",
+            event.userId, event.email, event.verificationToken)
+        try {
+
+            //mongoDB 에 알림 저장
+            emailVerifiedSucceedEventHandler.handle(event)
+
+        } catch (e: Exception) {
+            log.error("MongoDB 저장 실패 - 사용자: {}, 오류: {}", event.userId, e.message, e)
+            throw e // 재처리를 위해 예외 다시 던지기        }
+        }
+
     }
     
     private fun <T> convertPayload(payload: Any, targetClass: Class<T>): T {

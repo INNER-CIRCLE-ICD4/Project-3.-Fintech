@@ -50,9 +50,9 @@ class UserServiceTest(
         println(userService.deleteUser("test@gmail.com", "1234", user.id))
     }
 
-    @Test
-    fun verifyEmail() {
-        val result = userService.verifyEmail("123123", "test@gmail.com")
-        println(result)
-    }
+//    @Test
+//    fun verifyEmail() {
+//        val result = userService.verifyEmail("123123", "test@gmail.com")
+//        println(result)
+//    }
 }

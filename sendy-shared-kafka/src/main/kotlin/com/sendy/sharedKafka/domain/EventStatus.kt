@@ -1,4 +1,4 @@
-package com.sendy.sharedKafka.event
+package com.sendy.sharedKafka.domain
 
 enum class EventStatus {
     READY,

@@ -1,7 +1,7 @@
 package com.sendy.sharedKafka.infrastructure
 
-import com.sendy.sharedKafka.event.EventMessage
-import com.sendy.sharedKafka.event.EventPublisher
+import com.sendy.sharedKafka.domain.EventMessage
+import com.sendy.sharedKafka.domain.EventPublisher
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 

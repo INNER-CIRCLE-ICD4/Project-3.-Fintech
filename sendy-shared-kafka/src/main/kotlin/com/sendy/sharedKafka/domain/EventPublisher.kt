@@ -1,4 +1,4 @@
-package com.sendy.sharedKafka.event
+package com.sendy.sharedKafka.domain
 
 interface EventPublisher {
     fun <T> publish(

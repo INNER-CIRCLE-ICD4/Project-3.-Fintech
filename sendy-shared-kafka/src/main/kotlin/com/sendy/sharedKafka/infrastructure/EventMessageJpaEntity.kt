@@ -1,6 +1,6 @@
 package com.sendy.sharedKafka.infrastructure
 
-import com.sendy.sharedKafka.event.EventStatus
+import com.sendy.sharedKafka.domain.EventStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType

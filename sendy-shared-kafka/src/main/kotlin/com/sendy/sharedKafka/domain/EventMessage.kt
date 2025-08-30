@@ -1,9 +1,9 @@
-package com.sendy.sharedKafka.event
+package com.sendy.sharedKafka.domain
 
 data class EventMessage<T>(
-    val id: String,
+    val id: Long,
     val source: String,
-    val aggregateId: String,
+    val aggregateId: Long,
     val payload: T,
     val type: String,
     var status: EventStatus = EventStatus.READY,

@@ -1,7 +1,6 @@
-package com.sendy.sharedKafka.event
+package com.sendy.sharedKafka.domain
 
 interface EventFailed {
-
     fun <T> publishFailed(
         topic: String,
         data: EventMessage<T>,

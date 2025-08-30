@@ -16,6 +16,13 @@ internal class DefaultEventPublisher(
 
     override fun <T> publish(
         topic: String,
+        data: T,
+    ) {
+        kafkaTemplate.send(topic, data)
+    }
+
+    override fun <T> publish(
+        topic: String,
         key: String,
         data: EventMessage<T>,
     ) {

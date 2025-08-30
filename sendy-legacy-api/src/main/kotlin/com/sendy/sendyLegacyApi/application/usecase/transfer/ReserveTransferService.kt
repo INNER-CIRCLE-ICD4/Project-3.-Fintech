@@ -43,7 +43,7 @@ class ReserveTransferService(
                 sendUserId = command.sendUserId,
                 sendAccountNumber = command.sendAccountNumber,
                 amount = command.amount,
-                status = TransferStatusEnum.RESERVED,
+                status = TransferStatusEnum.RESERVE,
                 scheduledAt = command.scheduledAt,
                 requestedAt = command.requestedAt,
             )
@@ -68,6 +68,8 @@ class ReserveTransferService(
 
             transferEntity.receivePhoneNumber = it
         }
+
+        // TODO. 수취인 이름 맞는지 체크
 
         transferRepository.save(transferEntity)
 

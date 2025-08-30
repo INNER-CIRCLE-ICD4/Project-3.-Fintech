@@ -1,4 +1,4 @@
-package com.sendy.sharedKafka.support.config
+package com.sendy.sharedKafka.infrastructure.config
 
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
@@ -26,9 +26,7 @@ class SharedKafkaProducerConfig(
         )
 
     @Bean
-    fun producerFactory(): ProducerFactory<String, Any> {
-        return DefaultKafkaProducerFactory(productConfigProps)
-    }
+    fun producerFactory(): ProducerFactory<String, Any> = DefaultKafkaProducerFactory(productConfigProps)
 
     @Bean
     fun kafkaTemplate(): KafkaTemplate<String, Any> = KafkaTemplate(producerFactory())

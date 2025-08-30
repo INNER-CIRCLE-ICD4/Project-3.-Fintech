@@ -34,6 +34,10 @@ class TransferEntity(
     @Column(nullable = true)
     val reason: String? = null,
 ) : Identity(id) {
+    fun changeToPending() {
+        status = TransferStatusEnum.PENDING
+    }
+
     fun changeToSuccess() {
         status = TransferStatusEnum.SUCCESS
     }

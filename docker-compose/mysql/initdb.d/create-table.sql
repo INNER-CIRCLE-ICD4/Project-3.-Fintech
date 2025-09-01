@@ -81,14 +81,14 @@ CREATE TABLE email
 -- 계좌 테이블
 CREATE TABLE account
 (
-    id                 BIGINT      NOT NULL PRIMARY KEY,
-    account_number     VARCHAR(13) NOT NULL,
-    user_id            BIGINT      NOT NULL,
-    password           VARCHAR(120) NOT NULL,
-    status             VARCHAR(20) NOT NULL,
-    created_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    balance            BIGINT      NOT NULL,
+    id             BIGINT       NOT NULL PRIMARY KEY,
+    account_number VARCHAR(13)  NOT NULL,
+    user_id        BIGINT       NOT NULL,
+    password       VARCHAR(120) NOT NULL,
+    status         VARCHAR(20)  NOT NULL,
+    created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    balance        BIGINT       NOT NULL,
 
     UNIQUE KEY `account_user_id_uk` (user_id)
 ) engine = InnoDB;
@@ -128,4 +128,16 @@ create table device_info
     user_agent         varchar(500),
     device_fingerprint varchar(255)          not null,
     primary key (device_id)
+) engine = InnoDB;
+
+create table event_message
+(
+    id           bigint PRIMARY KEY COMMENT "id",
+    source       varchar(255) NOT NULL COMMENT "이벤트 발행처",
+    aggregate_id bigint       NOT NULL COMMENT "aggregate id",
+    payload      json COMMENT "payload",
+    status       VARCHAR(13) NULL COMMENT "상태(READY, PUBLISH, FAIL)",
+    `type`       varchar(255) NOT NULL COMMENT "이벤트 타입",
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "송금 요청 일자",
+    published_at DATETIME COMMENT "완료 일자"
 ) engine = InnoDB;

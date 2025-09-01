@@ -15,6 +15,7 @@ import com.sendy.sharedKafka.event.EventMessage
 import com.sendy.sharedKafka.event.EventPublisher
 import com.sendy.sharedKafka.event.EventTypes
 import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
+import com.sendy.sharedKafka.topic.KafkaTopics
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.mail.javamail.JavaMailSender
@@ -135,7 +136,7 @@ class UserService(
         )
         
         eventPublisher.publish(
-            topic = "user-registration.user.register.email",
+            topic = "user-api.user.verified.email",
             key = email,
             data = eventMessage,
         )

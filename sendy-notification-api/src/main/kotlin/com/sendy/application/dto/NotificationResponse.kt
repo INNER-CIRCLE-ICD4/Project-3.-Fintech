@@ -12,13 +12,16 @@ data class NotificationResponse(
     val message: String,
     val isRead: Boolean,
     val createdAt: Instant,
+    val deletedAt: Instant?,
 )
+
 data class UnreadCountResponse(
-    val count: Long
+    val count: Long,
 )
+
 // 확장 함수
-fun VerifiedNotification.toResponse(): NotificationResponse {
-    return NotificationResponse(
+fun VerifiedNotification.toResponse(): NotificationResponse =
+    NotificationResponse(
         id = this.notificationId,
         userId = this.userId,
         type = this.type,
@@ -26,5 +29,5 @@ fun VerifiedNotification.toResponse(): NotificationResponse {
         message = this.message,
         isRead = this.isRead,
         createdAt = this.createdAt,
+        deletedAt = this.deletedAt,
     )
-}

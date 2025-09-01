@@ -3,6 +3,7 @@ package com.sendy.sharedMongoDB.notification.domain
 import jakarta.persistence.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 @Document(collection = "notifications")
 class VerifiedNotification(
@@ -14,15 +15,14 @@ class VerifiedNotification(
     val title: String,
     val message: String,
     val createdAt: Instant = Instant.now(),
+    val deletedAt: Instant? = Instant.now().plus(90, ChronoUnit.DAYS),
     val isRead: Boolean = false,
+)
 
-) {
-}
-
-//추후 상황에 맞게 추가 필요
+// 추후 상황에 맞게 추가 필요
 enum class NotificationType {
-    WELCOME,           // 환영 메시지
+    WELCOME, // 환영 메시지
     EMAIL_VERIFICATION, // 이메일 인증
-    SYSTEM,            // 시스템 알림
-    TRANSFER           // 송금 관련
+    SYSTEM, // 시스템 알림
+    TRANSFER, // 송금 관련
 }

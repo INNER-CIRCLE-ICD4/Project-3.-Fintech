@@ -37,7 +37,7 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/health")
                     .permitAll()
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs")
                     .permitAll()
                     .requestMatchers("/users/**")
                     .permitAll()

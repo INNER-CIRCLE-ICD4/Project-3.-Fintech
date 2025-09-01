@@ -51,6 +51,8 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/admin/**")
                     .permitAll() // 관리자 API 허용 (테스트용)
+                    .requestMatchers("/inner/**") // (내부 통신용)
+                    .permitAll()
                     .requestMatchers("/h2-console/**")
                     .permitAll()
                     .anyRequest()

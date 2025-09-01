@@ -5,5 +5,5 @@ enum class TransferStatusEnum {
     SUCCESS,
     FAILED,
     CANCELLED,
-    RESERVED,
+    RESERVE,
 }

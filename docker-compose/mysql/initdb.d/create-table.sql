@@ -23,8 +23,8 @@ CREATE TABLE transfer_limit
     single_transaction_limit bigint     NOT NULL COMMENT "1회 이체시 최대 한도",
     daily_count              bigint     NOT NULL COMMENT "일일 이체 횟수",
     created_at               DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "생성 일자",
-    updated_at               DATETIME NULL DEFAULT CURRENT_TIMESTAMP COMMENT "수정 일자",
-    user_id                  bigint NULL,
+    updated_at               DATETIME   NULL     DEFAULT CURRENT_TIMESTAMP COMMENT "수정 일자",
+    user_id                  bigint     NULL,
 
     -- 추후 account 외래키 추가
     INDEX (user_id),
@@ -59,8 +59,8 @@ CREATE TABLE users
     email          VARCHAR(255) NOT NULL,
     ci             VARCHAR(100),
     birth          CHAR(8)      NOT NULL,
-    is_delete      TINYINT(1) NOT NULL,
-    email_verified TINYINT(1) NOT NULL DEFAULT 0,
+    is_delete      TINYINT(1)   NOT NULL,
+    email_verified TINYINT(1)   NOT NULL DEFAULT 0,
     create_at      TIMESTAMP    NOT NULL,
     update_at      TIMESTAMP,
     delete_at      TIMESTAMP,
@@ -73,7 +73,7 @@ CREATE TABLE email
     id          BIGINT       NOT NULL PRIMARY KEY,
     code        VARCHAR(255) NOT NULL,
     email       VARCHAR(255) NOT NULL,
-    is_verified TINYINT(1) NOT NULL DEFAULT 0,
+    is_verified TINYINT(1)   NOT NULL DEFAULT 0,
     user_id     BIGINT       NOT NULL,
     send_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) engine = InnoDB;
@@ -97,9 +97,9 @@ CREATE TABLE account
 -- jwt 토큰 정보
 create table jwt_token
 (
-    created_at datetime(6) not null,
+    created_at datetime(6)  not null,
     device_id  bigint,
-    expired_at datetime(6) not null,
+    expired_at datetime(6)  not null,
     token_id   bigint       not null auto_increment,
     updated_at datetime(6),
     user_id    bigint       not null,
@@ -113,9 +113,9 @@ create table jwt_token
 create table device_info
 (
     is_mobile          BOOLEAN DEFAULT false not null,
-    created_at         datetime(6) not null,
+    created_at         datetime(6)           not null,
     device_id          bigint                not null auto_increment,
-    last_login_at      datetime(6) not null,
+    last_login_at      datetime(6)           not null,
     updated_at         datetime(6),
     user_id            bigint                not null,
     language           varchar(10),

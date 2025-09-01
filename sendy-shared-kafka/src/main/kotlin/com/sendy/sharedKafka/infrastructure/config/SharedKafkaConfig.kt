@@ -1,4 +1,4 @@
-package com.sendy.sharedKafka.support.config
+package com.sendy.sharedKafka.infrastructure.config
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration

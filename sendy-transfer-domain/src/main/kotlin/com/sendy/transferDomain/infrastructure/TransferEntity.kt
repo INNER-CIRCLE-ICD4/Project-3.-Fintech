@@ -1,0 +1,35 @@
+package com.sendy.transferDomain.infrastructure
+
+import com.sendy.transferDomain.domain.enum.TransferStatusEnum
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Table
+import java.time.LocalDateTime
+
+@Entity
+@Table(name = "transfer")
+class TransferEntity(
+    id: Long,
+    @Column
+    val sendUserId: Long,
+    @Column
+    val sendAccountNumber: String,
+    @Column(nullable = true)
+    val receivePhoneNumber: String? = null,
+    @Column(nullable = true)
+    val receiveAccountNumber: String? = null,
+    @Column
+    var amount: Long,
+    @Enumerated(EnumType.STRING)
+    var status: TransferStatusEnum,
+    @Column(nullable = true)
+    val scheduledAt: LocalDateTime? = null,
+    @Column
+    val requestedAt: LocalDateTime,
+    @Column(nullable = true)
+    var completedAt: LocalDateTime? = null,
+    @Column(nullable = true)
+    val reason: String? = null,
+) : Identity(id)

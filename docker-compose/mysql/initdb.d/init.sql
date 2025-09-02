@@ -68,7 +68,7 @@ VALUES (38352658567418874,
 -- transfer(reserve)
 insert into `sendy`.transfer
 (id, send_user_id, send_account_number, receive_phone_number, receive_account_number, amount, status, scheduled_at)
-values (745937025742925543, 38352658567418872, '3210000000001', 'G4ud4CMhyt0B/SdraVjGidVtH+r++Px1uplGXYyk/c4=', null,
+values (745937025742925543, 38352658567418872, '3210000000001', '01012341234', null,
         1000, 'RESERVE',
         '2025-08-20 18:05:00'),
        (745937025742925544, 38352658567418873, '3210000000002', null, '3210000000003', 1000, 'RESERVE',

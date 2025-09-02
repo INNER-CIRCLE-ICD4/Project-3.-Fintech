@@ -55,7 +55,7 @@ CREATE TABLE users
     id             BIGINT       NOT NULL PRIMARY KEY,
     password       VARCHAR(120) NOT NULL,
     name           VARCHAR(50)  NOT NULL,
-    phone_number   VARCHAR(20)  NOT NULL,
+    phone_number   VARCHAR(200)  NOT NULL,
     email          VARCHAR(255) NOT NULL,
     ci             VARCHAR(100),
     birth          CHAR(8)      NOT NULL,

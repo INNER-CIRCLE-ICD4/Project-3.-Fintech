@@ -19,11 +19,11 @@ class EventMessageJpaEntity(
     @Column(columnDefinition = "json")
     val payload: String,
     @Enumerated(EnumType.STRING)
-    val status: EventStatus,
+    var status: EventStatus,
     @Column
     val type: String,
     @Column
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column
-    val publishedAt: LocalDateTime? = null,
+    var publishedAt: LocalDateTime? = null,
 ) : Identity(id)

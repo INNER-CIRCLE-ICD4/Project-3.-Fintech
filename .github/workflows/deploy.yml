@@ -14,6 +14,8 @@ on:
     #  배포대상이 될 브런치 명시 
     branches:
       - main
+permissions:
+  contents: write
 jobs:
   makeTagAndRelease:
     #  구동 환경 설정 

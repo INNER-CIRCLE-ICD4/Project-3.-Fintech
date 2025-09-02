@@ -112,7 +112,7 @@ jobs:
         env:
           DOCKER_COMPOSE_PROD_SPRING: ${{ secrets.DOCKER_COMPOSE_PROD_SPRING_YML }}
         run: | 
-           mkdir -p docker-compose
+           mkdir -p docker-compose 
            echo "$DOCKER_COMPOSE_PROD_SPRING" > docker-compose/docker-compose.prod.spring.yml
       - name: 설정 파일 EC2로 전송
         uses: appleboy/scp-action@master
@@ -120,7 +120,7 @@ jobs:
           host: ${{ secrets.SPRING_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "sendy"
+          source: "docker-compose/docker-compose.prod.spring.yml,src/main/resources/application-secret.yml"
           target: "/home/ec2-user/"
 
       - name: 스프링,배포

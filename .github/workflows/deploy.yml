@@ -16,6 +16,7 @@ on:
       - main
 permissions:
   contents: write
+  packages: write
 jobs:
   makeTagAndRelease:
     #  구동 환경 설정 

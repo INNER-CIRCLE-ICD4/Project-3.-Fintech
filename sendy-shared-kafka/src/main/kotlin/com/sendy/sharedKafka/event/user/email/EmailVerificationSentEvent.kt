@@ -9,3 +9,11 @@ data class EmailVerificationSentEvent(
     val verificationToken: String,
     val expiresAt: Instant
 )
+
+data class EmailVerificationSucceedEventHandler(
+    val userId: Long,
+    val email: String,
+    val username: String,
+    val verificationToken: String,
+    val expiresAt: Instant
+)

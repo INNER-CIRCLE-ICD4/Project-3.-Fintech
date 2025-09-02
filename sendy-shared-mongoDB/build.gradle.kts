@@ -11,10 +11,9 @@ allOpen {
 dependencies {
     // MongoDB 관련 의존성을 다른 모듈에 제공
     api("org.springframework.boot:spring-boot-starter-data-mongodb")
-    api("org.springframework.boot:spring-boot-starter-web")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin")
+
 
     // 테스트용 (라이브러리 내부에서만 사용)
-    testImplementation("org.testcontainers:testcontainers:1.24.0")
+    testImplementation("org.testcontainers:testcontainers:1.21.3")
     testImplementation("org.testcontainers:mongodb:1.24.0")
 }

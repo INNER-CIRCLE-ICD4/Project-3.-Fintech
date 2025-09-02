@@ -16,6 +16,7 @@ import com.sendy.sharedKafka.domain.EventMessageRepository
 import com.sendy.sharedKafka.domain.EventPublisher
 import com.sendy.sharedKafka.domain.EventTypes
 import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
+import com.sendy.sharedKafka.topic.KafkaTopics
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.mail.javamail.JavaMailSender

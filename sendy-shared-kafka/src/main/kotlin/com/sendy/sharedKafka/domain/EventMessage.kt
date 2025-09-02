@@ -13,6 +13,7 @@ object EventTypes {
     // 회원가입 관련 이벤트
     const val USER_REGISTRATION = "USER_REGISTRATION"
     const val USER_VERIFICATION = "USER_VERIFICATION"
+    const val USER_VERIFICATION_SUCCESS = "USER_VERIFICATION_SUCCESS"
     const val PASSWORD_CHANGED = "PASSWORD_CHANGED"
 
     // 유저 관련 이벤트

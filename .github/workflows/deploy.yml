@@ -134,7 +134,7 @@ jobs:
             docker pull ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest
             echo "OWNER_LC=${{ env.OWNER_LC }}" > .env
             echo "DOCKER_IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}" >> .env
-            docker compose -f docker-compose.prod.spring.yml down
-            docker compose -f docker-compose.prod.spring.yml up -d
+            docker compose -f docker-compose/docker-compose.prod.spring.yml down
+            docker compose -f docker-compose/docker-compose.prod.spring.yml up -d
             docker system prune -f
           

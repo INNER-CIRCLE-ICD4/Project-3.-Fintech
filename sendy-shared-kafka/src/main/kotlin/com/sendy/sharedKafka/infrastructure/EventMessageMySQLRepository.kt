@@ -68,4 +68,35 @@ class EventMessageMySQLRepository(
 
         return list.toList()
     }
+
+    override fun getTransferEventMessage(): List<EventMessage<String>> {
+        val jdbcClient = JdbcClient.create(jdbcTemplate)
+
+        val sql =
+            """
+            select em.*
+            from event_message em
+            where 1=1
+            and em.`type` like 'TRANSFER%'
+            and em.status = 'READY'
+            and em.published_at is null
+            order by em.created_at desc
+            """.trimIndent()
+
+        val list =
+            jdbcClient
+                .sql(sql)
+                .query { rs, _ ->
+                    EventMessage(
+                        id = rs.getLong("id"),
+                        aggregateId = rs.getLong("aggregate_id"),
+                        payload = rs.getString("payload"),
+                        type = rs.getString("type"),
+                        status = EventStatus.entries.find { it.name == rs.getString("status") } ?: EventStatus.READY,
+                        source = rs.getString("source"),
+                    )
+                }.list()
+
+        return list.toList()
+    }
 }

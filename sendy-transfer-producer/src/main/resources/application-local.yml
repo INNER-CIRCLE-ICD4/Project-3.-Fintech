@@ -1,0 +1,15 @@
+server:
+  shutdown: graceful
+
+spring:
+  application:
+    name: sendy-transfer-producer
+  datasource:
+    hikari:
+      jdbc-url: ${SPRING_DATASOURCE_JDBC_URL:jdbc:mysql://localhost:3306/sendy}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: ${SPRING_DATASOURCE_USERNAME:sendy_master}
+      password: ${SPRING_DATASOURCE_PASSWORD:sendy_master}
+  kafka:
+    consumer:
+      group-id: transfer-service

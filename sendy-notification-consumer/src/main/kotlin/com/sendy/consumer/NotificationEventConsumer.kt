@@ -2,10 +2,11 @@ package com.sendy.consumer
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sendy.consumer.handler.EmailVerifiedEventHandler
+import com.sendy.consumer.handler.EmailVerifiedSucceedEventHandler
 import com.sendy.sharedKafka.domain.EventMessage
 import com.sendy.sharedKafka.domain.EventTypes
-import com.sendy.consumer.handler.EmailVerifiedSucceedEventHandler
 import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
+import com.sendy.sharedKafka.event.user.email.EmailVerificationSucceedEventHandler
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
@@ -44,8 +45,15 @@ class NotificationEventConsumer(
                     val event = eventMessage.payload?.let { convertPayload(it, EmailVerificationSentEvent::class.java) }
                     event?.let { handleEmailVerificationSent(it) }
                 }
+
                 EventTypes.USER_VERIFICATION_SUCCESS -> {
-                    val event = eventMessage.payload?.let { convertPayload(it, EmailVerificationSucceedEventHandler::class.java) }
+                    val event =
+                        eventMessage.payload?.let {
+                            convertPayload(
+                                it,
+                                EmailVerificationSucceedEventHandler::class.java,
+                            )
+                        }
                     event?.let { handlerEmailVerificationSucceed(it) }
                 }
 

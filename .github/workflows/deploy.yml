@@ -1,0 +1,137 @@
+# .github/workflows/deploy.yml 
+
+name: deploy.yml
+on:
+  #  어플리케이션 구동에 필요한 경로들 취득 
+  push:
+    paths:
+      - ".github/workflows/**"
+      - "src/**"
+      - "build.gradle"
+      - "settings.gradle.kts"
+      - "Dockerfile"
+    
+    #  배포대상이 될 브런치 명시 
+    branches:
+      - main
+jobs:
+  makeTagAndRelease:
+    #  구동 환경 설정 
+    runs-on: ubuntu-latest
+    outputs:
+      #  이미지에 태그 설정 
+      tag_name: ${{ steps.create_tag.outputs.new_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Tag
+        id: create_tag
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_tag.outputs.new_tag }}
+          release_name: Release ${{ steps.create_tag.outputs.new_tag }}
+          body: ${{ steps.create_tag.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+  #  이 단계에서 build한 파일들을 컨테이너에 담아, Docker Hub에 적재 
+  buildImageAndPush:
+    name: 도커 이미지 빌드와 푸시
+    needs: makeTagAndRelease
+    runs-on: ubuntu-latest
+    env:
+      #  docker에 적재 될 이미지 명 환경변수화  
+      DOCKER_IMAGE_NAME: sendy
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ env.DOCKER_IMAGE_NAME }}
+      OWNER_LC: ${{ env.OWNER_LC }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: application-secret.yml 생성
+        env:
+          APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
+        run: |
+          echo "$APPLICATION_SECRET" > src/main/resources/application-secret.yml
+      - name: Docker Buildx 설치
+        uses: docker/setup-buildx-action@v2
+      - name: 레지스트리 로그인
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
+        env:
+          OWNER: "${{ github.repository_owner }}"
+      - name: 빌드 앤 푸시
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          cache-from: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:cache
+          cache-to: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:cache,mode=max
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:${{ needs.makeTagAndRelease.outputs.tag_name }},
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+
+  #  이 단계에서 Docker Hub에 적재한 이미지를 application 서버에 가져와서 구동 
+  deploy:
+    #  구동 환경 지정 
+    runs-on: ubuntu-latest
+
+    needs: [ buildImageAndPush ]
+    env:
+      DOCKER_IMAGE_NAME: ${{ needs.buildImageAndPush.outputs.DOCKER_IMAGE_NAME }}
+      OWNER_LC: ${{ needs.buildImageAndPush.outputs.OWNER_LC }}
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: 인스턴스 ID 가져오기
+        id: get_instance_id
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Team01-api-server" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
+
+          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+          echo $INSTANCE_ID
+
+      - name: 설정 파일 생성
+        env:
+          DOCKER_COMPOSE_PROD_SPRING: ${{ secrets.DOCKER_COMPOSE_PROD_SPRING_YML }}
+        run: |                    
+          echo "$DOCKER_COMPOSE_PROD_SPRING" > elk/prod/docker-compose.prod.spring.yml
+
+      - name: 설정 파일 EC2로 전송
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SPRING_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "sendy"
+          target: "/home/ec2-user/"
+
+      - name: 스프링,배포
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SPRING_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ env.OWNER_LC }} --password-stdin
+            docker pull ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+            echo "OWNER_LC=${{ env.OWNER_LC }}" > .env
+            echo "DOCKER_IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}" >> .env
+            docker-compose -f docker-compose.prod.spring.yml down
+            docker-compose -f docker-compose.prod.spring.yml up -d
+            docker system prune -f
+          

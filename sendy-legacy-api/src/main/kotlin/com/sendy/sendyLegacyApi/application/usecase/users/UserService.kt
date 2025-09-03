@@ -11,9 +11,10 @@ import com.sendy.sendyLegacyApi.support.response.Result
 import com.sendy.sendyLegacyApi.support.util.Aes256Util
 import com.sendy.sendyLegacyApi.support.util.SHA256Util
 import com.sendy.sendyLegacyApi.support.util.getTsid
-import com.sendy.sharedKafka.event.EventMessage
-import com.sendy.sharedKafka.event.EventPublisher
-import com.sendy.sharedKafka.event.EventTypes
+import com.sendy.sharedKafka.domain.EventMessage
+import com.sendy.sharedKafka.domain.EventMessageRepository
+import com.sendy.sharedKafka.domain.EventPublisher
+import com.sendy.sharedKafka.domain.EventTypes
 import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
 import com.sendy.sharedKafka.topic.KafkaTopics
 import org.springframework.beans.factory.annotation.Value
@@ -22,7 +23,6 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
-import java.util.*
 
 @Service
 class UserService(
@@ -33,6 +33,7 @@ class UserService(
     private val mailAsyncSend: MailAsyncSend,
     private val eventPublisher: EventPublisher, // Kafka EventPublisher 추가
     @Value("\${aes256.key}") private val key: String,
+    private val eventMessageRepository: EventMessageRepository,
 ) {
     private val aesUtil = Aes256Util(key)
 
@@ -114,43 +115,39 @@ class UserService(
 
         // 실제 이메일 발송
         val mailFlag = mailAsyncSend.sendEmailAsync(mailSender, email, randomCode)
-        
+
         // 이메일 발송 후 Kafka 알림 메시지 발송
-        val user = userEntityRepository.findById(userId).orElseThrow { 
-            throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) 
-        }
-        
-        val eventMessage = EventMessage(
-            id = getTsid().toString(),
-            source = "sendy-legacy-api",
-            aggregateId = userId.toString(),
-            payload = EmailVerificationSentEvent(
-                userId = userId,
-                email = email,
-                username = user.name,
-                verificationToken = randomCode,
-                expiresAt = Instant.now().plusSeconds(3600)
+        val user =
+            userEntityRepository.findById(userId).orElseThrow {
+                throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+            }
+
+        eventMessageRepository.saveReady(
+            EventMessage(
+                id = getTsid(),
+                source = "sendy-legacy-api",
+                aggregateId = userId,
+                payload =
+                    EmailVerificationSentEvent(
+                        userId = userId,
+                        email = email,
+                        username = user.name,
+                        verificationToken = randomCode,
+                        expiresAt = Instant.now().plusSeconds(3600),
+                    ),
+                type = EventTypes.USER_VERIFICATION,
             ),
-            type = EventTypes.USER_VERIFICATION,
-            createdAt = java.time.LocalDateTime.now().toString()
         )
-        
-        eventPublisher.publish(
-            topic = "user-api.user.verified.email",
-            key = email,
-            data = eventMessage,
-        )
-        
+
         return "인증 코드 발송" + mailFlag
     }
 
     @Transactional
     fun verifyEmail(
-        userId : Long,
+        userId: Long,
         email: String,
         emailCode: String,
     ): Result {
-
         val user =
             userEntityRepository.findById(userId).orElseThrow {
                 throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
@@ -159,8 +156,9 @@ class UserService(
             throw ResponseException("이메일 정보가 다릅니다.", HttpStatus.NOT_FOUND)
         }
 
-        val emailEntity =  emailRepository.findByUserId(userId)
-            ?: throw ResponseException("이메일 인증 정보가 없습니다.", HttpStatus.NOT_FOUND)
+        val emailEntity =
+            emailRepository.findByUserId(userId)
+                ?: throw ResponseException("이메일 인증 정보가 없습니다.", HttpStatus.NOT_FOUND)
 
         if (emailEntity.code != emailCode) {
             throw ResponseException("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST)

@@ -1,7 +1,6 @@
-package com.sendy.sharedKafka.event
+package com.sendy.sharedKafka.domain
 
 interface EventRetry {
-
     fun <T> publishRetry(
         topic: String,
         data: EventMessage<T>,

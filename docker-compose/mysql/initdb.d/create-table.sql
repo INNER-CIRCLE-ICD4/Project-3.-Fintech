@@ -130,12 +130,14 @@ create table device_info
     primary key (device_id)
 ) engine = InnoDB;
 
-
-create table outbox
+create table event_message
 (
-    id           BIGINT PRIMARY KEY COMMENT "id",
-    aggregate_id BIGINT      NOT NULL COMMENT "aggregate id(kafka key 활용)",
-    payload      JSON        NOT NULL COMMENT "페이로드",
-    status       VARCHAR(30) NOT NULL COMMENT "상태(READY, PUBLISHED, COMPLETE, FAIL)",
-    createdAt    DATETIME(6) NOT NULL
+    id           bigint PRIMARY KEY COMMENT "id",
+    source       varchar(255) NOT NULL COMMENT "이벤트 발행처",
+    aggregate_id bigint       NOT NULL COMMENT "aggregate id",
+    payload      json COMMENT "payload",
+    status       VARCHAR(13) NULL COMMENT "상태(READY, PUBLISH, FAIL)",
+    `type`       varchar(255) NOT NULL COMMENT "이벤트 타입",
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "송금 요청 일자",
+    published_at DATETIME COMMENT "완료 일자"
 ) engine = InnoDB;

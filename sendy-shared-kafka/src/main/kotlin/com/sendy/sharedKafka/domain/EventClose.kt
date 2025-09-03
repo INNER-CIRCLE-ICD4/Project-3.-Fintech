@@ -1,7 +1,6 @@
-package com.sendy.sharedKafka.event
+package com.sendy.sharedKafka.domain
 
 interface EventClose {
-
     fun <T> publishClose(
         topic: String,
         data: EventMessage<T>,

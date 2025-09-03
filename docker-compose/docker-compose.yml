@@ -45,7 +45,7 @@ services:
       dockerfile: sendy-notification-consumer/Dockerfile
     container_name: sendy-notification-consumer
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prd
       - SPRING_DATA_MONGODB_URI=mongodb://sendy-mongoDB:sendy123!@sendy-mongodb:27017/notification?authSource=admin
       - SPRING_DATA_MONGODB_DATABASE=notification
       - SPRING_DATA_MONGODB_HOST=sendy-mongodb
@@ -166,7 +166,7 @@ services:
     container_name: sendy-kafka-ui
     restart: always
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: sendy-local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092

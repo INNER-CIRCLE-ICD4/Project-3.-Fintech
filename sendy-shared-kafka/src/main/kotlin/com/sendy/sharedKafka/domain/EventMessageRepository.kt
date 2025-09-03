@@ -6,4 +6,6 @@ interface EventMessageRepository {
     fun savePublish(eventId: Long)
 
     fun getUserEventMessage(): List<EventMessage<String>>
+
+    fun getTransferEventMessage(): List<EventMessage<String>>
 }

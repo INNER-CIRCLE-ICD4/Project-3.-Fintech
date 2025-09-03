@@ -1,5 +1,6 @@
 package com.sendy.sendyLegacyApi.application.usecase.transfer
 
+import com.sendy.sendyLegacyApi.application.dto.transfer.TransferInfo
 import com.sendy.sendyLegacyApi.application.dto.transfer.TransferMoneyCommand
 import com.sendy.sendyLegacyApi.domain.account.AccountEntity
 import com.sendy.sendyLegacyApi.domain.account.AccountRepository
@@ -27,7 +28,7 @@ class TransferProcessor(
     private val shA256Util: SHA256Util,
 ) {
     @Transactional
-    fun doTransferWithPassword(command: TransferMoneyCommand) {
+    fun doTransferWithPassword(command: TransferMoneyCommand): TransferInfo {
         // 출금 계좌 조회 시 lock 획득 후 진행
         val senderAccount =
             accountRepository.findOneBySenderUserId(command.sendUserId)
@@ -96,6 +97,11 @@ class TransferProcessor(
                 createdAt = LocalDateTime.now(),
                 accountId = receiveAccount.id,
             ),
+        )
+
+        return TransferInfo(
+            deposit = TransferInfo.UserId(receiver.id),
+            withdraw = TransferInfo.UserId(command.sendUserId),
         )
     }
 

@@ -22,7 +22,7 @@ FROM eclipse-temurin:21.0.4_7-jre-alpine
 WORKDIR /app
 
 # 빌드된 jar 파일 복사
-COPY --from=build /builder/sendy-legacy-api/build/libs/sendy-legacy-api.jar app.jar
+COPY --from=build /builder/sendy-legacy-api/build/libs/*.jar app.jar
 
 # 애플리케이션 실행 (포트 8080)
 EXPOSE 8080

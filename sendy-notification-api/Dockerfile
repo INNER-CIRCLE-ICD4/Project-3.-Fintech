@@ -22,6 +22,6 @@ RUN ./gradlew :sendy-notification-api:bootJar
 FROM eclipse-temurin:21.0.4_7-jre-alpine
 WORKDIR /app
 
-COPY --from=build /builder/sendy-notification-api/build/libs/sendy-notification-api.jar app.jar
+COPY --from=build /builder/sendy-notification-api/build/libs/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -22,6 +22,6 @@ FROM eclipse-temurin:21.0.4_7-jre-alpine
 WORKDIR /app
 
 # 빌드된 jar 파일 복사
-COPY --from=build /builder/sendy-transfer-consumer/build/libs/sendy-transfer-consumer.jar app.jar
+COPY --from=build /builder/sendy-transfer-consumer/build/libs/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

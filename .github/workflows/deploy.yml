@@ -13,7 +13,7 @@ on:
     
     #  배포대상이 될 브런치 명시 
     branches:
-      - main
+      - develop
 permissions:
   contents: write
   packages: write

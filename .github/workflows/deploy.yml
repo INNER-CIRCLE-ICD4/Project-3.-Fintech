@@ -70,7 +70,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./${{ matrix.module }}/Dockerfile
+          file: ${{ matrix.module }}/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/${{ matrix.module }}:${{ needs.makeTagAndRelease.outputs.tag_name }}

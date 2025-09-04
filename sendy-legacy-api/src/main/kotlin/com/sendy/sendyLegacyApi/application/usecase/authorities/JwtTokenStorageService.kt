@@ -124,7 +124,7 @@ class JwtTokenStorageService(
         val tokenEntity = jwtTokenRepository.findByTokenHashAndStatus(jti, TokenStatus.ACTIVE)
 
         return tokenEntity.isPresent &&
-            tokenEntity.get().expiredAt.isAfter(LocalDateTime.now())
+                tokenEntity.get().expiredAt.isAfter(LocalDateTime.now())
     }
 
     /**

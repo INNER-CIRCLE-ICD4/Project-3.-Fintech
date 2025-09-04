@@ -126,7 +126,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ env.OWNER_LC }} --password-stdin
             docker-compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml down --remove-orphans
             docker-compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml up --build -d
             docker system prune -f

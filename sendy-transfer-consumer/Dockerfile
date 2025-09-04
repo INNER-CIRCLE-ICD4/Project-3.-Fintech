@@ -12,8 +12,7 @@ COPY sendy-shared-kafka/ sendy-shared-kafka/
 COPY sendy-transfer-domain/ sendy-transfer-domain/
 
 # 현재 모듈 복사
-COPY sendy-transfer-consumer/ sendy-transfer-consumer/
-
+COPY . .
 RUN chmod +x ./gradlew
 
 # sendy-legacy-api 모듈만 빌드

@@ -125,18 +125,9 @@ jobs:
           host: ${{ secrets.SPRING_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: GITHUB_TOKEN
           script: |
-            OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-            echo "$GITHUB_TOKEN" | docker login ghcr.io -u $OWNER_LC --password-stdin
-
-            # 최신 이미지 풀
-            docker compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml pull
-
-            # 서비스 재시작
-            docker compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml down --remove-orphans
-            docker compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml up -d
-
-            # 불필요 리소스 정리
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ env.OWNER_LC }} --password-stdin
+            docker-compose -f docker-compose/docker-compose.prod.spring.yml down --remove-orphans
+            docker-compose -f docker-compose/docker-compose.prod.spring.yml up --build -d
             docker system prune -f
     

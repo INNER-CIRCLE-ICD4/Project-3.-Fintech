@@ -14,7 +14,7 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - SPRING_KAFKA_CONSUMER_GROUP_ID=sendy-api-group
       - SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET=earliest
-      - SPRING_REDIS_HOST=my-redis
+      - SPRING_REDIS_HOST=sendy-redis
       - SPRING_REDIS_PORT=6379
     restart: always
     networks:
@@ -23,21 +23,6 @@ services:
       - mysql-master
       - redis
       - kafka
-
-  # notification-api:
-  #   build:
-  #     context: ..
-  #     dockerfile: sendy-notification-api/Dockerfile
-  #   container_name: sendy-notification-api
-  #   ports:
-  #     - "8088:8088"
-  #   environment:
-  #     - SPRING_PROFILES_ACTIVE=docker
-  #   restart: always
-  #   networks:
-  #     - sendy-net
-  #   depends_on:
-  #     - mongo
 
   notification-consumer:
     build:
@@ -86,6 +71,85 @@ services:
     tmpfs:
       - /var/lib/mysql
 
+  # sendy-transfer-consumer
+  sendy-transfer-consumer:
+    build:
+      context: ..
+      dockerfile: sendy-transfer-consumer/Dockerfile
+    container_name: sendy-transfer-consumer
+    environment:
+      - SPRING_PROFILES_ACTIVE=prd
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://mysql-master:3306/sendy
+      - SPRING_DATASOURCE_USERNAME=sendy_master
+      - SPRING_DATASOURCE_PASSWORD=sendy_master
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=transfer-scheduler
+    restart: always
+    networks:
+      - sendy-net
+    depends_on:
+      - mysql-master
+      - kafka
+
+  # sendy-transfer-producer
+  sendy-transfer-producer:
+    build:
+      context: ..
+      dockerfile: sendy-transfer-producer/Dockerfile
+    container_name: sendy-transfer-producer
+    environment:
+      - SPRING_PROFILES_ACTIVE=prd
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://mysql-master:3306/sendy
+      - SPRING_DATASOURCE_USERNAME=sendy_master
+      - SPRING_DATASOURCE_PASSWORD=sendy_master
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=transfer-service
+    restart: always
+    networks:
+      - sendy-net
+    depends_on:
+      - mysql-master
+      - kafka
+
+  # sendy-user-producer
+  sendy-user-producer:
+    build:
+      context: ..
+      dockerfile: sendy-user-producer/Dockerfile
+    container_name: sendy-user-producer
+    environment:
+      - SPRING_PROFILES_ACTIVE=prd
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://mysql-master:3306/sendy
+      - SPRING_DATASOURCE_USERNAME=sendy_master
+      - SPRING_DATASOURCE_PASSWORD=sendy_master
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=user-service
+    restart: always
+    networks:
+      - sendy-net
+    depends_on:
+      - mysql-master
+      - kafka
+  # sendy-transfer-scheduler
+  sendy-transfer-scheduler:
+    build:
+      context: ..
+      dockerfile: sendy-transfer-scheduler/Dockerfile
+    container_name: sendy-transfer-scheduler
+    environment:
+      - SPRING_PROFILES_ACTIVE=prd
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://mysql-master:3306/sendy
+      - SPRING_DATASOURCE_USERNAME=sendy_master
+      - SPRING_DATASOURCE_PASSWORD=sendy_master
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=transfer-scheduler
+    restart: always
+    networks:
+      - sendy-net
+    depends_on:
+      - mysql-master
+      - kafka
+
   grafana:
     image: grafana/grafana
     container_name: grafana
@@ -119,7 +183,7 @@ services:
       - sendy-net
   redis:
     image: redis:latest
-    container_name: my-redis
+    container_name: sendy-redis
     ports:
       - "6379:6379"
     volumes:

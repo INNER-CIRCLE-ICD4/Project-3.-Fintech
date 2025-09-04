@@ -12,8 +12,8 @@ spring:
       password: ${SPRING_DATASOURCE_PASSWORD:sendy_master}
   kafka:
     consumer:
-      group-id: transfer-scheduler
-
+      group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID}
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
 
 logging:
   level:

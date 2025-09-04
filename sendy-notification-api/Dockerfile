@@ -9,7 +9,6 @@ COPY settings.gradle.kts ./
 
 # 공통 모듈들 복사
 COPY sendy-shared-mongoDB/ sendy-shared-mongoDB/
-COPY sendy-notificaiton-mongoDB/ sendy-notificaiton-mongoDB/
 
 # 현재 모듈 복사
 COPY . .

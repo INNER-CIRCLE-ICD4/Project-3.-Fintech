@@ -1,7 +1,7 @@
 package com.sendy.transferScheduler.application.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.sendy.sharedKafka.event.EventPublisher
+import com.sendy.sharedKafka.domain.EventPublisher
 import com.sendy.transferDomain.domain.TransferRepository
 import com.sendy.transferDomain.domain.vo.TransferId
 import org.slf4j.LoggerFactory
@@ -52,7 +52,12 @@ class ScheduledReserveTransferService(
         }
 
         while (nextCursor != null) {
-            val next = transferRepository.getReservedTransferByCursor(startDt, endDt, fetchSize = fetchSize, id = nextCursor.value)
+            val next = transferRepository.getReservedTransferByCursor(
+                startDt,
+                endDt,
+                fetchSize = fetchSize,
+                id = nextCursor.value
+            )
             nextCursor = next.nextCursor
 
             next.nextCursor?.let { list.add(next.transferIds) }

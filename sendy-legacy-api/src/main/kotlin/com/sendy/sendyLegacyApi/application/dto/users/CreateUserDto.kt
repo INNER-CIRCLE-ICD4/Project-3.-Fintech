@@ -1,4 +1,5 @@
 package com.sendy.sendyLegacyApi.application.dto.users
+
 import com.sendy.sendyLegacyApi.domain.user.UserEntity
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
@@ -44,5 +45,7 @@ data class CreateUserDto(
             updateAt = null,
             deleteAt = null,
             emailVerified = false,
+            wrongCount = 0,
+            isLocked = false,
         )
 }

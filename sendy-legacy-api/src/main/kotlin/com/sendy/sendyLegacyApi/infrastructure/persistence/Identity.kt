@@ -1,13 +1,9 @@
 package com.sendy.sendyLegacyApi.infrastructure.persistence
 
-import jakarta.persistence.Column
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.Id
-import jakarta.persistence.MappedSuperclass
-import jakarta.persistence.PostLoad
-import jakarta.persistence.PrePersist
+import jakarta.persistence.*
 import org.springframework.data.domain.Persistable
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import kotlin.jvm.Transient
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)

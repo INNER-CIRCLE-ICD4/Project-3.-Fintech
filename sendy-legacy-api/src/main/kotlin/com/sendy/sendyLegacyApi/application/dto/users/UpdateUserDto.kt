@@ -1,4 +1,5 @@
 package com.sendy.sendyLegacyApi.application.dto.users
+
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
@@ -9,7 +10,9 @@ data class UpdateUserDto(
 
     val name: String?,
 
-    val password : String?,
+    val password: String?,
+
+    val birth: String?,
 
     @Schema(description = "핸드폰 번호", example = "01012345678")
     val phoneNumber: String?,

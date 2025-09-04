@@ -14,7 +14,7 @@ interface UserEntityRepository : JpaRepository<UserEntity, Long> {
 
     @Query(
         value =
-            "select user " +
+        "select user " +
                 "from UserEntity user " +
                 "where 1=1 " +
                 "and user.phoneNumber = :phoneNumber " +
@@ -29,5 +29,9 @@ interface UserEntityRepository : JpaRepository<UserEntity, Long> {
     fun findByPhoneNumberAndDeleteAtIsNull(phoneNumber: String): UserEntity?
 
     fun findActiveById(id: Long): UserEntity?
-    
+
+    fun findByIdAndEmailVerifiedFalse(id: Long): List<UserEntity>
+
+    fun findByIdAndIsLockedTrue(id: Long): UserEntity?
+
 }

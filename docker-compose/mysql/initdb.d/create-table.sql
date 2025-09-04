@@ -52,18 +52,20 @@ CREATE TABLE transaction_history
 -- 사용자 테이블
 CREATE TABLE users
 (
-    id             BIGINT       NOT NULL PRIMARY KEY,
-    password       VARCHAR(120) NOT NULL,
-    name           VARCHAR(50)  NOT NULL,
-    phone_number   VARCHAR(255)  NOT NULL,
-    email          VARCHAR(255) NOT NULL,
-    ci             VARCHAR(100),
-    birth          CHAR(8)      NOT NULL,
-    is_delete      TINYINT(1)   NOT NULL,
-    email_verified TINYINT(1)   NOT NULL DEFAULT 0,
-    create_at      TIMESTAMP    NOT NULL,
-    update_at      TIMESTAMP,
-    delete_at      TIMESTAMP,
+    id             BIGINT       NOT NULL PRIMARY KEY COMMENT "id",
+    password       VARCHAR(255) NOT NULL COMMENT "비밀번호",
+    name           VARCHAR(50)  NOT NULL COMMENT "이름",
+    phone_number   VARCHAR(255)  NOT NULL COMMENT "핸드폰 번호",
+    email          VARCHAR(255) NOT NULL COMMENT "이메일",
+    ci             VARCHAR(100) COMMENT "본인인증 고유값",
+    birth          CHAR(8)      NOT NULL COMMENT "생년월일",
+    is_delete      TINYINT(1) NOT NULL COMMENT "삭제여부",
+    email_verified TINYINT(1) NOT NULL DEFAULT 0 COMMENT "이메일본인인증여부",
+    create_at      TIMESTAMP    NOT NULL COMMENT "생성일시",
+    update_at      TIMESTAMP COMMENT "수정일시",
+    delete_at      TIMESTAMP COMMENT "삭제일시",
+    is_locked     TINYINT(1) NOT NULL DEFAULT 0 COMMENT "계정잠금여부",
+    wrong_count  INT         NOT NULL DEFAULT 0 COMMENT "비밀번호 틀린 횟수",
     UNIQUE KEY `users_phone_number_uk` (phone_number)
 ) engine = InnoDB;
 

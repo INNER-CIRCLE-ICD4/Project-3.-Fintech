@@ -12,7 +12,7 @@ COPY sendy-shared-kafka/ sendy-shared-kafka/
 COPY sendy-transfer-domain/ sendy-transfer-domain/
 
 # 현재 모듈 복사
-COPY sendy-transfer-scheduler/ sendy-transfer-scheduler/
+COPY . .
 
 RUN chmod +x ./gradlew
 

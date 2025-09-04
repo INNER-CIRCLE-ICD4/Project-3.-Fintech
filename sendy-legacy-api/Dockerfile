@@ -11,7 +11,7 @@ COPY settings.gradle.kts ./
 COPY sendy-shared-kafka/ sendy-shared-kafka/
 
 # 현재 모듈 복사
-COPY sendy-legacy-api/ sendy-legacy-api/
+COPY . .
 
 RUN chmod +x ./gradlew
 

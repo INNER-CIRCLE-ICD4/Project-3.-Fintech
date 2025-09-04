@@ -12,7 +12,7 @@ COPY sendy-shared-kafka/ sendy-shared-kafka/
 COPY sendy-shared-mongoDB/ sendy-shared-mongoDB/
 
 # 현재 모듈 복사
-COPY sendy-notification-consumer/ sendy-notification-consumer/
+COPY . .
 
 RUN chmod +x ./gradlew
 

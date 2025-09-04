@@ -12,7 +12,7 @@ COPY sendy-shared-mongoDB/ sendy-shared-mongoDB/
 COPY sendy-notificaiton-mongoDB/ sendy-notificaiton-mongoDB/
 
 # 현재 모듈 복사
-COPY sendy-notification-api/ sendy-notification-api/
+COPY . .
 
 RUN chmod +x ./gradlew
 

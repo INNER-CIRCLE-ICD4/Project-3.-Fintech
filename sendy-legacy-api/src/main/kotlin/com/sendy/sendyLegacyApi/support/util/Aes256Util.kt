@@ -2,8 +2,7 @@ package com.sendy.sendyLegacyApi.support.util
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import java.security.SecureRandom
-import java.util.Base64
+import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -30,12 +29,10 @@ class Aes256Util(
     fun encrypt(plainText: String): String =
         try {
             val iv = ByteArray(IV_SIZE)
-            SecureRandom().nextBytes(iv)
             val cipher = Cipher.getInstance(TRANSFORMATION)
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, IvParameterSpec(iv))
             val encrypted = cipher.doFinal(plainText.toByteArray())
-            val ivAndEncrypted = iv + encrypted
-            Base64.getEncoder().encodeToString(ivAndEncrypted)
+            Base64.getEncoder().encodeToString(encrypted)
         } catch (e: Exception) {
             throw RuntimeException("AES encryption error", e)
         }
@@ -43,11 +40,9 @@ class Aes256Util(
     fun decrypt(cipherText: String): String =
         try {
             val ivAndEncrypted = Base64.getDecoder().decode(cipherText)
-            val iv = ivAndEncrypted.copyOfRange(0, IV_SIZE)
-            val encrypted = ivAndEncrypted.copyOfRange(IV_SIZE, ivAndEncrypted.size)
             val cipher = Cipher.getInstance(TRANSFORMATION)
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, IvParameterSpec(iv))
-            val decrypted = cipher.doFinal(encrypted)
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, IvParameterSpec(ByteArray(IV_SIZE)))
+            val decrypted = cipher.doFinal(ivAndEncrypted)
             String(decrypted)
         } catch (e: Exception) {
             throw RuntimeException("AES decryption error", e)

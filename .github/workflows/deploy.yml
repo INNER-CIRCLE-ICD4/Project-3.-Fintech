@@ -47,7 +47,7 @@ jobs:
           sendy-legacy-api,
           sendy-notification-api,
           sendy-notification-consumer,
-          sendy-shared-mongoDB,
+          sendy-shared-mongo,
           sendy-shared-kafka,
           sendy-transfer-consumer,
           sendy-transfer-producer,
@@ -116,7 +116,7 @@ jobs:
             sendy-legacy-api/src/main/resources/application-secret.yml,
             sendy-notification-api/src/main/resources/application-secret.yml,
             sendy-notification-consumer/src/main/resources/application-secret.yml,
-            sendy-shared-mongoDB/src/main/resources/application-secret.yml,
+            sendy-shared-mongo/src/main/resources/application-secret.yml,
             sendy-transfer-consumer/src/main/resources/application-secret.yml,
             sendy-transfer-producer/src/main/resources/application-secret.yml,
             sendy-user-producer/src/main/resources/application-secret.yml

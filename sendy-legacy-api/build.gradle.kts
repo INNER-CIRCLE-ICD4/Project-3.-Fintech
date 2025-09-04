@@ -17,7 +17,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     // swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
     // jwt
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
@@ -33,6 +33,6 @@ dependencies {
     // redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
-    //kafka
+    // kafka
     implementation(project(":sendy-shared-kafka"))
 }

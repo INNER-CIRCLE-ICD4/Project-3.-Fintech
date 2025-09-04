@@ -12,7 +12,7 @@ tasks.bootJar {
 }
 
 dependencies {
-    //MongoDB 공통 모듈 (알림 조회용)
-    implementation(project(":sendy-shared-mongoDB"))
+    // MongoDB 공통 모듈 (알림 조회용)
+    implementation(project(":sendy-shared-mongo"))
     implementation("org.springframework.boot:spring-boot-starter-web")
 }

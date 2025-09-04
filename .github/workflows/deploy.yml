@@ -125,9 +125,11 @@ jobs:
           host: ${{ secrets.SPRING_EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
           script: |
-            docker-compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml down --remove-orphans
-            docker-compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml up -d
+            set -euo pipefail
+            echo ${{ secrets.GHCR_PAT_READ }} | docker login ghcr.io -u ukukdin --password-stdin
+            docker-compose -f /home/***/docker-compose/docker-compose.prod.spring.yml down --remove-orphans
+            docker-compose -f /home/***/docker-compose/docker-compose.prod.spring.yml pull   # ← 권한/태그 오류 즉시 fail
+            docker-compose -f /home/***/docker-compose/docker-compose.prod.spring.yml up -d
             docker system prune -f
-        
-    

@@ -127,6 +127,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker-compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml down --remove-orphans
-            docker-compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml up --build -d
+            docker-compose -f /home/ec2-user/docker-compose/docker-compose.prod.spring.yml up -d
             docker system prune -f
+        
     

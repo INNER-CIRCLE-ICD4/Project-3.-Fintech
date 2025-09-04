@@ -3,10 +3,13 @@ package com.sendy.consumer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sendy.consumer.handler.EmailVerifiedEventHandler
 import com.sendy.consumer.handler.EmailVerifiedSucceedEventHandler
+import com.sendy.consumer.handler.TransferCompletedEventHandler
+import com.sendy.consumer.handler.TransferFailedEventHandler
 import com.sendy.sharedKafka.domain.EventMessage
 import com.sendy.sharedKafka.domain.EventTypes
 import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
 import com.sendy.sharedKafka.event.user.email.EmailVerificationSucceedEventHandler
+import com.sendy.sharedKafka.event.user.email.TransferCompletionEventHandler
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
@@ -18,12 +21,20 @@ class NotificationEventConsumer(
     private val objectMapper: ObjectMapper,
     private val emailVerifiedEventHandler: EmailVerifiedEventHandler,
     private val emailVerifiedSucceedEventHandler: EmailVerifiedSucceedEventHandler,
+    private val transferCompletedEventHandler: TransferCompletedEventHandler,
+    private val transferFailedEventHandler: TransferFailedEventHandler,
 ) {
     private val log = LoggerFactory.getLogger(NotificationEventConsumer::class.java)
 
     // 이메일 인증 발송
     @KafkaListener(
-        topics = ["user-api.user.verified.email", "user-api.user.verifiedSucceed.email"],
+        topics = [
+            "user-api.user.verified.email",
+            "user-api.user.verifiedSucceed.email",
+            "transfer-api.transfer.transfer.succeed",
+            "transfer-api.transfer.transfer.failed",
+            "transfer-scheduler.transfer.reservation.started",
+        ],
         groupId = "notification-service",
     )
     fun handleUserRegistrationEvents(
@@ -49,12 +60,25 @@ class NotificationEventConsumer(
                 EventTypes.USER_VERIFICATION_SUCCESS -> {
                     val event =
                         eventMessage.payload?.let {
-                            convertPayload(
-                                it,
-                                EmailVerificationSucceedEventHandler::class.java,
-                            )
+                            convertPayload(it, EmailVerificationSucceedEventHandler::class.java)
                         }
                     event?.let { handlerEmailVerificationSucceed(it) }
+                }
+                // 송금 성공
+                EventTypes.TRANSFER_COMPLETED -> {
+                    val event =
+                        eventMessage.payload?.let {
+                            convertPayload(it, TransferCompletionEventHandler::class.java)
+                        }
+                    event?.let { handlerTransferCompletionSucceed(it) }
+                }
+                // 송금 실패
+                EventTypes.TRANSFER_FAILED -> {
+                    val event =
+                        eventMessage.payload?.let {
+                            convertPayload(it, TransferCompletionEventHandler::class.java)
+                        }
+                    event?.let { handlerTransferCompletionFailed(it) }
                 }
 
                 else -> {
@@ -110,6 +134,54 @@ class NotificationEventConsumer(
         } catch (e: Exception) {
             log.error("MongoDB 저장 실패 - 사용자: {}, 오류: {}", event.userId, e.message, e)
             throw e // 재처리를 위해 예외 다시 던지기        }
+        }
+    }
+
+    // 송금 성공 handler
+    private fun handlerTransferCompletionSucceed(event: TransferCompletionEventHandler) {
+        log.info(
+            "송금에 성공하였습니다. - 사용자: {}.금액:{}, 메모:{}",
+            event.userId,
+            event.email,
+            event.verificationToken,
+        )
+        try {
+            transferCompletedEventHandler.handle(event)
+        } catch (e: Exception) {
+            log.error("MongoDB 저장 실패 - 사용자: {}, 오류: {}", event.userId, e.message, e)
+            throw e
+        }
+    }
+
+    // 송금 성공 handler
+    private fun handlerTransferCompletionFailed(event: TransferCompletionEventHandler) {
+        log.info(
+            "송금에 실패하였습니다. - 사용자: {}.금액:{}, 메모:{}",
+            event.userId,
+            event.email,
+            event.verificationToken,
+        )
+        try {
+            transferFailedEventHandler.handle(event)
+        } catch (e: Exception) {
+            log.error("MongoDB 저장 실패 - 사용자: {}, 오류: {}", event.userId, e.message, e)
+            throw e
+        }
+    }
+
+    // 계좌 생성 성공 handler
+    private fun handlerAccountCompletionFailed(event: TransferCompletionEventHandler) {
+        log.info(
+            "송금에 실패하였습니다. - 사용자: {}.금액:{}, 메모:{}",
+            event.userId,
+            event.email,
+            event.verificationToken,
+        )
+        try {
+            transferFailedEventHandler.handle(event)
+        } catch (e: Exception) {
+            log.error("MongoDB 저장 실패 - 사용자: {}, 오류: {}", event.userId, e.message, e)
+            throw e
         }
     }
 

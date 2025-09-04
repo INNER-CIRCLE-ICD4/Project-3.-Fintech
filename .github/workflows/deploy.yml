@@ -80,8 +80,8 @@ jobs:
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
-          context: ${{ matrix.module }}
-          file: ${{ matrix.module }}/Dockerfile
+          context: ./${{ matrix.module }}
+          file: ./${{ matrix.module }}/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/${{ matrix.module }}:${{ needs.makeTagAndRelease.outputs.tag_name }}

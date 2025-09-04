@@ -90,7 +90,7 @@ jobs:
         env:
           APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
         run: |
-          echo "$APPLICATION_SECRET" > sendy-user-api/src/main/resources/application-secret.yml        
+          echo "$APPLICATION_SECRET" > sendy-user-producer/src/main/resources/application-secret.yml        
        
 
       - name: Docker Buildx 설치

@@ -26,5 +26,4 @@ WORKDIR /app
 COPY --from=build /builder/sendy-notification-consumer/build/libs/sendy-notification-consumer.jar app.jar
 
 # 애플리케이션 실행
-EXPOSE 8082
 ENTRYPOINT ["java", "-jar", "app.jar"]

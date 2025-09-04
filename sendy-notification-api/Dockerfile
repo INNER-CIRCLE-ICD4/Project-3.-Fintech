@@ -18,18 +18,10 @@ RUN chmod +x ./gradlew
 # 현재 모듈만 빌드
 RUN ./gradlew :sendy-notification-api:bootJar
 
-FROM eclipse-temurin:21.0.4_7-jre-alpine as extract
-WORKDIR /extract
-
-COPY --from=build /builder/sendy-notification-api/build/libs/sendy-notification-api.jar sendy-notification-api.jar
-RUN java -Djarmode=tools -jar sendy-notification-api.jar extract --layers --destination extracted
 
 FROM eclipse-temurin:21.0.4_7-jre-alpine
 WORKDIR /app
 
-COPY --from=extract /extract/extracted/dependencies/ ./
-COPY --from=extract /extract/extracted/spring-boot-loader/ ./
-COPY --from=extract /extract/extracted/snapshot-dependencies/ ./
-COPY --from=extract /extract/extracted/application/ ./
+COPY --from=build /builder/sendy-notification-api/build/libs/sendy-notification-api.jar app.jar
 
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

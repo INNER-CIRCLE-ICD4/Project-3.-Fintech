@@ -45,7 +45,6 @@ jobs:
       matrix:
         module: [
           sendy-legacy-api,
-          sendy-notification-api,
           sendy-notification-consumer,
           sendy-transfer-consumer,
           sendy-transfer-producer,
@@ -112,7 +111,6 @@ jobs:
           source: |
             docker-compose/docker-compose.prod.spring.yml,
             sendy-legacy-api/src/main/resources/application-secret.yml,
-            sendy-notification-api/src/main/resources/application-secret.yml,
             sendy-notification-consumer/src/main/resources/application-secret.yml,
             sendy-shared-mongo/src/main/resources/application-secret.yml,
             sendy-shared-kafka/src/main/resources/application-secret.yml,

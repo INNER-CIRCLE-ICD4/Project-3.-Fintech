@@ -8,8 +8,8 @@ COPY build.gradle.kts ./
 COPY settings.gradle.kts ./
 
 # 의존 모듈들 복사 (notification-consumer가 필요한 것들)
-COPY ../sendy-shared-kafka sendy-shared-kafka/
-COPY ../sendy-shared-mongoDB sendy-shared-mongoDB/
+COPY sendy-shared-kafka/ sendy-shared-kafka/
+COPY sendy-shared-mongoDB/ sendy-shared-mongoDB/
 
 # 현재 모듈 복사
 COPY . .

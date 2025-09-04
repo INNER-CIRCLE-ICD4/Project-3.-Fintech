@@ -48,6 +48,7 @@ jobs:
           sendy-notification-api,
           sendy-notification-consumer,
           sendy-shared-mongoDB,
+          sendy-shared-kafka,
           sendy-transfer-consumer,
           sendy-transfer-producer,
           sendy-user-producer
@@ -80,7 +81,7 @@ jobs:
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
-          context: ./${{ matrix.module }}
+          context: .
           file: ./${{ matrix.module }}/Dockerfile
           push: true
           tags: |

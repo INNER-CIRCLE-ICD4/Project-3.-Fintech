@@ -8,7 +8,7 @@ COPY build.gradle.kts ./
 COPY settings.gradle.kts ./
 
 # 의존 모듈만 복사 (sendy-legacy-api가 필요한 것만)
-COPY ../sendy-shared-kafka sendy-shared-kafka/
+COPY sendy-shared-kafka/ sendy-shared-kafka/
 
 # 현재 모듈 복사
 COPY . .

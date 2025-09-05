@@ -4,24 +4,24 @@ server:
 
 spring:
   application:
-    name: sendy
+    name: sendy-legacy-api
   data:
     redis:
-      host: my-redis
-      port: 6379
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
   kafka:
-    bootstrap-servers: kafka:29092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
     producer:
-      bootstrap-servers: kafka:29092
+      bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
     consumer:
-      group-id: sendy-legacy-api-group
-      auto-offset-reset: earliest
+      group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID}
+      auto-offset-reset: ${SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET}
   datasource:
     hikari:
-      jdbc-url: jdbc:mysql://mysql-master:3306/sendy?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+      jdbc-url: ${SPRING_DATASOURCE_JDBC_URL}
       driver-class-name: com.mysql.cj.jdbc.Driver
-      username: sendy_master
-      password: sendy_master
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -29,12 +29,7 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-        use_sql_comments: true
+
   mail:
     host: smtp.gmail.com
     port: 587

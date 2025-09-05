@@ -1,23 +1,28 @@
+# .github/workflows/deploy.yml 
+
 name: deploy.yml
 on:
+  #  어플리케이션 구동에 필요한 경로들 취득 
   push:
     paths:
       - ".github/workflows/**"
-      - "*/src/**"
+      - "src/**"
       - "build.gradle"
       - "settings.gradle.kts"
-      - "*/Dockerfile"
+      - "Dockerfile"
+    
+    #  배포대상이 될 브런치 명시 
     branches:
-      - develop
-
+      - main
 permissions:
   contents: write
   packages: write
-
 jobs:
   makeTagAndRelease:
+    #  구동 환경 설정 
     runs-on: ubuntu-latest
     outputs:
+      #  이미지에 태그 설정 
       tag_name: ${{ steps.create_tag.outputs.new_tag }}
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +32,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -37,42 +43,38 @@ jobs:
           draft: false
           prerelease: false
 
+  #  이 단계에서 build한 파일들을 컨테이너에 담아, Docker Hub에 적재 
   buildImageAndPush:
     name: 도커 이미지 빌드와 푸시
     needs: makeTagAndRelease
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        module: [
-          sendy-legacy-api,
-          sendy-notification-consumer,
-          sendy-transfer-consumer,
-          sendy-transfer-producer,
-          sendy-user-producer
-        ]
+    env:
+      #  docker에 적재 될 이미지 명 환경변수화  
+      DOCKER_IMAGE_NAME: sendy
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ env.DOCKER_IMAGE_NAME }}
+      OWNER_LC: ${{ env.OWNER_LC }}
     steps:
       - name: Docker Buildx 설치
         uses: docker/setup-buildx-action@v2
-
       - name: 레지스트리 로그인
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: set lower case owner name
-        run: echo "OWNER_LC=${OWNER,,}" >> $GITHUB_ENV
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
         env:
-          OWNER: ${{ github.repository_owner }}
-
+          OWNER: "${{ github.repository_owner }}"
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./${{ matrix.module }}/Dockerfile
           push: true
+          cache-from: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:cache
+          cache-to: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:cache,mode=max
           tags: |
-            ghcr.io/${{ env.OWNER_LC }}/${{ matrix.module }}:${{ needs.makeTagAndRelease.outputs.tag_name }}
-            ghcr.io/${{ env.OWNER_LC }}/${{ matrix.module }}:latest
-    
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:${{ needs.makeTagAndRelease.outputs.tag_name }},
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest

@@ -1,5 +1,3 @@
-# .github/workflows/deploy.yml 
-
 name: deploy.yml
 on:
   #  어플리케이션 구동에 필요한 경로들 취득 

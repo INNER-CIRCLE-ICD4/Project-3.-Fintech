@@ -1,376 +1,80 @@
-name: Deploy Multi-Module Application
+# .github/workflows/deploy.yml 
 
+name: deploy.yml
 on:
+  #  어플리케이션 구동에 필요한 경로들 취득 
   push:
     paths:
       - ".github/workflows/**"
-      - "*/src/**"
+      - "src/**"
       - "build.gradle"
       - "settings.gradle.kts"
-      - "*/Dockerfile"
-      - "docker-compose/**"
+      - "Dockerfile"
+    
+    #  배포대상이 될 브런치 명시 
     branches:
       - develop
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME_PREFIX: ${{ github.repository_owner }}
-
 permissions:
   contents: write
   packages: write
-  actions: read
-
 jobs:
-  # 변경된 모듈 감지
-  detect-changes:
+  makeTagAndRelease:
+    #  구동 환경 설정 
     runs-on: ubuntu-latest
     outputs:
-      modules: ${{ steps.changes.outputs.modules }}
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Detect changed modules
-        id: changes
-        run: |
-          ALL_MODULES=(
-            "sendy-legacy-api"
-            "sendy-notification-consumer" 
-            "sendy-transfer-consumer"
-            "sendy-transfer-producer"
-            "sendy-user-producer"
-          )
-          
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-          CHANGED_MODULES=()
-          
-          for module in "${ALL_MODULES[@]}"; do
-            if echo "$CHANGED_FILES" | grep -q "^$module/\|^build.gradle\|^settings.gradle.kts\|^\.github/workflows/"; then
-              CHANGED_MODULES+=("$module")
-            fi
-          done
-          
-          # If workflow files changed, deploy all modules
-          if echo "$CHANGED_FILES" | grep -q "^\.github/workflows/"; then
-            CHANGED_MODULES=("${ALL_MODULES[@]}")
-          fi
-          
-          # Convert to JSON array
-          MODULES_JSON=$(printf '%s\n' "${CHANGED_MODULES[@]}" | jq -R . | jq -s .)
-          echo "modules=$MODULES_JSON" >> $GITHUB_OUTPUT
-
-      - name: Set matrix for build
-        id: set-matrix
-        run: |
-          MODULES='${{ steps.changes.outputs.modules }}'
-          if [ "$MODULES" = "[]" ] || [ -z "$MODULES" ]; then
-            echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
-          else
-            MATRIX_JSON=$(echo "$MODULES" | jq -c 'map({module: .})')
-            echo "matrix={\"include\":$MATRIX_JSON}" >> $GITHUB_OUTPUT
-          fi
-
-  # 태그 생성 (변경된 모듈이 있을 때만)
-  create-tag:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: fromJSON(needs.detect-changes.outputs.modules)[0] != null
-    outputs:
+      #  이미지에 태그 설정 
       tag_name: ${{ steps.create_tag.outputs.new_tag }}
-      changelog: ${{ steps.create_tag.outputs.changelog }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Create Tag
         id: create_tag
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          default_bump: patch
-
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ steps.create_tag.outputs.new_tag }}
-          name: Release ${{ steps.create_tag.outputs.new_tag }}
-          body: |
-            ## Changed Modules
-            ${{ join(fromJSON(needs.detect-changes.outputs.modules), ', ') }}
-            
-            ## Changelog
-            ${{ steps.create_tag.outputs.changelog }}
+          tag_name: ${{ steps.create_tag.outputs.new_tag }}
+          release_name: Release ${{ steps.create_tag.outputs.new_tag }}
+          body: ${{ steps.create_tag.outputs.changelog }}
           draft: false
-          prerelease: ${{ github.ref != 'refs/heads/main' }}
+          prerelease: false
 
-  # 도커 이미지 빌드 및 푸시
-  build-and-push:
-    name: Build and Push Docker Images
+  #  이 단계에서 build한 파일들을 컨테이너에 담아, Docker Hub에 적재 
+  buildImageAndPush:
+    name: 도커 이미지 빌드와 푸시
+    needs: makeTagAndRelease
     runs-on: ubuntu-latest
-    needs: [detect-changes, create-tag]
-    if: fromJSON(needs.detect-changes.outputs.matrix).include[0] != null
-    strategy:
-      matrix: ${{ fromJSON(needs.detect-changes.outputs.matrix) }}
-      fail-fast: false
+    env:
+      #  docker에 적재 될 이미지 명 환경변수화  
+      DOCKER_IMAGE_NAME: sendy
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ env.DOCKER_IMAGE_NAME }}
+      OWNER_LC: ${{ env.OWNER_LC }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
+      - name: Docker Buildx 설치
+        uses: docker/setup-buildx-action@v2
+      - name: 레지스트리 로그인
+        uses: docker/login-action@v2
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set environment variables
+      - name: set lower case owner name
         run: |
-          echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ needs.create-tag.outputs.tag_name }}" >> $GITHUB_ENV
-
-      - name: Create application-secret.yml
+          echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
         env:
-          APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
-        run: |
-          mkdir -p ${{ matrix.module }}/src/main/resources
-          echo "$APPLICATION_SECRET" > ${{ matrix.module }}/src/main/resources/application-secret.yml
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/${{ matrix.module }}
-          tags: |
-            type=raw,value=${{ env.IMAGE_TAG }}
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+          OWNER: "${{ github.repository_owner }}"
+      - name: 빌드 앤 푸시
+        uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./${{ matrix.module }}/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=${{ matrix.module }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.module }}
-          platforms: linux/amd64
-
-      - name: Verify image
-        run: |
-          docker run --rm ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/${{ matrix.module }}:${{ env.IMAGE_TAG }} --version || true
-
-  # 보안 스캔
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    needs: [detect-changes, build-and-push]
-    if: fromJSON(needs.detect-changes.outputs.matrix).include[0] != null
-    strategy:
-      matrix: ${{ fromJSON(needs.detect-changes.outputs.matrix) }}
-      fail-fast: false
-    steps:
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.module }}:${{ needs.create-tag.outputs.tag_name }}
-          format: 'sarif'
-          output: 'trivy-results-${{ matrix.module }}.sarif'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: 'trivy-results-${{ matrix.module }}.sarif'
-
-  # 배포
-  deploy:
-    name: Deploy to Environment
-    runs-on: ubuntu-latest
-    needs: [detect-changes, create-tag, build-and-push]
-    if: fromJSON(needs.detect-changes.outputs.modules)[0] != null
-    environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
-      url: ${{ github.ref == 'refs/heads/main' && 'https://api.example.com' || 'https://staging-api.example.com' }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Set deployment environment
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "DEPLOY_ENV=production" >> $GITHUB_ENV
-            echo "EC2_HOST=${{ secrets.PROD_EC2_HOST }}" >> $GITHUB_ENV
-            echo "COMPOSE_FILE=docker-compose.prod.spring.yml" >> $GITHUB_ENV
-          else
-            echo "DEPLOY_ENV=staging" >> $GITHUB_ENV
-            echo "EC2_HOST=${{ secrets.SPRING_EC2_HOST }}" >> $GITHUB_ENV
-            echo "COMPOSE_FILE=docker-compose.staging.spring.yml" >> $GITHUB_ENV
-          fi
-
-      - name: Create deployment files
-        env:
-          DOCKER_COMPOSE_PROD_SPRING: ${{ secrets.DOCKER_COMPOSE_PROD_SPRING_YML }}
-          APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
-        run: |
-          mkdir -p deploy/docker-compose
-          
-          # Create docker-compose file
-          echo "$DOCKER_COMPOSE_PROD_SPRING" > deploy/docker-compose/${{ env.COMPOSE_FILE }}
-          
-          # Create application-secret files for each changed module
-          MODULES='${{ needs.detect-changes.outputs.modules }}'
-          echo "$MODULES" | jq -r '.[]' | while read module; do
-            mkdir -p deploy/$module/src/main/resources
-            echo "$APPLICATION_SECRET" > deploy/$module/src/main/resources/application-secret.yml
-          done
-
-      - name: Transfer files to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ env.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "deploy/*"
-          target: "/home/ec2-user/"
-          strip_components: 1
-          rm: true
-
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ env.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script_stop: true
-          script: |
-            set -euo pipefail
-            
-            # Function to log with timestamp
-            log() {
-              echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
-            }
-            
-            log "Starting deployment to ${{ env.DEPLOY_ENV }}"
-            log "Using image tag: ${{ needs.create-tag.outputs.tag_name }}"
-            log "Changed modules: ${{ join(fromJSON(needs.detect-changes.outputs.modules), ', ') }}"
-            
-            # Login to registry
-            echo ${{ secrets.GHCR_PAT_READ }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            
-            # Export image tag for docker-compose
-            export IMAGE_TAG=${{ needs.create-tag.outputs.tag_name }}
-            
-            # Navigate to deployment directory
-            cd /home/ec2-user
-            
-            # Create backup of current state
-            log "Creating backup of current deployment"
-            if [ -f "docker-compose/${{ env.COMPOSE_FILE }}" ]; then
-              cp docker-compose/${{ env.COMPOSE_FILE }} docker-compose/${{ env.COMPOSE_FILE }}.backup.$(date +%Y%m%d_%H%M%S)
-            fi
-            
-            # Pre-pull images to check availability
-            log "Pre-pulling Docker images"
-            if ! docker-compose -f docker-compose/${{ env.COMPOSE_FILE }} pull; then
-              log "ERROR: Failed to pull images. Deployment aborted."
-              exit 1
-            fi
-            
-            # Stop services gracefully
-            log "Stopping current services"
-            docker-compose -f docker-compose/${{ env.COMPOSE_FILE }} down --remove-orphans
-            
-            # Start services
-            log "Starting updated services"
-            if ! docker-compose -f docker-compose/${{ env.COMPOSE_FILE }} up -d; then
-              log "ERROR: Failed to start services. Attempting rollback..."
-              # Rollback logic could be added here
-              exit 1
-            fi
-            
-            # Wait for services to be ready
-            log "Waiting for services to be ready (30s)"
-            sleep 30
-            
-            # Health check
-            log "Performing health checks"
-            FAILED_SERVICES=""
-            
-            # Check each service health (customize URLs as needed)
-            for service in $(docker-compose -f docker-compose/${{ env.COMPOSE_FILE }} config --services); do
-              if ! docker-compose -f docker-compose/${{ env.COMPOSE_FILE }} exec -T $service curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; then
-                log "WARNING: Health check failed for $service"
-                FAILED_SERVICES="$FAILED_SERVICES $service"
-              else
-                log "✅ $service is healthy"
-              fi
-            done
-            
-            if [ -n "$FAILED_SERVICES" ]; then
-              log "WARNING: Some services failed health checks:$FAILED_SERVICES"
-              log "Check service logs with: docker-compose -f docker-compose/${{ env.COMPOSE_FILE }} logs"
-            else
-              log "✅ All services are healthy"
-            fi
-            
-            # Cleanup old images and containers
-            log "Cleaning up old Docker resources"
-            docker system prune -f --filter "until=24h"
-            
-            log "🚀 Deployment completed successfully!"
-            log "Services running:"
-            docker-compose -f docker-compose/${{ env.COMPOSE_FILE }} ps
-
-  # 배포 후 검증
-  post-deploy-verification:
-    name: Post-deployment Verification
-    runs-on: ubuntu-latest
-    needs: [deploy, create-tag]
-    if: success()
-    steps:
-      - name: Wait for deployment to stabilize
-        run: sleep 60
-
-      - name: Run integration tests
-        run: |
-          # Add your integration tests here
-          echo "Running post-deployment verification tests"
-          # curl tests, API validation, etc.
-
-      - name: Notify deployment status
-        uses: 8398a7/action-slack@v3
-        if: always()
-        with:
-          status: ${{ job.status }}
-          channel: '#deployments'
-          text: |
-            Deployment ${{ job.status }} for tag ${{ needs.create-tag.outputs.tag_name }}
-            Environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}
-            Changed modules: ${{ join(fromJSON(needs.detect-changes.outputs.modules), ', ') }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          cache-from: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:cache
+          cache-to: type=registry,ref=ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:cache,mode=max
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:${{ needs.makeTagAndRelease.outputs.tag_name }},
+            ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest

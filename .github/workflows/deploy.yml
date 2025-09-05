@@ -131,19 +131,19 @@ jobs:
 
       - name: 스프링 배포
         uses: appleboy/ssh-action@master
-    env:
-      GHCR_USER: ${{ secrets.GHCR_USER }}
-        GHCR_PAT:  ${{ secrets.GHCR_PAT }}
-        with:
-          host: ${{ secrets.SPRING_EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ env.OWNER_LC }} --password-stdin
-            docker pull ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-            echo "OWNER_LC=${{ env.OWNER_LC }}" > .env
-            echo "DOCKER_IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}" >> .env
-            docker compose -f docker-compose/docker-compose.prod.spring.yml down
-            docker compose -f docker-compose/docker-compose.prod.spring.yml up -d
-            docker system prune -f
+        env:
+          GHCR_USER: ${{ secrets.GHCR_USER }}
+          GHCR_PAT:  ${{ secrets.GHCR_PAT }}
+          with:
+            host: ${{ secrets.SPRING_EC2_HOST }}
+            username: ${{ secrets.EC2_USERNAME }}
+            key: ${{ secrets.EC2_SSH_KEY }}
+            script: |
+              echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ env.OWNER_LC }} --password-stdin
+              docker pull ghcr.io/${{ env.OWNER_LC }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+              echo "OWNER_LC=${{ env.OWNER_LC }}" > .env
+              echo "DOCKER_IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}" >> .env
+              docker compose -f docker-compose/docker-compose.prod.spring.yml down
+              docker compose -f docker-compose/docker-compose.prod.spring.yml up -d
+              docker system prune -f
           

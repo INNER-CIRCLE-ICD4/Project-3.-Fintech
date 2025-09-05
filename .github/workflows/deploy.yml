@@ -48,7 +48,8 @@ jobs:
           sendy-notification-consumer,
           sendy-transfer-consumer,
           sendy-transfer-producer,
-          sendy-user-producer
+          sendy-user-producer,
+          sendy-transfer-scheduler
         ]
     steps:
       - uses: actions/checkout@v4

@@ -38,6 +38,7 @@ class UserServiceTest(
                 password = "",
                 phoneNumber = "01011112222",
                 email = "",
+                birth = "",
             )
         userService.updateUser(user.id, dto)
     }
@@ -45,9 +46,9 @@ class UserServiceTest(
     @Test
     fun deleteUser() {
         val user = userRepository.findByEmail("test@gmail.com") ?: return
-        userService.deleteUser("test@gmail.com", "1234", user.id)
+        userService.deleteUser("1234", user.id)
 
-        println(userService.deleteUser("test@gmail.com", "1234", user.id))
+        println(userService.deleteUser("1234", user.id))
     }
 
 //    @Test

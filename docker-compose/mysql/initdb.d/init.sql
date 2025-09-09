@@ -1,0 +1,42 @@
+-- users
+-- tester1 -> password: password1
+-- tester2 -> password: password2
+INSERT INTO `sendy`.users
+(id, password, name, phone_number, email, ci, birth, is_delete, email_verified, create_at, update_at, delete_at)
+VALUES (38352658567418872,
+        '0b14d501a594442a01c6859541bcb3e8164d183d32937b851835442f69d5c94e',
+        'tester1',
+        'Cx/OjtBzh4LMoQnTi88/hNlXyGeIvZmq1gIM7CVvQT0=',
+        'qpXdwvkn2fj8BjGIyhwHfBfONx/LzRjuenSYwkAzcuE=',
+        'ci1',
+        '19990123',
+        0,
+        1,
+        now(),
+        now(),
+        null),
+       (38352658567418873,
+        '6cf615d5bcaac778352a8f1f3360d23f02f34ec182e259897fd6ce485d7870d4',
+        'tester2',
+        'G4ud4CMhyt0B/SdraVjGidVtH+r++Px1uplGXYyk/c4=',
+        'NyfMsclCGx1QflWO5xFyM8LaPxhvFYdN3j/6rmaaCPc=',
+        'ci2',
+        '19991231',
+        0,
+        1,
+        now(),
+        now(),
+        null),
+       (38352658567418874,
+        '6cf615d5bcaac778352a8f1f3360d23f02f34ec182e259897fd6ce485d7870d4',
+        'tester3',
+        '01032141111',
+        '4rGsE91CofxjfWSL/xUab9V4CFj5kktcS4GZkUiXoSE=',
+        'ci2',
+        '19991231',
+        0,
+        1,
+        now(),
+        now(),
+        null);
+

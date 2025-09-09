@@ -3,7 +3,6 @@ package com.sendy.sendyLegacyApi.interfaces.rest.user
 import com.sendy.sendyLegacyApi.application.dto.users.CreateUserDto
 import com.sendy.sendyLegacyApi.application.dto.users.UpdateUserDto
 import com.sendy.sendyLegacyApi.application.usecase.users.UserService
-import com.sendy.sendyLegacyApi.domain.user.UserEntity
 import com.sendy.sendyLegacyApi.support.response.Response
 import com.sendy.sendyLegacyApi.support.response.Result
 import io.swagger.v3.oas.annotations.Operation
@@ -26,24 +25,23 @@ class UserController(
     @Operation(summary = "사용자 등록", description = "사용자 정보로 회원가입을 합니다.")
     fun registerUser(
         @RequestBody @Valid requestDto: CreateUserDto,
-    ): Response<UserEntity> = Response.ok(userService.registerUser(requestDto))
+    ): Response<String> = Response.ok(userService.registerUser(requestDto))
 
     @PutMapping("/{id}")
     @Operation(summary = "사용자 수정", description = "사용자 정보를 수정합니다.")
     fun updateUser(
         @RequestBody @Valid updateDto: UpdateUserDto,
         @PathVariable("id") id: Long,
-    ): Response<UserEntity> = Response.ok(userService.updateUser(id, updateDto))
+    ): Response<String> = Response.ok(userService.updateUser(id, updateDto))
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/")
     @Operation(summary = "사용자 삭제", description = "사용자 정보를 삭제합니다.")
     fun deleteUser(
-        email: String,
         password: String,
-        @PathVariable("id") id: Long,
-    ): Response<UserEntity> {
+        id: Long,
+    ): Response<String> {
         // 로그인된 사용자 엔티티 조회
-        return Response.ok(userService.deleteUser(email, password, id))
+        return Response.ok(userService.deleteUser(password, id))
     }
 
     @PostMapping("/auth/email/send")

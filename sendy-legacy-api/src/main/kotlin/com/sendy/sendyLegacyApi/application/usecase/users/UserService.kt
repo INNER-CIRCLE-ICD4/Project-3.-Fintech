@@ -4,6 +4,7 @@ import com.sendy.sendyLegacyApi.application.dto.email.EmailDto
 import com.sendy.sendyLegacyApi.application.dto.users.CreateUserDto
 import com.sendy.sendyLegacyApi.application.dto.users.UpdateUserDto
 import com.sendy.sendyLegacyApi.domain.authorities.UserEntityRepository
+import com.sendy.sendyLegacyApi.domain.email.EmailEntity
 import com.sendy.sendyLegacyApi.domain.user.UserEntity
 import com.sendy.sendyLegacyApi.infrastructure.persistence.email.EmailRepository
 import com.sendy.sendyLegacyApi.support.exception.ResponseException
@@ -11,18 +12,16 @@ import com.sendy.sendyLegacyApi.support.response.Result
 import com.sendy.sendyLegacyApi.support.util.Aes256Util
 import com.sendy.sendyLegacyApi.support.util.SHA256Util
 import com.sendy.sendyLegacyApi.support.util.getTsid
-import com.sendy.sharedKafka.domain.EventMessage
 import com.sendy.sharedKafka.domain.EventMessageRepository
 import com.sendy.sharedKafka.domain.EventPublisher
-import com.sendy.sharedKafka.domain.EventTypes
-import com.sendy.sharedKafka.event.user.email.EmailVerificationSentEvent
-import com.sendy.sharedKafka.topic.KafkaTopics
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
+import java.time.LocalDateTime
 
 @Service
 class UserService(
@@ -42,10 +41,11 @@ class UserService(
      * @param requestDto 유저 등록 요청 DTO
      */
     @Transactional
-    fun registerUser(requestDto: CreateUserDto): UserEntity {
+    fun registerUser(requestDto: CreateUserDto): String {
         // ci 값 등록
         val entity = requestDto.toEntity(getTsid(), sha256Util.hash(requestDto.password))
-        return userEntityRepository.save(entity)
+        userEntityRepository.save(entity)
+        return entity.id.toString()
     }
 
     @Transactional
@@ -55,39 +55,45 @@ class UserService(
             ?.id
             ?: throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
 
+    @PersistenceContext
+    private lateinit var entityManager: EntityManager
+
     @Transactional
     fun updateUser(
         id: Long,
         updateDto: UpdateUserDto,
-    ): UserEntity {
+    ): String {
         val updateUser =
             userEntityRepository
                 .findByIdAndIsDeleteFalse(id)
                 .orElseThrow { throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) }
 
-        return updateUser.update(updateDto)
+        updateUser.update(updateDto)
+
+        userEntityRepository.save(updateUser)
+        return updateUser.id.toString()
     }
 
     @Transactional
     fun deleteUser(
-        email: String,
         password: String,
         id: Long,
-    ): UserEntity {
+    ): String {
         val delUser =
             userEntityRepository
                 .findByIdAndIsDeleteFalse(id)
                 .orElseThrow { throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) }
 
-        if (!delUser.email.equals(email) || !delUser.password.equals(password)) {
-            throw ResponseException("사용자 정보가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED)
+        if (!sha256Util.matches(password, delUser.password)) {
+            throw ResponseException("비밀번호 일치하지 않습니다.", HttpStatus.UNAUTHORIZED)
         }
 
         if (delUser.isDelete) {
             throw ResponseException("이미 삭제된 사용자입니다.", HttpStatus.NOT_FOUND)
         }
-
-        return delUser.deleteUser()
+        delUser.userDelete()
+        delUser.deleteAt = LocalDateTime.now()
+        return delUser.id.toString() + "delete success"
     }
 
     // 이메일 발송 로직
@@ -117,27 +123,27 @@ class UserService(
         val mailFlag = mailAsyncSend.sendEmailAsync(mailSender, email, randomCode)
 
         // 이메일 발송 후 Kafka 알림 메시지 발송
-        val user =
-            userEntityRepository.findById(userId).orElseThrow {
-                throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
-            }
+//        val user =
+//            userEntityRepository.findById(userId).orElseThrow {
+//                throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+//            }
 
-        eventMessageRepository.saveReady(
-            EventMessage(
-                id = getTsid(),
-                source = "sendy-legacy-api",
-                aggregateId = userId,
-                payload =
-                    EmailVerificationSentEvent(
-                        userId = userId,
-                        email = email,
-                        username = user.name,
-                        verificationToken = randomCode,
-                        expiresAt = Instant.now().plusSeconds(3600),
-                    ),
-                type = EventTypes.USER_VERIFICATION,
-            ),
-        )
+//        eventMessageRepository.saveReady(
+//            EventMessage(
+//                id = getTsid(),
+//                source = "sendy-legacy-api",
+//                aggregateId = userId,
+//                payload =
+//                    EmailVerificationSentEvent(
+//                        userId = userId,
+//                        email = email,
+//                        username = user.name,
+//                        verificationToken = randomCode,
+//                        expiresAt = Instant.now().plusSeconds(3600),
+//                    ),
+//                type = EventTypes.USER_VERIFICATION,
+//            ),
+//        )
 
         return "인증 코드 발송" + mailFlag
     }
@@ -148,25 +154,39 @@ class UserService(
         email: String,
         emailCode: String,
     ): Result {
-        val user =
-            userEntityRepository.findById(userId).orElseThrow {
-                throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
-            }
-        if (!user.email.equals(email)) {
-            throw ResponseException("이메일 정보가 다릅니다.", HttpStatus.NOT_FOUND)
-        }
+        val userEntity =
+            userEntityRepository
+                .findById(userId)
+                .orElseThrow { throw ResponseException("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND) }
 
-        val emailEntity =
+        val emailEntitys: List<EmailEntity> =
             emailRepository.findByUserId(userId)
-                ?: throw ResponseException("이메일 인증 정보가 없습니다.", HttpStatus.NOT_FOUND)
+                ?: throw ResponseException("이메일 인증 정보가 존재하지 않습니다.", HttpStatus.BAD_REQUEST)
 
-        if (emailEntity.code != emailCode) {
-            throw ResponseException("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST)
+        // 이메일 테이블에서 인증할 사용자와 같은지 확인
+        emailEntitys.forEach {
+            if (!it.userId.equals(userEntity.id)) {
+                throw ResponseException("사용자 정보가 다릅니다.", HttpStatus.NOT_FOUND)
+            }
+
+            if (it.isVerified == false) {
+                if (it.code != emailCode) {
+                    throw ResponseException("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST)
+                }
+
+                if (userEntity.isLocked) {
+                    userEntity.emailVerified = true
+                    userEntity.wrongCount = 0
+                    userEntity.isLocked = false
+                    it.isVerified = true
+                } else {
+                    userEntity.emailVerified = true
+                    it.isVerified = true
+                }
+                emailRepository.save(it)
+                userEntityRepository.save(userEntity)
+            }
         }
-        user.emailVerified = true
-        emailEntity.isVerified = true
-        emailRepository.save(emailEntity)
-
         return Result(200, "이메일 인증 성공")
     }
 

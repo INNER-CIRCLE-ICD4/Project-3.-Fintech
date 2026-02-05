@@ -23,8 +23,8 @@ CREATE TABLE transfer_limit
     single_transaction_limit bigint     NOT NULL COMMENT "1회 이체시 최대 한도",
     daily_count              bigint     NOT NULL COMMENT "일일 이체 횟수",
     created_at               DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "생성 일자",
-    updated_at               DATETIME NULL DEFAULT CURRENT_TIMESTAMP COMMENT "수정 일자",
-    user_id                  bigint NULL,
+    updated_at               DATETIME   NULL     DEFAULT CURRENT_TIMESTAMP COMMENT "수정 일자",
+    user_id                  bigint     NULL,
 
     -- 추후 account 외래키 추가
     INDEX (user_id),
@@ -52,18 +52,20 @@ CREATE TABLE transaction_history
 -- 사용자 테이블
 CREATE TABLE users
 (
-    id             BIGINT       NOT NULL PRIMARY KEY,
-    password       VARCHAR(100) NOT NULL,
-    name           VARCHAR(50)  NOT NULL,
-    phone_number   VARCHAR(20)  NOT NULL,
-    email          VARCHAR(255) NOT NULL,
-    ci             VARCHAR(100),
-    birth          CHAR(8)      NOT NULL,
-    is_delete      TINYINT(1) NOT NULL,
-    email_verified TINYINT(1) NOT NULL DEFAULT 0,
-    create_at      TIMESTAMP    NOT NULL,
-    update_at      TIMESTAMP,
-    delete_at      TIMESTAMP,
+    id             BIGINT       NOT NULL PRIMARY KEY COMMENT "id",
+    password       VARCHAR(255) NOT NULL COMMENT "비밀번호",
+    name           VARCHAR(50)  NOT NULL COMMENT "이름",
+    phone_number   VARCHAR(255)  NOT NULL COMMENT "핸드폰 번호",
+    email          VARCHAR(255) NOT NULL COMMENT "이메일",
+    ci             VARCHAR(100) COMMENT "본인인증 고유값",
+    birth          CHAR(8)      NOT NULL COMMENT "생년월일",
+    is_delete      TINYINT(1) NOT NULL COMMENT "삭제여부",
+    email_verified TINYINT(1) NOT NULL DEFAULT 0 COMMENT "이메일본인인증여부",
+    create_at      TIMESTAMP    NOT NULL COMMENT "생성일시",
+    update_at      TIMESTAMP COMMENT "수정일시",
+    delete_at      TIMESTAMP COMMENT "삭제일시",
+    is_locked     TINYINT(1) NOT NULL DEFAULT 0 COMMENT "계정잠금여부",
+    wrong_count  INT         NOT NULL DEFAULT 0 COMMENT "비밀번호 틀린 횟수",
     UNIQUE KEY `users_phone_number_uk` (phone_number)
 ) engine = InnoDB;
 
@@ -73,7 +75,7 @@ CREATE TABLE email
     id          BIGINT       NOT NULL PRIMARY KEY,
     code        VARCHAR(255) NOT NULL,
     email       VARCHAR(255) NOT NULL,
-    is_verified TINYINT(1) NOT NULL DEFAULT 0,
+    is_verified TINYINT(1)   NOT NULL DEFAULT 0,
     user_id     BIGINT       NOT NULL,
     send_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) engine = InnoDB;
@@ -81,14 +83,14 @@ CREATE TABLE email
 -- 계좌 테이블
 CREATE TABLE account
 (
-    id                 BIGINT      NOT NULL PRIMARY KEY,
-    account_number     VARCHAR(13) NOT NULL,
-    user_id            BIGINT      NOT NULL,
-    password           VARCHAR(64) NOT NULL,
-    status             VARCHAR(20) NOT NULL,
-    created_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    balance            BIGINT      NOT NULL,
+    id             BIGINT       NOT NULL PRIMARY KEY,
+    account_number VARCHAR(13)  NOT NULL,
+    user_id        BIGINT       NOT NULL,
+    password       VARCHAR(120) NOT NULL,
+    status         VARCHAR(20)  NOT NULL,
+    created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    balance        BIGINT       NOT NULL,
 
     UNIQUE KEY `account_user_id_uk` (user_id)
 ) engine = InnoDB;
@@ -97,9 +99,9 @@ CREATE TABLE account
 -- jwt 토큰 정보
 create table jwt_token
 (
-    created_at datetime(6) not null,
+    created_at datetime(6)  not null,
     device_id  bigint,
-    expired_at datetime(6) not null,
+    expired_at datetime(6)  not null,
     token_id   bigint       not null auto_increment,
     updated_at datetime(6),
     user_id    bigint       not null,
@@ -113,9 +115,9 @@ create table jwt_token
 create table device_info
 (
     is_mobile          BOOLEAN DEFAULT false not null,
-    created_at         datetime(6) not null,
+    created_at         datetime(6)           not null,
     device_id          bigint                not null auto_increment,
-    last_login_at      datetime(6) not null,
+    last_login_at      datetime(6)           not null,
     updated_at         datetime(6),
     user_id            bigint                not null,
     language           varchar(10),
@@ -128,4 +130,16 @@ create table device_info
     user_agent         varchar(500),
     device_fingerprint varchar(255)          not null,
     primary key (device_id)
+) engine = InnoDB;
+
+create table event_message
+(
+    id           bigint PRIMARY KEY COMMENT "id",
+    source       varchar(255) NOT NULL COMMENT "이벤트 발행처",
+    aggregate_id bigint       NOT NULL COMMENT "aggregate id",
+    payload      json COMMENT "payload",
+    status       VARCHAR(13) NULL COMMENT "상태(READY, PUBLISH, FAIL)",
+    `type`       varchar(255) NOT NULL COMMENT "이벤트 타입",
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT "송금 요청 일자",
+    published_at DATETIME COMMENT "완료 일자"
 ) engine = InnoDB;

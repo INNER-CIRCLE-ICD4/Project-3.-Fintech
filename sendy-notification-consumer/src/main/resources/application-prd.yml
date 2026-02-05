@@ -1,0 +1,25 @@
+spring:
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:sendy-kafka:9092}
+    consumer:
+      group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID:notification-service}
+      auto-offset-reset: ${SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET:earliest}
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: manual_immediate
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://sendy-mongoDB:sendy123!@sendy-mongodb:27017/notification?authSource=admin}
+      database: ${SPRING_DATA_MONGODB_DATABASE:notification}
+
+server:
+  port: 8082
+
+logging:
+  level:
+    com.sendy.consumer: DEBUG
+    org.springframework.kafka: DEBUG
+    org.springframework.kafka.listener: DEBUG
+    root: INFO

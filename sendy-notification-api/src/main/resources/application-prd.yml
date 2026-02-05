@@ -1,0 +1,69 @@
+# Notification API - MongoDB 설정
+
+# 기본 설정
+spring:
+  application:
+    name: notification-api
+  data:
+    mongodb:
+      # Docker 컨테이너 간 통신 (내부 네트워크)
+      host: mongo
+      port: 27017
+      database: notification
+      username: sendy-mongoDB
+      password: sendy123!
+      authentication-database: admin
+
+# 로그 설정
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
+    org.mongodb.driver: INFO
+    com.sendy: DEBUG
+
+---
+# 로컬 개발 환경 (Docker 외부에서 접근)
+spring:
+  config:
+    activate:
+      on-profile: local
+  data:
+    mongodb:
+      # 로컬에서 Docker MongoDB에 접근
+      host: localhost
+      port: 27017
+      database: notification_local
+      username: sendy-mongoDB
+      password: sendy123!
+      authentication-database: admin
+
+---
+# Docker Compose 내부 환경
+spring:
+  config:
+    activate:
+      on-profile: docker
+  data:
+    mongodb:
+      # Docker 컨테이너 간 통신 (내부 네트워크)
+      host: mongo
+      port: 27017
+      database: notification
+      username: sendy-mongoDB
+      password: sendy123!
+      authentication-database: admin
+
+---
+# 운영 환경
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    mongodb:
+      host: ${MONGODB_HOST:mongo}
+      port: ${MONGODB_PORT:27017}
+      database: ${MONGODB_DATABASE:notification}
+      username: ${MONGODB_USERNAME:sendy-mongoDB}
+      password: ${MONGODB_PASSWORD:sendy123!}
+      authentication-database: ${MONGODB_AUTH_DATABASE:admin}
